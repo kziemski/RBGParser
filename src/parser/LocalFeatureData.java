@@ -27,7 +27,7 @@ public class LocalFeatureData {
 	final int ntypes;				// number of label types
 	final int size, sizeL;						
 	final int rank;								
-	final double gamma;//, gammaLabel;
+	final double gamma, gammaL;
 	
 	int numarcs;					// number of un-pruned arcs and gold arcs (if indexGoldArcs == true)
 	int[] arc2id;					// map (h->m) arc to an id in [0, numarcs-1]
@@ -71,7 +71,7 @@ public class LocalFeatureData {
 		size = synFactory.numArcFeats+1;
 		sizeL = synFactory.numLabeledArcFeats+1;
 		gamma = options.gamma;
-		//gammaLabel = options.gammaLabel;
+		gammaL = options.gammaLabel;
 		
 		wordFvs = new FeatureVector[len];
 		wpU = new double[len][rank];
@@ -1021,11 +1021,28 @@ public class LocalFeatureData {
 		return fv;
 	}
 	
-	private double getLabelScore(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private double getLabelScoreTheta(DependencyArcList arcLis, int[] heads, int mod, int type)
 	{
 		ScoreCollector col = new ScoreCollector(parameters, true);
 		synFactory.createLabelFeatures(col, inst, arcLis, heads, mod, type);
 		return col.score;
+	}
+	
+	private double getLabelScoreTensor(DependencyArcList arcLis, int[] heads, int mod, int type)
+	{
+		int head = heads[mod];
+		double s = 0;
+		for (int k = 0; k < rank; ++k) {
+			s += wpU[head][k] * wpV[mod][k] * parameters.WL[k][type];
+		}
+		return s;
+	}
+	
+	
+	private double getLabelScore(DependencyArcList arcLis, int[] heads, int mod, int type)
+	{
+		return gammaL * getLabelScoreTheta(arcLis, heads, mod, type) +
+				(1-gammaL) * getLabelScoreTensor(arcLis, heads, mod, type);
 	}
 	
 	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)

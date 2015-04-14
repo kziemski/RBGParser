@@ -50,7 +50,7 @@ public class Options implements Cloneable, Serializable {
 	
 	public boolean average = true;
 	public double C = 0.01;
-	public double gamma = 0.3, gammaLabel = 1;
+	public double gamma = 0.3, gammaLabel = 0.3;
 	public int R = 50;
 	
 	// feature set
@@ -148,7 +148,9 @@ public class Options implements Cloneable, Serializable {
             }
             else if (arg.startsWith("gamma:")) {
             	gamma = Double.parseDouble(arg.split(":")[1]);
-            	//gammaLabel = gamma;
+            }
+            else if (arg.startsWith("gammaLabel:")) {
+            	gammaLabel = Double.parseDouble(arg.split(":")[1]);
             }
             else if (arg.startsWith("R:")) {
                 R = Integer.parseInt(arg.split(":")[1]);

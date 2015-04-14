@@ -17,22 +17,23 @@ public class Parameters implements Serializable {
 	
 	public transient Options options;
 	public final int labelLossType;
-	public double C, gamma, gammaLabel;
+	public double C, gamma, gammaL;
 	public int size, sizeL;
 	public int rank;
-	public int N, M, T, D;
+	public int N, M, T, D, DL;
 	
 	public float[] params, paramsL;
-	public double[][] U, V, W;
+	public double[][] U, V, W, WL;
 	public transient float[] total, totalL;
-	public transient double[][] totalU, totalV, totalW;
+	public transient double[][] totalU, totalV, totalW, totalWL;
 	
-	public transient FeatureVector[] dU, dV, dW;
+	public transient FeatureVector[] dU, dV, dW, dWL;
 	
 	public Parameters(DependencyPipe pipe, Options options) 
 	{
 		 //T = pipe.types.length;
         D = d * 2 + 1;
+        DL = pipe.types.length;
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -47,7 +48,7 @@ public class Parameters implements Serializable {
 		this.labelLossType = options.labelLossType;
 		C = options.C;
 		gamma = options.gamma;
-		gammaLabel = options.gammaLabel;
+		gammaL = options.gammaLabel;
 		rank = options.R;
 		
 		N = pipe.synFactory.numWordFeats;
@@ -55,13 +56,15 @@ public class Parameters implements Serializable {
 		U = new double[rank][N];		
 		V = new double[rank][M];
 		W = new double[rank][D];
+		WL = new double[rank][DL];
 		totalU = new double[rank][N];
 		totalV = new double[rank][M];
 		totalW = new double[rank][D];
+		totalWL = new double[rank][DL];
 		dU = new FeatureVector[rank];
 		dV = new FeatureVector[rank];
 		dW = new FeatureVector[rank];
-
+		dWL = new FeatureVector[rank];
 	}
 	
 	public void randomlyInitUVW() 
@@ -101,6 +104,11 @@ public class Parameters implements Serializable {
 			for (int j = 0; j < D; ++j) {
 				W[i][j] += totalW[i][j]/T;
 			}
+		
+		for (int i = 0; i < rank; ++i)
+			for (int j = 0; j < DL; ++j) {
+				WL[i][j] += totalWL[i][j]/T;
+			}
 	}
 	
 	public void unaverageParameters(int T) 
@@ -128,6 +136,11 @@ public class Parameters implements Serializable {
 			for (int j = 0; j < D; ++j) {				
 				W[i][j] -= totalW[i][j]/T;
 			}
+		
+		for (int i = 0; i < rank; ++i)
+			for (int j = 0; j < DL; ++j) {
+				WL[i][j] -= totalWL[i][j]/T;
+			}
 	}
 	
 	public void clearUVW() 
@@ -139,7 +152,10 @@ public class Parameters implements Serializable {
 			Arrays.fill(totalU[i], 0);
 			Arrays.fill(totalV[i], 0);
 			Arrays.fill(totalW[i], 0);
-			
+			if (options.learnLabel) {
+				Arrays.fill(WL[i], 0);
+				Arrays.fill(totalWL[i], 0);
+			}
 		}
 	}
 	
@@ -241,19 +257,46 @@ public class Parameters implements Serializable {
     	double Fi = getLabelDis(actDeps, actLabs, predDeps, predLabs);
         	
     	FeatureVector dtl = lfd.getLabeledFeatureDifference(gold, pred);
-    	double loss = - dtl.dotProduct(paramsL) + Fi;
-        double l2norm = dtl.Squaredl2NormUnsafe();
+    	double loss = - dtl.dotProduct(paramsL)*gammaL + Fi;
+        double l2norm = dtl.Squaredl2NormUnsafe() * gammaL * gammaL;
     	
+        // update WL
+    	for (int k = 0; k < rank; ++k) {
+    		FeatureVector dWLk = getdWL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dWLk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
+        	loss -= dWLk.dotProduct(WL[k]) * (1-gammaL);
+        	dWL[k] = dWLk;
+    	}
+        
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
-    		double coeff = alpha;
-    		double coeff2 = coeff * (1-updCnt);
-    		for (int i = 0, K = dtl.size(); i < K; ++i) {
-	    		int x = dtl.x(i);
-	    		double z = dtl.value(i);
-	    		paramsL[x] += coeff * z;
-	    		totalL[x] += coeff2 * z;
+    		
+    		{
+    			// update thetaL
+	    		double coeff = alpha * gammaL;
+	    		double coeff2 = coeff * (1-updCnt);
+	    		for (int i = 0, K = dtl.size(); i < K; ++i) {
+		    		int x = dtl.x(i);
+		    		double z = dtl.value(i);
+		    		paramsL[x] += coeff * z;
+		    		totalL[x] += coeff2 * z;
+	    		}
+    		}
+    		
+    		{
+	    		// update WL
+				double coeff = alpha * (1-gammaL);
+				double coeff2 = coeff * (1-updCnt);
+	        	for (int k = 0; k < rank; ++k) {
+	        		FeatureVector dWLk = dWL[k];
+	        		for (int i = 0, K = dWLk.size(); i < K; ++i) {
+	        			int x = dWLk.x(i);
+	        			double z = dWLk.value(i);
+	        			WL[k][x] += coeff * z;
+	        			totalWL[k][x] += coeff2 * z;
+	        		}
+	        	}  
     		}
     	}
     	
@@ -456,6 +499,30 @@ public class Parameters implements Serializable {
     	for (int i = 0; i < D; ++i)
     		dW2.addEntry(i, dW[i]);
     	return dW2;
+    }
+    
+    private FeatureVector getdWL(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpU = lfd.wpU, wpV = lfd.wpV;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	double[] dWL = new double[DL];
+    	for (int mod = 1; mod < L; ++mod) {
+    		assert(actDeps[mod] == predDeps[mod]);
+    		int head = actDeps[mod];
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		if (lab == lab2) continue;
+    		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
+    		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
+    		dWL[lab] += dotu * dotv;
+    		dWL[lab2] -= dotu * dotv;
+    	}
+    	
+    	FeatureVector dWL2 = new FeatureVector(DL);
+    	for (int i = 0; i < DL; ++i)
+    		dWL2.addEntry(i, dWL[i]);
+    	return dWL2;
     }
     
 	public double getHammingDis(int[] actDeps, int[] actLabs,

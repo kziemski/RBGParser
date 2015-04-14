@@ -4,3 +4,8 @@
 *.jar
 *.war
 *.ear
+
+# running data #
+*.model
+*.test
+*.train
