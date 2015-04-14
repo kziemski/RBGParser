@@ -9,3 +9,5 @@
 *.model
 *.test
 *.train
+
+jni_include
