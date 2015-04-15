@@ -96,6 +96,14 @@ public class LocalFeatureData {
 		initFirstOrderTables();
 	}
 	
+	public void updateProjection()
+	{
+		for (int i = 0; i < len; ++i) {
+			parameters.projectU(wordFvs[i], wpU[i]);
+			parameters.projectV(wordFvs[i], wpV[i]);
+		}
+	}
+	
 	private void initFirstOrderTables() 
 	{
 		for (int i = 0; i < len; ++i) {

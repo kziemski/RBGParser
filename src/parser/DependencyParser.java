@@ -305,6 +305,7 @@ public class DependencyParser implements Serializable {
         		if (ua != n-1) {
         			loss += parameters.update(inst, predInst, lfd, gfd,
         					iIter * N + i + 1, offset);
+        			lfd.updateProjection();
                 }
         		
         		if (options.learnLabel) {
