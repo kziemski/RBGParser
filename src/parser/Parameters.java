@@ -31,9 +31,9 @@ public class Parameters implements Serializable {
 	
 	public Parameters(DependencyPipe pipe, Options options) 
 	{
-		 //T = pipe.types.length;
         D = d * 2 + 1;
-        DL = pipe.types.length;
+        T = pipe.types.length;
+        DL = T + T*d*2;
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -522,13 +522,16 @@ public class Parameters implements Serializable {
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head = actDeps[mod];
+    		int dis = getBinnedDistance(head-mod);
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dWL[lab] += dotu * dotv;
+    		dWL[T+lab*2*d+dis-1] += dotu * dotv;
     		dWL[lab2] -= dotu * dotv;
+    		dWL[T+lab2*2*d+dis-1] -= dotu * dotv;
     	}
     	
     	FeatureVector dWL2 = new FeatureVector(DL);

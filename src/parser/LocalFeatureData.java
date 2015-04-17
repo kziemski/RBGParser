@@ -1039,9 +1039,12 @@ public class LocalFeatureData {
 	private double getLabelScoreTensor(DependencyArcList arcLis, int[] heads, int mod, int type)
 	{
 		int head = heads[mod];
+		int d = parameters.d;
+		int dis = parameters.getBinnedDistance(head-mod);
+		int T = ntypes;
 		double s = 0;
 		for (int k = 0; k < rank; ++k) {
-			s += wpU[head][k] * wpV[mod][k] * parameters.WL[k][type];
+			s += wpU[head][k] * wpV[mod][k] * (parameters.WL[k][type] + parameters.WL[k][T+type*2*d+dis-1]);
 		}
 		return s;
 	}
