@@ -205,6 +205,18 @@ public class Parameters implements Serializable {
 		System.out.printf(" |W|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
+	public void printWLStat() 
+	{
+		double sum = 0;
+		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(WL[i]);
+			min = Math.min(min, Utils.min(WL[i]));
+			max = Math.max(max, Utils.max(WL[i]));
+		}
+		System.out.printf(" |WL|^2: %f min: %f\tmax: %f%n", sum, min, max);
+	}
+	
 	public void printThetaStat() 
 	{
 		double sum = Utils.squaredSum(params);

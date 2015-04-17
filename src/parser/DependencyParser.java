@@ -319,9 +319,13 @@ public class DependencyParser implements Serializable {
         		}
 
     		}
+    		
     		System.out.printf("%n  Iter %d\tloss=%.4f\tuas=%.4f\t[%ds]%n", iIter+1,
     				loss, uas/(tot+0.0),
     				(System.currentTimeMillis() - start)/1000);
+    		System.out.println();
+    		parameters.printWStat();
+    		parameters.printWLStat();
     		
     		if (options.learningMode != LearningMode.Basic && options.pruning && pruner != null)
     			pruner.printPruningStats();
