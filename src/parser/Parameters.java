@@ -217,6 +217,42 @@ public class Parameters implements Serializable {
 		System.out.printf(" |WL|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
+	private void printdWStat() 
+	{
+		double sum = 0;
+		for (int i = 0; i < rank; ++i) {
+			sum += dW[i].Squaredl2NormUnsafe();
+		}
+		System.out.printf(" |dW|^2: %f\n", sum);
+	}
+	
+	private void printdWLStat() 
+	{
+		double sum = 0;
+		for (int i = 0; i < rank; ++i) {
+			sum += dWL[i].Squaredl2NormUnsafe();
+		}
+		System.out.printf(" |dWL|^2: %f\n", sum);
+	}
+	
+	private double WNorm()
+	{
+		double sum = 0;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(W[i]);
+		}
+		return sum;
+	}
+	
+	private double WLNorm()
+	{
+		double sum = 0;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(WL[i]);
+		}
+		return sum;
+	}
+	
 	public void printThetaStat() 
 	{
 		double sum = Utils.squaredSum(params);
@@ -258,7 +294,7 @@ public class Parameters implements Serializable {
 	
 	public double updateLabel(DependencyInstance gold, DependencyInstance pred,
 			LocalFeatureData lfd, GlobalFeatureData gfd,
-			int updCnt, int offset)
+			int updCnt)
 	{
 		int N = gold.length;
     	int[] actDeps = gold.heads;
@@ -280,6 +316,7 @@ public class Parameters implements Serializable {
         	dWL[k] = dWLk;
     	}
         
+    	double oldnorm = WLNorm();
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
@@ -308,10 +345,12 @@ public class Parameters implements Serializable {
 	        			WL[k][x] += coeff * z;
 	        			totalWL[k][x] += coeff2 * z;
 	        		}
-	        	}  
+	        	}
+	        	//System.out.printf("WL coefficient: %f\n", coeff);
     		}
     	}
-    	
+    	//printdWLStat();
+    	//System.out.printf("WL norm difference: %f\n", WLNorm()-oldnorm);
     	return loss;
 	}
 	
@@ -361,6 +400,7 @@ public class Parameters implements Serializable {
         	}   
         //}
         
+        double oldnorm = WNorm();
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
@@ -412,6 +452,7 @@ public class Parameters implements Serializable {
     			// update W
     			double coeff = alpha * (1-gamma);
     			double coeff2 = coeff * (1-updCnt);
+    			//System.out.printf("W coeff: %f\nW value:",coeff);
             	for (int k = 0; k < rank; ++k) {
             		FeatureVector dWk = dW[k];
             		for (int i = 0, K = dWk.size(); i < K; ++i) {
@@ -419,11 +460,15 @@ public class Parameters implements Serializable {
             			double z = dWk.value(i);
             			W[k][x] += coeff * z;
             			totalW[k][x] += coeff2 * z;
+            			//System.out.printf(" %f",z);
             		}
             	}  
+            	//System.out.println();
+            	//System.out.printf("W coefficient: %f\n", coeff);
     		}
     	}
-    	
+    	//printdWStat();
+    	//System.out.printf("W norm difference: %f\n", WNorm()-oldnorm);
         return loss;
 	}
 	
@@ -510,6 +555,7 @@ public class Parameters implements Serializable {
     	FeatureVector dW2 = new FeatureVector(D);
     	for (int i = 0; i < D; ++i)
     		dW2.addEntry(i, dW[i]);
+    	//System.out.printf("W: %f\n",dW2.Squaredl2NormUnsafe());
     	return dW2;
     }
     
@@ -537,6 +583,7 @@ public class Parameters implements Serializable {
     	FeatureVector dWL2 = new FeatureVector(DL);
     	for (int i = 0; i < DL; ++i)
     		dWL2.addEntry(i, dWL[i]);
+    	//System.out.printf("WL: %f\n",dWL2.Squaredl2NormUnsafe());
     	return dWL2;
     }
     

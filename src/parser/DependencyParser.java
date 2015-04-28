@@ -233,6 +233,19 @@ public class DependencyParser implements Serializable {
             parameters.printUStat();
             parameters.printVStat();
             parameters.printWStat();
+            
+            if (options.learnLabel) {
+            	options.learningMode = LearningMode.Basic;
+            	options.gammaLabel = 0;
+            	parameters.gammaL = 0;
+            	initWL(lstTrain);
+            	options.learningMode = optionsBak.learningMode;
+            	options.gammaLabel = optionsBak.gammaLabel;
+            	parameters.gammaL = optionsBak.gammaLabel;
+            	parameters.printWLStat();
+            }
+            
+            
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
     		System.out.println("=============================================");
@@ -279,7 +292,7 @@ public class DependencyParser implements Serializable {
 
     		long start = 0;
     		double loss = 0;
-    		int uas = 0, tot = 0;
+    		int uas = 0, las = 0, tot = 0;
     		start = System.currentTimeMillis();
                 		    		
     		for (int i = 0; i < N; ++i) {
@@ -314,14 +327,15 @@ public class DependencyParser implements Serializable {
         			la = evaluateLabelCorrect(inst, predInst);
         			if (la != n-1) {
         				loss += parameters.updateLabel(inst, predInst, lfd, gfd,
-        						iIter * N + i + 1, offset);
+        						iIter * N + i + 1);
         			}
+        			las += la;
         		}
 
     		}
     		
-    		System.out.printf("%n  Iter %d\tloss=%.4f\tuas=%.4f\t[%ds]%n", iIter+1,
-    				loss, uas/(tot+0.0),
+    		System.out.printf("%n  Iter %d\tloss=%.4f\tuas=%.4f\tlas=%.4f\t[%ds]%n", iIter+1,
+    				loss, uas/(tot+0.0), las/(tot+0.0),
     				(System.currentTimeMillis() - start)/1000);
     		System.out.println();
     		parameters.printWStat();
@@ -353,6 +367,58 @@ public class DependencyParser implements Serializable {
     	
     	if (evalAndSave && options.average) {
             parameters.averageParameters(options.maxNumIters * N);
+    	}
+
+        decoder.shutdown();
+    }
+    
+    
+    public void initWL(DependencyInstance[] lstTrain) throws IOException
+    {
+
+    	DependencyDecoder decoder = DependencyDecoder
+    			.createDependencyDecoder(options);
+    	
+    	int N = lstTrain.length;
+    	int printPeriod = 10000 < N ? N/10 : 1000;
+    	
+    	for (int iIter = 0; iIter < options.numPretrainIters; ++iIter) {
+    		
+    		long start = 0;
+    		double loss = 0;
+    		int las = 0, tot = 0;
+    		start = System.currentTimeMillis();
+                		    		
+    		for (int i = 0; i < N; ++i) {
+    			
+    			if ((i + 1) % printPeriod == 0) {
+				System.out.printf("  %d (time=%ds)", (i+1),
+					(System.currentTimeMillis()-start)/1000);
+    			}
+
+    			//DependencyInstance inst = new DependencyInstance(lstTrain[i]);
+    			DependencyInstance inst = lstTrain[i];
+    			LocalFeatureData lfd = new LocalFeatureData(inst, this, true, true);
+    		    GlobalFeatureData gfd = new GlobalFeatureData(lfd);
+    		    
+    		    int n = inst.length;
+    		    
+    		    DependencyInstance predInst = decoder.decode(inst, lfd, gfd, true);
+        		predInst.heads = inst.heads;
+        		lfd.predictLabels(predInst.heads, predInst.deplbids, true);
+        		int la = evaluateLabelCorrect(inst, predInst);
+        		if (la != n-1) {
+        			loss += parameters.updateLabel(inst, predInst, lfd, gfd,
+        					iIter * N + i + 1);
+        		}
+        		las += la;
+        		tot += n-1;
+    		}
+    		
+    		System.out.printf("%n  Iter %d\tloss=%.4f\tlas=%.4f\t[%ds]%n", iIter+1,
+    				loss, las/(tot+0.0),
+    				(System.currentTimeMillis() - start)/1000);
+    		System.out.println();
     	}
 
         decoder.shutdown();
