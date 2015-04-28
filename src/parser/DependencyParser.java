@@ -230,11 +230,8 @@ public class DependencyParser implements Serializable {
     		parameters.gamma = optionsBak.gamma;
     		parameters.gammaL = optionsBak.gammaLabel;
     		parameters.clearTheta();
-            parameters.printUStat();
-            parameters.printVStat();
-            parameters.printWStat();
             
-            if (options.learnLabel) {
+            /*if (options.learnLabel) {
             	options.learningMode = LearningMode.Basic;
             	options.gammaLabel = 0;
             	parameters.gammaL = 0;
@@ -243,8 +240,11 @@ public class DependencyParser implements Serializable {
             	options.gammaLabel = optionsBak.gammaLabel;
             	parameters.gammaL = optionsBak.gammaLabel;
             	parameters.printWLStat();
-            }
+            }*/
             
+            parameters.printUStat();
+            parameters.printVStat();
+            parameters.printWStat();
             
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
@@ -264,6 +264,11 @@ public class DependencyParser implements Serializable {
 		System.out.println("Running MIRA ... ");
 		trainIter(lstTrain, true);
 		System.out.println();
+		
+		
+		/*if (options.learnLabel) {
+        	initWL(lstTrain);
+        }*/
 		
 		end = System.currentTimeMillis();
 		
@@ -321,7 +326,7 @@ public class DependencyParser implements Serializable {
         			lfd.updateProjection();
                 }
         		
-        		if (options.learnLabel) {
+        		/*if (options.learnLabel) {
         			predInst.heads = inst.heads;
         			lfd.predictLabels(predInst.heads, predInst.deplbids, true);
         			la = evaluateLabelCorrect(inst, predInst);
@@ -330,8 +335,35 @@ public class DependencyParser implements Serializable {
         						iIter * N + i + 1);
         			}
         			las += la;
-        		}
+        		}*/
 
+    		}
+    		
+    		if (options.learnLabel) {
+				for (int i = 0; i < N; ++i) {
+					
+					if ((i + 1) % printPeriod == 0) {
+					System.out.printf("  %d (time=%ds)", (i+1),
+						(System.currentTimeMillis()-start)/1000);
+					}
+			
+					//DependencyInstance inst = new DependencyInstance(lstTrain[i]);
+					DependencyInstance inst = lstTrain[i];
+					LocalFeatureData lfd = new LocalFeatureData(inst, this, true, true);
+				    GlobalFeatureData gfd = new GlobalFeatureData(lfd);
+				    
+				    int n = inst.length;
+				    
+				    DependencyInstance predInst = decoder.decode(inst, lfd, gfd, true);
+					predInst.heads = inst.heads;
+					lfd.predictLabels(predInst.heads, predInst.deplbids, true);
+					int la = evaluateLabelCorrect(inst, predInst);
+					if (la != n-1) {
+						loss += parameters.updateLabel(inst, predInst, lfd, gfd,
+								iIter * N + i + 1);
+					}
+					las += la;
+				}
     		}
     		
     		System.out.printf("%n  Iter %d\tloss=%.4f\tuas=%.4f\tlas=%.4f\t[%ds]%n", iIter+1,
@@ -382,7 +414,7 @@ public class DependencyParser implements Serializable {
     	int N = lstTrain.length;
     	int printPeriod = 10000 < N ? N/10 : 1000;
     	
-    	for (int iIter = 0; iIter < options.numPretrainIters; ++iIter) {
+    	for (int iIter = 0; iIter < options.maxNumIters; ++iIter) {
     		
     		long start = 0;
     		double loss = 0;
@@ -419,6 +451,7 @@ public class DependencyParser implements Serializable {
     				loss, las/(tot+0.0),
     				(System.currentTimeMillis() - start)/1000);
     		System.out.println();
+    		parameters.printWLStat();
     	}
 
         decoder.shutdown();
