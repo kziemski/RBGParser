@@ -281,11 +281,7 @@ public class DependencyParser implements Serializable {
     		long start = 0;
     		double loss = 0;
     		int uas = 0, las = 0, tot = 0;
-    		start = System.currentTimeMillis();
-                		    		
-    		
-    		parameters.sdW = 0;
-    		parameters.sdWL = 0;
+    		start = System.currentTimeMillis();	
     		
     		
     		for (int i = 0; i < N; ++i) {
@@ -313,10 +309,6 @@ public class DependencyParser implements Serializable {
         					iIter * N + i + 1, offset);
         			lfd.updateProjection();
                 }
-        		lfd = new LocalFeatureData(inst, this, true, true);
-        		gfd = new GlobalFeatureData(lfd);
-        		predInst = decoder.decode(inst, lfd, gfd, true);
-        		
         		if (options.learnLabel) {
         			predInst.heads = inst.heads;
         			lfd.predictLabels(predInst.heads, predInst.deplbids, true);
@@ -334,9 +326,11 @@ public class DependencyParser implements Serializable {
     				loss, uas/(tot+0.0), las/(tot+0.0),
     				(System.currentTimeMillis() - start)/1000);
     		System.out.println();
+    		
+    		parameters.printUStat();
+    		parameters.printVStat();
     		parameters.printWStat();
     		parameters.printWLStat();
-    		System.out.printf("dW: %f\tdWL %f\t\n",parameters.sdW,parameters.sdWL);
     		
     		if (options.learningMode != LearningMode.Basic && options.pruning && pruner != null)
     			pruner.printPruningStats();

@@ -28,7 +28,6 @@ public class Parameters implements Serializable {
 	public transient double[][] totalU, totalV, totalW, totalWL;
 	
 	public transient FeatureVector[] dU, dV, dW, dWL;
-	public double sdW, sdWL;
 	
 	public Parameters(DependencyPipe pipe, Options options) 
 	{
@@ -66,9 +65,6 @@ public class Parameters implements Serializable {
 		dV = new FeatureVector[rank];
 		dW = new FeatureVector[rank];
 		dWL = new FeatureVector[rank];
-		
-		sdW = 0;
-		sdWL = 0;
 	}
 	
 	public void randomlyInitUVWWL() 
@@ -316,15 +312,28 @@ public class Parameters implements Serializable {
     	double loss = - dtl.dotProduct(paramsL)*gammaL + Fi;
         double l2norm = dtl.Squaredl2NormUnsafe() * gammaL * gammaL;
     	
+        // update U
+    	for (int k = 0; k < rank; ++k) {        		
+    		FeatureVector dUk = getdUL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dUk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);            	
+        	loss -= dUk.dotProduct(U[k]) * (1-gammaL);
+        	dU[k] = dUk;
+    	}
+    	// update V
+    	for (int k = 0; k < rank; ++k) {
+    		FeatureVector dVk = getdVL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dVk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
+        	//loss -= dVk.dotProduct(V[k]) * (1-gammaL);
+        	dV[k] = dVk;
+    	}        	
         // update WL
     	for (int k = 0; k < rank; ++k) {
     		FeatureVector dWLk = getdWL(k, lfd, actDeps, actLabs, predDeps, predLabs);
         	l2norm += dWLk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
-        	loss -= dWLk.dotProduct(WL[k]) * (1-gammaL);
+        	//loss -= dWLk.dotProduct(WL[k]) * (1-gammaL);
         	dWL[k] = dWLk;
     	}
         
-    	double oldnorm = WLNorm();
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
@@ -342,6 +351,34 @@ public class Parameters implements Serializable {
     		}
     		
     		{
+    			// update U
+    			double coeff = alpha * (1-gammaL);
+    			double coeff2 = coeff * (1-updCnt);
+            	for (int k = 0; k < rank; ++k) {
+            		FeatureVector dUk = dU[k];
+            		for (int i = 0, K = dUk.size(); i < K; ++i) {
+            			int x = dUk.x(i);
+            			double z = dUk.value(i);
+            			U[k][x] += coeff * z;
+            			totalU[k][x] += coeff2 * z;
+            		}
+            	}
+    		}	
+    		{
+    			// update V
+    			double coeff = alpha * (1-gammaL);
+    			double coeff2 = coeff * (1-updCnt);
+            	for (int k = 0; k < rank; ++k) {
+            		FeatureVector dVk = dV[k];
+            		for (int i = 0, K = dVk.size(); i < K; ++i) {
+            			int x = dVk.x(i);
+            			double z = dVk.value(i);
+            			V[k][x] += coeff * z;
+            			totalV[k][x] += coeff2 * z;
+            		}
+            	}            	
+    		} 
+    		{
 	    		// update WL
 				double coeff = alpha * (1-gammaL);
 				double coeff2 = coeff * (1-updCnt);
@@ -354,11 +391,8 @@ public class Parameters implements Serializable {
 	        			totalWL[k][x] += coeff2 * z;
 	        		}
 	        	}
-	        	//System.out.printf("WL coefficient: %f\n", coeff);
     		}
     	}
-    	sdWL += printdWLStat() * alpha * alpha;
-    	//System.out.printf("WL norm difference: %f\n", WLNorm()-oldnorm);
     	return loss;
 	}
 	
@@ -381,34 +415,28 @@ public class Parameters implements Serializable {
         double loss = - dt.dotProduct(params)*gamma + Fi;
         double l2norm = dt.Squaredl2NormUnsafe() * gamma * gamma;
     	
-        int updId = (updCnt + offset) % 3;
-        //if ( updId == 1 ) {
-        	// update U
-        	for (int k = 0; k < rank; ++k) {        		
-        		FeatureVector dUk = getdU(k, lfd, actDeps, predDeps);
-            	l2norm += dUk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);            	
-            	loss -= dUk.dotProduct(U[k]) * (1-gamma);
-            	dU[k] = dUk;
-        	}
-        //} else if ( updId == 2 ) {
-        	// update V
-        	for (int k = 0; k < rank; ++k) {
-        		FeatureVector dVk = getdV(k, lfd, actDeps, predDeps);
-            	l2norm += dVk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
-            	//loss -= dVk.dotProduct(V[k]) * (1-gamma);
-            	dV[k] = dVk;
-        	}        	
-        //} else {
-        	// update W
-        	for (int k = 0; k < rank; ++k) {
-        		FeatureVector dWk = getdW(k, lfd, actDeps, predDeps);
-            	l2norm += dWk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
-            	//loss -= dWk.dotProduct(W[k]) * (1-gamma);
-            	dW[k] = dWk;
-        	}   
-        //}
+    	// update U
+    	for (int k = 0; k < rank; ++k) {        		
+    		FeatureVector dUk = getdU(k, lfd, actDeps, predDeps);
+        	l2norm += dUk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);            	
+        	loss -= dUk.dotProduct(U[k]) * (1-gamma);
+        	dU[k] = dUk;
+    	}
+    	// update V
+    	for (int k = 0; k < rank; ++k) {
+    		FeatureVector dVk = getdV(k, lfd, actDeps, predDeps);
+        	l2norm += dVk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+        	//loss -= dVk.dotProduct(V[k]) * (1-gamma);
+        	dV[k] = dVk;
+    	}        	
+    	// update W
+    	for (int k = 0; k < rank; ++k) {
+    		FeatureVector dWk = getdW(k, lfd, actDeps, predDeps);
+        	l2norm += dWk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+        	//loss -= dWk.dotProduct(W[k]) * (1-gamma);
+        	dW[k] = dWk;
+    	}   
         
-        double oldnorm = WNorm();
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
@@ -425,7 +453,6 @@ public class Parameters implements Serializable {
 	    		}
     		}
     		
-    		//if ( updId == 1 ) 
     		{
     			// update U
     			double coeff = alpha * (1-gamma);
@@ -440,7 +467,6 @@ public class Parameters implements Serializable {
             		}
             	}
     		}	
-    		//else if ( updId == 2 ) 
     		{
     			// update V
     			double coeff = alpha * (1-gamma);
@@ -455,12 +481,10 @@ public class Parameters implements Serializable {
             		}
             	}            	
     		} 
-            //else 
     		{
     			// update W
     			double coeff = alpha * (1-gamma);
     			double coeff2 = coeff * (1-updCnt);
-    			//System.out.printf("W coeff: %f\nW value:",coeff);
             	for (int k = 0; k < rank; ++k) {
             		FeatureVector dWk = dW[k];
             		for (int i = 0, K = dWk.size(); i < K; ++i) {
@@ -468,15 +492,10 @@ public class Parameters implements Serializable {
             			double z = dWk.value(i);
             			W[k][x] += coeff * z;
             			totalW[k][x] += coeff2 * z;
-            			//System.out.printf(" %f",z);
             		}
             	}  
-            	//System.out.println();
-            	//System.out.printf("W coefficient: %f\n", coeff);
     		}
     	}
-    	sdW += printdWStat() * alpha * alpha;
-    	//System.out.printf("W norm difference: %f\n", WNorm()-oldnorm);
         return loss;
 	}
 	
@@ -522,6 +541,26 @@ public class Parameters implements Serializable {
     	return dU;
     }
     
+    private FeatureVector getdUL(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpV = lfd.wpV;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dU = new FeatureVector(N);
+    	for (int mod = 1; mod < L; ++mod) {
+    		assert(actDeps[mod] == predDeps[mod]);
+    		int head  = actDeps[mod];
+    		int dis = getBinnedDistance(head-mod);
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		if (lab == lab2) continue;
+    		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
+    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
+    									 - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));
+    	}
+    	return dU;
+    }
+    
     private FeatureVector getdV(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) {
     	double[][] wpU = lfd.wpU;
     	FeatureVector[] wordFvs = lfd.wordFvs;
@@ -537,6 +576,26 @@ public class Parameters implements Serializable {
     		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		dV.addEntries(wordFvs[mod], dotu  * (W[k][0] + W[k][d])
     									- dotu2 * (W[k][0] + W[k][d2]));    		
+    	}
+    	return dV;
+    }
+    
+    private FeatureVector getdVL(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpU = lfd.wpU;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dV = new FeatureVector(M);
+    	for (int mod = 1; mod < L; ++mod) {
+    		assert(actDeps[mod] == predDeps[mod]);
+    		int head  = actDeps[mod];
+    		int dis = getBinnedDistance(head-mod);
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		if (lab == lab2) continue;
+    		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
+    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
+    									- dotu * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));    		
     	}
     	return dV;
     }
