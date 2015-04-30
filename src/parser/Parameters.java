@@ -28,6 +28,7 @@ public class Parameters implements Serializable {
 	public transient double[][] totalU, totalV, totalW, totalWL;
 	
 	public transient FeatureVector[] dU, dV, dW, dWL;
+	public double sdW, sdWL;
 	
 	public Parameters(DependencyPipe pipe, Options options) 
 	{
@@ -65,17 +66,22 @@ public class Parameters implements Serializable {
 		dV = new FeatureVector[rank];
 		dW = new FeatureVector[rank];
 		dWL = new FeatureVector[rank];
+		
+		sdW = 0;
+		sdWL = 0;
 	}
 	
-	public void randomlyInitUVW() 
+	public void randomlyInitUVWWL() 
 	{
 		for (int i = 0; i < rank; ++i) {
 			U[i] = Utils.getRandomUnitVector(N);
 			V[i] = Utils.getRandomUnitVector(M);
 			W[i] = Utils.getRandomUnitVector(D);
+			WL[i] = Utils.getRandomUnitVector(DL);
 			totalU[i] = U[i].clone();
 			totalV[i] = V[i].clone();
 			totalW[i] = W[i].clone();
+			totalWL[i] = WL[i].clone();
 		}
 	}
 	
@@ -217,22 +223,24 @@ public class Parameters implements Serializable {
 		System.out.printf(" |WL|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
-	private void printdWStat() 
+	private double printdWStat() 
 	{
 		double sum = 0;
 		for (int i = 0; i < rank; ++i) {
 			sum += dW[i].Squaredl2NormUnsafe();
 		}
-		System.out.printf(" |dW|^2: %f\n", sum);
+		//System.out.printf(" |dW|^2: %f\n", sum);
+		return sum;
 	}
 	
-	private void printdWLStat() 
+	private double printdWLStat() 
 	{
 		double sum = 0;
 		for (int i = 0; i < rank; ++i) {
 			sum += dWL[i].Squaredl2NormUnsafe();
 		}
-		System.out.printf(" |dWL|^2: %f\n", sum);
+		//System.out.printf(" |dWL|^2: %f\n", sum);
+		return sum;
 	}
 	
 	private double WNorm()
@@ -349,7 +357,7 @@ public class Parameters implements Serializable {
 	        	//System.out.printf("WL coefficient: %f\n", coeff);
     		}
     	}
-    	//printdWLStat();
+    	sdWL += printdWLStat() * alpha * alpha;
     	//System.out.printf("WL norm difference: %f\n", WLNorm()-oldnorm);
     	return loss;
 	}
@@ -467,7 +475,7 @@ public class Parameters implements Serializable {
             	//System.out.printf("W coefficient: %f\n", coeff);
     		}
     	}
-    	//printdWStat();
+    	sdW += printdWStat() * alpha * alpha;
     	//System.out.printf("W norm difference: %f\n", WNorm()-oldnorm);
         return loss;
 	}
