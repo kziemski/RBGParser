@@ -31,6 +31,7 @@ public class Conll06Reader extends DependencyReader {
 	    String[] lemmas = new String[length + 1];
 	    String[] cpos = new String[length + 1];
 	    String[] pos = new String[length + 1];
+	    String[] totfeats = new String[length + 1];
 	    String[][] feats = new String[length + 1][];
 	    String[] deprels = new String[length + 1];
 	    int[] heads = new int[length + 1];
@@ -55,13 +56,14 @@ public class Conll06Reader extends DependencyReader {
 	    	} //else lemmas[i] = forms[i];
 	    	cpos[i] = parts[3];
 	    	pos[i] = parts[4];
+	    	totfeats[i] = parts[5];
 	    	if (!parts[5].equals("_")) feats[i] = parts[5].split("\\|");
 	    	heads[i] = Integer.parseInt(parts[6]);
 	    	deprels[i] = (/*options.learnLabel &&*/ isLabeled) ? parts[7] : "<no-type>";
 	    }
 	    if (!hasLemma) lemmas = null;
 	    
-		return new DependencyInstance(forms, lemmas, cpos, pos, feats, heads, deprels);
+		return new DependencyInstance(forms, lemmas, cpos, pos, totfeats, feats, heads, deprels);
 	}
 
 	@Override

@@ -381,6 +381,14 @@ public class SyntacticFeatureFactory implements Serializable {
 					inst.lemmaids[c], inst.cpostagids[c], attDist);
     	
     	if (inst.featids[h] != null && inst.featids[c] != null) {
+    		
+    		addCore1OBigramFeatures(fv, inst.formids[h], inst.totfeatids[h], 
+					inst.formids[c], inst.totfeatids[c], attDist);
+			
+			if (inst.lemmas != null)
+				addCore1OBigramFeatures(fv, inst.lemmaids[h], inst.totfeatids[h], 
+						inst.lemmaids[c], inst.totfeatids[c], attDist);
+			
     		for (int i = 0, N = inst.featids[h].length; i < N; ++i)
     			for (int j = 0, M = inst.featids[c].length; j < M; ++j) {
     				

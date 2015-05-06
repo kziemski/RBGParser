@@ -42,6 +42,9 @@ public class DependencyInstance implements Serializable {
 	// MOST-COARSE-POS: the coarsest part-of-speech tags (about 11 in total)
 	public SpecialPos[] specialPos;
 	
+	// FEATURES: concatenation of feats
+	public String[] totfeats;
+		
 	// FEATURES: some features associated with the elements separated by "|", e.g. "PAST|3P"
 	public String[][] feats;
 
@@ -56,6 +59,7 @@ public class DependencyInstance implements Serializable {
 	public int[] postagids;
 	public int[] cpostagids;
 	public int[] deprelids;
+	public int[] totfeatids;
 	public int[][] featids;
 	public int[] wordVecIds;
 
@@ -90,6 +94,12 @@ public class DependencyInstance implements Serializable {
     	this.lemmas = lemmas;    	
     	this.feats = feats;
     	this.cpostags = cpostags;
+    }
+    
+    public DependencyInstance(String[] forms, String[] lemmas, String[] cpostags, String[] postags,
+            String[] totfeats, String[][] feats, int[] heads, String[] deprels) {
+    	this(forms, lemmas, cpostags, postags, feats, heads, deprels);
+    	this.totfeats = totfeats;
     }
     
     public DependencyInstance(DependencyInstance a) {
@@ -133,8 +143,10 @@ public class DependencyInstance implements Serializable {
     			lemmaids[i] = dicts.lookupIndex(WORD, "lemma="+normalize(lemmas[i]));
     	}
 
+    	totfeatids = new int[length];
 		featids = new int[length][];
 		for (int i = 0; i < length; ++i) if (feats[i] != null) {
+			totfeatids[i] = dicts.lookupIndex(POS, "feat="+totfeats[i]);
 			featids[i] = new int[feats[i].length];
 			for (int j = 0; j < feats[i].length; ++j)
 				featids[i][j] = dicts.lookupIndex(POS, "feat="+feats[i][j]);
