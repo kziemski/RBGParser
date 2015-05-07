@@ -103,7 +103,7 @@ public class DependencyInstance implements Serializable {
     }
     
     public DependencyInstance(DependencyInstance a) {
-    	//this(a.forms, a.lemmas, a.cpostags, a.postags, a.feats, a.heads, a.deprels);
+    	//this(a.forms, a.lemmas, a.cpostags, a.postags, a.totfeats, a.feats, a.heads, a.deprels);
     	specialPos = a.specialPos;
     	length = a.length;
     	heads = a.heads;
@@ -113,6 +113,7 @@ public class DependencyInstance implements Serializable {
     	cpostagids = a.cpostagids;
     	deprelids = a.deprelids;
     	deplbids = a.deplbids;
+    	totfeatids = a.totfeatids;
     	featids = a.featids;
     	wordVecIds = a.wordVecIds;
     }
