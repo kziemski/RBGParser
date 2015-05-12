@@ -1,6 +1,7 @@
 *.class
 runs
 data
+jni_include
 
 # Package Files #
 *.jar

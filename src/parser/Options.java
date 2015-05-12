@@ -235,6 +235,7 @@ public class Options implements Cloneable, Serializable {
     	System.out.println("------\nFLAGS\n------");
     	System.out.println("train-file: " + trainFile);
     	System.out.println("test-file: " + testFile);
+    	System.out.println("affinity-file: " + affinityFile);
     	System.out.println("model-name: " + modelFile);
         System.out.println("output-file: " + outFile);
     	System.out.println("train: " + train);
