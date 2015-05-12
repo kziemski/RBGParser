@@ -19,6 +19,7 @@ public class Options implements Cloneable, Serializable {
 	public String trainFile = null;
 	public String testFile = null;
 	public String unimapFile = null;
+	public String affinityFile = null;
 	public String outFile = null;
 	public boolean train = false;
 	public boolean test = false;
@@ -133,6 +134,9 @@ public class Options implements Cloneable, Serializable {
     		}
     		else if (arg.startsWith("unimap-file:")) {
     			unimapFile = arg.split(":")[1];
+    		}
+    		else if (arg.startsWith("affinity-file:")) {
+    			affinityFile = arg.split(":")[1];
     		}
     		else if (arg.startsWith("output-file:")) {
     			outFile = arg.split(":")[1];

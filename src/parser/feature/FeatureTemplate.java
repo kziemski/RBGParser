@@ -354,6 +354,11 @@ public class FeatureTemplate {
 	    HEAD_EMB,
 	    MOD_EMB,
 	    
+	    // affinity
+	    ADJ,
+	    ADJ_HP_MP,
+	    ADJ_HP_MP_b,
+	    
 	    
 	    FEATURE_TEMPLATE_END;
 		

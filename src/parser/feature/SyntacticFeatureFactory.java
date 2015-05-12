@@ -1,12 +1,15 @@
 package parser.feature;
 
-
 import static parser.feature.FeatureTemplate.Arc.*;
 import static parser.feature.FeatureTemplate.Word.*;
 import gnu.trove.set.hash.TIntHashSet;
 import gnu.trove.set.hash.TLongHashSet;
 
-import java.io.Serializable;
+import java.io.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import parser.DependencyArcList;
 import parser.DependencyInstance;
@@ -22,6 +25,7 @@ import utils.Alphabet;
 import utils.Collector;
 import utils.FeatureVector;
 import utils.Utils;
+import utils.Dictionary;
 
 public class SyntacticFeatureFactory implements Serializable {
 
@@ -58,6 +62,9 @@ public class SyntacticFeatureFactory implements Serializable {
 	private Alphabet wordAlphabet;		// the alphabet of word features (e.g. \phi_h, \phi_m)
 	//private Alphabet arcAlphabet;		// the alphabet of 1st order arc features (e.g. \phi_{h->m})
 	
+	private Map<Map.Entry<Integer, Integer>, Double> affinityFeatures = null;
+	private double affinitymin = Double.POSITIVE_INFINITY;
+	
 	public SyntacticFeatureFactory(Options options)
 	{
 		this.options = options;
@@ -73,6 +80,20 @@ public class SyntacticFeatureFactory implements Serializable {
 		numArcFeats = (int) ((1L << options.bits)-1);
 		numLabeledArcFeats = (int ) ((1L << (options.bits-2))-1);
 		Utils.Assert(numArcFeats > 0);
+	}
+	
+	public void loadAffinityFile(String filename, Dictionary dict)  throws IOException
+	{
+		affinityFeatures = new HashMap<Map.Entry<Integer, Integer>, Double>();
+		Scanner in = new Scanner(new File(filename));
+		while (in.hasNext()) {
+			int a = dict.lookupIndex("form="+in.next());
+			int b = dict.lookupIndex("form="+in.next());
+			Double v = in.nextDouble();
+			affinityFeatures.put(new AbstractMap.SimpleEntry<Integer, Integer>(a,b), v);
+			affinitymin = Math.min(affinitymin, v);
+		}
+		in.close();
 	}
 	
 	public void closeAlphabets()
@@ -392,7 +413,39 @@ public class SyntacticFeatureFactory implements Serializable {
     							inst.lemmaids[c], inst.featids[c][j], attDist);
     			}
     	}
+    	
+    	if (affinityFeatures != null)
+    		addAffinityFeatures(fv, inst, h, c);
 
+    }
+    
+    public void addAffinityFeatures(Collector fv, DependencyInstance inst, 
+    		int h, int m) 
+    {
+    	int[] forms = inst.formids, postags = inst.postagids;
+    	
+    	Map.Entry<Integer, Integer> p;
+    	Double v;
+    	
+    	if (h < m)
+    		p = new AbstractMap.SimpleEntry<Integer, Integer>(forms[h], forms[m]);
+    	else p = new AbstractMap.SimpleEntry<Integer, Integer>(forms[m], forms[h]);
+    	if ( (v = affinityFeatures.get(p)) == null ) 
+    		return;
+    	
+		long code = 0;
+    	
+    	code = createArcCodeP(ADJ, 0);
+    	addArcFeature(code, v, fv);
+    	
+    	code = createArcCodePP(ADJ_HP_MP, postags[h], postags[m]);
+    	addArcFeature(code, v, fv);
+    	
+    	int b = (int)Math.floor((v-affinitymin) /3);
+    	for (int i = 0; i <= b; i++) {
+    		code = createArcCodePPP(ADJ_HP_MP_b, i, postags[h], postags[m]);
+    		addArcFeature(code, fv);
+    	}
     }
     
     public void addBasic1OFeatures(Collector fv, DependencyInstance inst, 

@@ -266,6 +266,9 @@ public class DependencyPipe implements Serializable {
 				dictionaries.size(DEPLABEL), synFactory.depNumBits);
 		System.out.printf("Flag Bits: %d%n", synFactory.flagBits);
 		System.out.printf("Creation took [%d ms]%n", System.currentTimeMillis() - start);
+		
+		if (options.affinityFile != null)
+			synFactory.loadAffinityFile(options.affinityFile, dictionaries.get(WORD));
 	}
 
 
