@@ -41,12 +41,10 @@ public abstract class DependencyWriter {
 		int[] childs = new int[length];
 		int[] pchilds = new int[length];
 		
-		Arrays.fill(childs, -1);
-		Arrays.fill(pchilds, -1);
 		for (int i = 1; i < length; ++i) {
-			if (childs[heads[i]] == -1 || Math.abs(i-heads[i]) < Math.abs(childs[heads[i]]-heads[i]))
+			if (childs[heads[i]] == 0 || Math.abs(i-heads[i]) < Math.abs(childs[heads[i]]-heads[i]))
 				childs[heads[i]] = i;
-			if (pchilds[pheads[i]] == -1 || Math.abs(i-pheads[i]) < Math.abs(pchilds[pheads[i]]-pheads[i]))
+			if (pchilds[pheads[i]] == 0 || Math.abs(i-pheads[i]) < Math.abs(pchilds[pheads[i]]-pheads[i]))
 				pchilds[pheads[i]] = i;
 		}
 			
