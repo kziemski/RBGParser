@@ -1,6 +1,7 @@
 package parser.io;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import parser.DependencyInstance;
 import parser.DependencyPipe;
