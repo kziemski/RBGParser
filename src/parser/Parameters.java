@@ -307,91 +307,119 @@ public class Parameters implements Serializable {
     	int[] predLabs = pred.deplbids;
     	
     	double Fi = getLabelDis(actDeps, actLabs, predDeps, predLabs);
-        	
+        
+    	// update theta
+    	FeatureVector dt = lfd.getFeatureDifference(gold, pred);
+    	dt.addEntries(gfd.getFeatureDifference(gold, pred));
+    	dt.rescale(gamma);
+    	
+    	// update thetaL
     	FeatureVector dtl = lfd.getLabeledFeatureDifference(gold, pred);
-    	double loss = - dtl.dotProduct(paramsL)*gammaL + Fi;
-        double l2norm = dtl.Squaredl2NormUnsafe() * gammaL * gammaL;
+    	dtl.rescale(gammaL);
+    	
+        double l2norm = dt.Squaredl2NormUnsafe() + dtl.Squaredl2NormUnsafe();
+        double loss = - dt.dotProduct(params) - dtl.dotProduct(paramsL) + Fi;
     	
         // update U
-    	for (int k = 0; k < rank; ++k) {        		
-    		FeatureVector dUk = getdUL(k, lfd, actDeps, actLabs, predDeps, predLabs);
-        	l2norm += dUk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);            	
-        	loss -= dUk.dotProduct(U[k]) * (1-gammaL);
+        for (int k = 0; k < rank; ++k) {        		
+    		FeatureVector dUk = getdU(k, lfd, actDeps, predDeps);
+    		dUk.rescale(1-gamma);
+    		FeatureVector dULk = getdUL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+    		dULk.rescale(1-gammaL);
+    		dUk.addEntries(dULk);
+        	l2norm += dUk.Squaredl2NormUnsafe();            	
         	dU[k] = dUk;
+        	
+        	loss -= dUk.dotProduct(U[k]);
     	}
     	// update V
     	for (int k = 0; k < rank; ++k) {
-    		FeatureVector dVk = getdVL(k, lfd, actDeps, actLabs, predDeps, predLabs);
-        	l2norm += dVk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
-        	//loss -= dVk.dotProduct(V[k]) * (1-gammaL);
+    		FeatureVector dVk = getdV(k, lfd, actDeps, predDeps);
+    		dVk.rescale(1-gamma);
+    		FeatureVector dVLk = getdVL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+    		dVLk.rescale(1-gammaL);
+    		dVk.addEntries(dVLk);
+        	l2norm += dVk.Squaredl2NormUnsafe();
         	dV[k] = dVk;
-    	}        	
+    	}
+    	// update W
+    	for (int k = 0; k < rank; ++k) {
+    		FeatureVector dWk = getdW(k, lfd, actDeps, predDeps);
+    		dWk.rescale(1-gamma);
+        	l2norm += dWk.Squaredl2NormUnsafe();
+        	dW[k] = dWk;
+    	}
         // update WL
     	for (int k = 0; k < rank; ++k) {
     		FeatureVector dWLk = getdWL(k, lfd, actDeps, actLabs, predDeps, predLabs);
-        	l2norm += dWLk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
-        	//loss -= dWLk.dotProduct(WL[k]) * (1-gammaL);
+    		dWLk.rescale(1-gammaL);
+        	l2norm += dWLk.Squaredl2NormUnsafe();
         	dWL[k] = dWLk;
     	}
         
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
-    		
-    		{
-    			// update thetaL
-	    		double coeff = alpha * gammaL;
-	    		double coeff2 = coeff * (1-updCnt);
-	    		for (int i = 0, K = dtl.size(); i < K; ++i) {
-		    		int x = dtl.x(i);
-		    		double z = dtl.value(i);
-		    		paramsL[x] += coeff * z;
-		    		totalL[x] += coeff2 * z;
-	    		}
+
+			// update theta
+    		for (int i = 0, K = dt.size(); i < K; ++i) {
+	    		int x = dt.x(i);
+	    		double z = dt.value(i);
+	    		params[x] += alpha * z;
+	    		total[x] += alpha * (1-updCnt) * z;
     		}
     		
-    		{
-    			// update U
-    			double coeff = alpha * (1-gammaL);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dUk = dU[k];
-            		for (int i = 0, K = dUk.size(); i < K; ++i) {
-            			int x = dUk.x(i);
-            			double z = dUk.value(i);
-            			U[k][x] += coeff * z;
-            			totalU[k][x] += coeff2 * z;
-            		}
-            	}
-    		}	
-    		{
-    			// update V
-    			double coeff = alpha * (1-gammaL);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dVk = dV[k];
-            		for (int i = 0, K = dVk.size(); i < K; ++i) {
-            			int x = dVk.x(i);
-            			double z = dVk.value(i);
-            			V[k][x] += coeff * z;
-            			totalV[k][x] += coeff2 * z;
-            		}
-            	}            	
-    		} 
-    		{
-	    		// update WL
-				double coeff = alpha * (1-gammaL);
-				double coeff2 = coeff * (1-updCnt);
-	        	for (int k = 0; k < rank; ++k) {
-	        		FeatureVector dWLk = dWL[k];
-	        		for (int i = 0, K = dWLk.size(); i < K; ++i) {
-	        			int x = dWLk.x(i);
-	        			double z = dWLk.value(i);
-	        			WL[k][x] += coeff * z;
-	        			totalWL[k][x] += coeff2 * z;
-	        		}
-	        	}
+			// update thetaL
+    		for (int i = 0, K = dtl.size(); i < K; ++i) {
+	    		int x = dtl.x(i);
+	    		double z = dtl.value(i);
+	    		paramsL[x] += alpha * z;
+	    		totalL[x] += alpha * (1-updCnt) * z;
     		}
+		
+			// update U
+        	for (int k = 0; k < rank; ++k) {
+        		FeatureVector dUk = dU[k];
+        		for (int i = 0, K = dUk.size(); i < K; ++i) {
+        			int x = dUk.x(i);
+        			double z = dUk.value(i);
+        			U[k][x] += alpha * z;
+        			totalU[k][x] += alpha * (1-updCnt) * z;
+        		}
+        	}
+        	
+			// update V
+        	for (int k = 0; k < rank; ++k) {
+        		FeatureVector dVk = dV[k];
+        		for (int i = 0, K = dVk.size(); i < K; ++i) {
+        			int x = dVk.x(i);
+        			double z = dVk.value(i);
+        			V[k][x] += alpha * z;
+        			totalV[k][x] += alpha * (1-updCnt) * z;
+        		}
+        	}   
+        	
+        	// update W
+        	for (int k = 0; k < rank; ++k) {
+        		FeatureVector dWk = dW[k];
+        		for (int i = 0, K = dWk.size(); i < K; ++i) {
+        			int x = dWk.x(i);
+        			double z = dWk.value(i);
+        			W[k][x] += alpha * z;
+        			totalW[k][x] += alpha * (1-updCnt) * z;
+        		}
+        	}  
+        	
+    		// update WL
+        	for (int k = 0; k < rank; ++k) {
+        		FeatureVector dWLk = dWL[k];
+        		for (int i = 0, K = dWLk.size(); i < K; ++i) {
+        			int x = dWLk.x(i);
+        			double z = dWLk.value(i);
+        			WL[k][x] += alpha * z;
+        			totalWL[k][x] += alpha * (1-updCnt) * z;
+        		}
+        	}
     	}
     	return loss;
 	}
@@ -548,15 +576,16 @@ public class Parameters implements Serializable {
     	int L = wordFvs.length;
     	FeatureVector dU = new FeatureVector(N);
     	for (int mod = 1; mod < L; ++mod) {
-    		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
+    		int head2 = predDeps[mod];
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (lab == lab2) continue;
+    		if (head == head2 && lab == lab2) continue;
+    		int dis = getBinnedDistance(head-mod);
+    		int dis2 = getBinnedDistance(head2-mod);
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
-    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									 - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));
+    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1]));
+    		dU.addEntries(wordFvs[head2], - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis2-1]));
     	}
     	return dU;
     }
@@ -587,15 +616,17 @@ public class Parameters implements Serializable {
     	int L = wordFvs.length;
     	FeatureVector dV = new FeatureVector(M);
     	for (int mod = 1; mod < L; ++mod) {
-    		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
+    		int head2 = predDeps[mod];
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (lab == lab2) continue;
+    		if (head == head2 && lab == lab2) continue;
+    		int dis = getBinnedDistance(head-mod);
+    		int dis2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
+    		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									- dotu * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));    		
+    									- dotu2 * (WL[k][lab2] + WL[k][T+lab2*2*d+dis2-1]));    		
     	}
     	return dV;
     }
@@ -622,7 +653,6 @@ public class Parameters implements Serializable {
     	FeatureVector dW2 = new FeatureVector(D);
     	for (int i = 0; i < D; ++i)
     		dW2.addEntry(i, dW[i]);
-    	//System.out.printf("W: %f\n",dW2.Squaredl2NormUnsafe());
     	return dW2;
     }
     
@@ -633,24 +663,25 @@ public class Parameters implements Serializable {
     	int L = wordFvs.length;
     	double[] dWL = new double[DL];
     	for (int mod = 1; mod < L; ++mod) {
-    		assert(actDeps[mod] == predDeps[mod]);
     		int head = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
+    		int head2 = predDeps[mod];
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (lab == lab2) continue;
+    		if (head == head2 && lab == lab2) continue;
+    		int dis = getBinnedDistance(head-mod);
+    		int dis2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
+    		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dWL[lab] += dotu * dotv;
     		dWL[T+lab*2*d+dis-1] += dotu * dotv;
-    		dWL[lab2] -= dotu * dotv;
-    		dWL[T+lab2*2*d+dis-1] -= dotu * dotv;
+    		dWL[lab2] -= dotu2 * dotv;
+    		dWL[T+lab2*2*d+dis2-1] -= dotu2 * dotv;
     	}
     	
     	FeatureVector dWL2 = new FeatureVector(DL);
     	for (int i = 0; i < DL; ++i)
     		dWL2.addEntry(i, dWL[i]);
-    	//System.out.printf("WL: %f\n",dWL2.Squaredl2NormUnsafe());
     	return dWL2;
     }
     
@@ -675,8 +706,8 @@ public class Parameters implements Serializable {
 	{
 		double dis = 0;
 		for (int i = 1; i < actLabs.length; ++i) {
-			assert(actDeps[i] == predDeps[i]);
-			if (actLabs[i] != predLabs[i]) dis += 1;
+			if (actDeps[i] != predDeps[i]) dis += 1;
+			else if (actLabs[i] != predLabs[i]) dis += 0.5;
 		}
 		return dis;
     }

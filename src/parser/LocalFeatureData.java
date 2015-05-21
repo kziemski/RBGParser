@@ -1062,13 +1062,11 @@ public class LocalFeatureData {
 		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
 		int T = ntypes;
 		for (int mod = 1; mod < len; ++mod) {
-			int head = heads[mod];
 			int type = addLoss ? 0 : 1;
-			double best = getLabelScore(arcLis, heads, mod, type) +
-				(addLoss && inst.deplbids[mod] != 0 ? 1.0 : 0.0);
-			for (int t = type+1; t < T; ++t) {
+			double best = Double.NEGATIVE_INFINITY;
+			for (int t = type; t < T; ++t) {
 				double va = getLabelScore(arcLis, heads, mod, t) +
-					(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
+					(addLoss && inst.heads[mod] == heads[mod] && inst.deplbids[mod] != t ? 0.5 : 0.0);
 				if (va > best) {
 					best = va;
 					type = t;
@@ -1081,8 +1079,6 @@ public class LocalFeatureData {
 	public FeatureVector getLabeledFeatureDifference(DependencyInstance gold, 
 			DependencyInstance pred)
 	{
-		assert(gold.heads == pred.heads);
-		
 		if (!options.learnLabel) return null;
 		
 		FeatureVector dlfv = new FeatureVector(sizeL);
@@ -1093,7 +1089,8 @@ public class LocalFeatureData {
     	int[] actLabs = gold.deplbids;
     	int[] predDeps = pred.heads;
     	int[] predLabs = pred.deplbids;
-    	DependencyArcList arcLis = new DependencyArcList(gold.heads, options.useHO);
+    	DependencyArcList actArcLis = new DependencyArcList(gold.heads, options.useHO);
+    	DependencyArcList predArcLis = new DependencyArcList(pred.heads, options.useHO);
     	
     	for (int mod = 1; mod < N; ++mod) {
     		int type = actLabs[mod];
@@ -1101,11 +1098,11 @@ public class LocalFeatureData {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head != head2 || type != type2) {
-    			int toR = head < mod ? 1 : 0;        		
-    			int toR2 = head2 < mod ? 1 : 0;   
-    			dlfv.addEntries(getLabelFeature(arcLis, actDeps, mod, type));
-    			dlfv.addEntries(getLabelFeature(arcLis, predDeps, mod, type2), -1.0);
+    			dlfv.addEntries(getLabelFeature(actArcLis, actDeps, mod, type));
+    			dlfv.addEntries(getLabelFeature(predArcLis, predDeps, mod, type2), -1.0);
     			
+    			//int toR = head < mod ? 1 : 0;        		
+    			//int toR2 = head2 < mod ? 1 : 0;   
     			//dlfv.addEntries(lbFvs[head][type][toR][0]);
     			//dlfv.addEntries(lbFvs[mod][type][toR][1]);
     			//dlfv.addEntries(lbFvs[head2][type2][toR2][0], -1.0);

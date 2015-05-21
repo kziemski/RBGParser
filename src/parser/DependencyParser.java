@@ -304,13 +304,8 @@ public class DependencyParser implements Serializable {
     		
         		uas += ua;
         		tot += n-1;        		
-        		if (ua != n-1) {
-        			loss += parameters.update(inst, predInst, lfd, gfd,
-        					iIter * N + i + 1, offset);
-        			lfd.updateProjection();
-                }
+        
         		if (options.learnLabel) {
-        			predInst.heads = inst.heads;
         			lfd.predictLabels(predInst.heads, predInst.deplbids, true);
         			la = evaluateLabelCorrect(inst, predInst);
         			if (la != n-1) {
@@ -319,6 +314,10 @@ public class DependencyParser implements Serializable {
         			}
         			las += la;
         		}
+        		else if (ua != n-1) {
+        			loss += parameters.update(inst, predInst, lfd, gfd,
+        					iIter * N + i + 1, offset);
+                }
 
     		}
     		

@@ -1,0 +1,312 @@
+Warning: unknow language
+Warning: unknow language
+Warning: couldn't find coarse POS map for this language
+Creating dictionaries ... 
+Filtered DEPLABEL (10-->8)
+4 8
+Lexical items: 47736 (16 bits)
+Tag/label items: 91 (7 bits)  8 (4 bits)
+Flag Bits: 4
+Creation took [4231 ms]
+Creating Alphabet ... [39254 ms]
+Hash collision: 6.3263% (1861241 / 29420855)
+Num of CONLL fine POS tags: 36
+Num of CONLL coarse POS tags: 36
+Num of labels: 8
+Num of Syntactic Features: 256364 268435455
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000 13000 14000 14368 [3242 ms]
+=============================================
+ Training Pruner:
+=============================================
+Running MIRA ... 
+  Iter 1	loss=167747.5274	uas=0.5587	[457s]
+  Iter 2	loss=113104.7761	uas=0.6599	[442s]
+  Iter 3	loss=91119.2967	uas=0.6932	[426s]
+  Iter 4	loss=77970.8958	uas=0.7157	[422s]
+  Iter 5	loss=69153.2471	uas=0.7327	[414s]
+  Iter 6	loss=62545.8221	uas=0.7468	[414s]
+  Iter 7	loss=57582.6390	uas=0.7578	[414s]
+  Iter 8	loss=53521.5810	uas=0.7681	[405s]
+  Iter 9	loss=50214.9746	uas=0.7760	[409s]
+  Iter 10	loss=47344.5708	uas=0.7835	[408s]
+
+Training took 4215529 ms.
+=============================================
+
+------
+FLAGS
+------
+train-file: data/spmrl.train.fpos.fn.conll
+test-file: data/spmrl.test.fpos.fn.conll
+model-name: runs/spmrl.model
+output-file: null
+train: true
+test: true
+iters: 10
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 1.0
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: true
+use grandparent: true
+use head bigram: true
+use grand siblings: true
+use tri-siblings: true
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Standard
+------
+
+Warning: couldn't find coarse POS map for this language
+Creating dictionaries ... 
+Filtered DEPLABEL (10-->8)
+4 8
+Lexical items: 47736 (16 bits)
+Tag/label items: 91 (7 bits)  8 (4 bits)
+Flag Bits: 8
+Creation took [1855 ms]
+Creating Alphabet ... [51165 ms]
+Hash collision: 3.7340% (1671205 / 44755952)
+Num of CONLL fine POS tags: 36
+Num of CONLL coarse POS tags: 36
+Num of labels: 8
+Num of Syntactic Features: 256364 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000 13000 14000 14368 [2916 ms]
+=============================================
+ Pre-training:
+=============================================
+Running MIRA ... 
+  1436 (time=61s)  2872 (time=117s)  4308 (time=187s)  5744 (time=247s)  7180 (time=287s)  8616 (time=328s)  10052 (time=368s)  11488 (time=408s)  12924 (time=444s)  14360 (time=483s)
+  Iter 1	loss=201566.7697	uas=0.6714	[484s]
+
+Init tensor ... 
+  Unfolding matrix: 13943078 / (256364*3845460)  0.00% entries.
+  Rank: 50 (max:50)  Sigma: max=1.838793 cut=0.316287
+
+ |U|^2: 50.000000 min: -0.518800	max: 0.856961
+ |V|^2: 50.000000 min: -0.876243	max: 0.907275
+ |W|^2: 15.270732 min: -1.699585	max: 0.680106
+
+Pre-training took 557142 ms.
+=============================================
+
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1436 (time=114s)  2872 (time=238s)  4308 (time=395s)  5744 (time=533s)  7180 (time=632s)  8616 (time=734s)  10052 (time=846s)  11488 (time=950s)  12924 (time=1044s)  14360 (time=1147s)
+  Iter 1	loss=169561.4162	uas=0.7142	[1148s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.888179	LAS=0.862516	CAS=0.120805	[153.20s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=122s)  2872 (time=251s)  4308 (time=411s)  5744 (time=553s)  7180 (time=668s)  8616 (time=781s)  10052 (time=882s)  11488 (time=972s)  12924 (time=1064s)  14360 (time=1172s)
+  Iter 2	loss=100390.8428	uas=0.7809	[1173s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.896438	LAS=0.873172	CAS=0.142617	[159.85s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=120s)  2872 (time=237s)  4308 (time=391s)  5744 (time=520s)  7180 (time=609s)  8616 (time=700s)  10052 (time=794s)  11488 (time=882s)  12924 (time=965s)  14360 (time=1059s)
+  Iter 3	loss=70394.5321	uas=0.8136	[1060s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.900286	LAS=0.877946	CAS=0.153803	[139.30s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=118s)  2872 (time=229s)  4308 (time=378s)  5744 (time=502s)  7180 (time=592s)  8616 (time=688s)  10052 (time=786s)  11488 (time=884s)  12924 (time=971s)  14360 (time=1063s)
+  Iter 4	loss=53655.7815	uas=0.8367	[1064s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.902703	LAS=0.880766	CAS=0.155481	[147.61s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=104s)  2872 (time=219s)  4308 (time=374s)  5744 (time=516s)  7180 (time=621s)  8616 (time=725s)  10052 (time=832s)  11488 (time=934s)  12924 (time=1022s)  14360 (time=1120s)
+  Iter 5	loss=42795.2896	uas=0.8554	[1121s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.903549	LAS=0.881431	CAS=0.158837	[152.82s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=118s)  2872 (time=235s)  4308 (time=395s)  5744 (time=516s)  7180 (time=615s)  8616 (time=718s)  10052 (time=826s)  11488 (time=916s)  12924 (time=989s)  14360 (time=1077s)
+  Iter 6	loss=35419.1686	uas=0.8696	[1078s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.904295	LAS=0.882156	CAS=0.163870	[130.35s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=100s)  2872 (time=207s)  4308 (time=362s)  5744 (time=489s)  7180 (time=576s)  8616 (time=666s)  10052 (time=763s)  11488 (time=857s)  12924 (time=952s)  14360 (time=1047s)
+  Iter 7	loss=30012.7706	uas=0.8809	[1048s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.904657	LAS=0.882559	CAS=0.170022	[146.87s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=114s)  2872 (time=228s)  4308 (time=374s)  5744 (time=496s)  7180 (time=584s)  8616 (time=681s)  10052 (time=775s)  11488 (time=866s)  12924 (time=954s)  14360 (time=1052s)
+  Iter 8	loss=26104.9758	uas=0.8898	[1053s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.905000	LAS=0.883123	CAS=0.170582	[126.30s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=94s)  2872 (time=211s)  4308 (time=379s)  5744 (time=514s)  7180 (time=597s)  8616 (time=691s)  10052 (time=788s)  11488 (time=878s)  12924 (time=963s)  14360 (time=1054s)
+  Iter 9	loss=23031.2541	uas=0.8976	[1054s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.905242	LAS=0.883365	CAS=0.171700	[135.87s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+  1436 (time=109s)  2872 (time=221s)  4308 (time=368s)  5744 (time=498s)  7180 (time=592s)  8616 (time=691s)  10052 (time=796s)  11488 (time=892s)  12924 (time=976s)  14360 (time=1064s)
+  Iter 10	loss=20672.9279	uas=0.9038	[1065s]
+  Pruning Recall: 0.9994	Effcy: 0.0916
+
+_____________________________________________
+
+ Evaluation: data/spmrl.test.fpos.fn.conll
+
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.905161	LAS=0.883184	CAS=0.172819	[135.50s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
+
+_____________________________________________
+
+
+Training took 12322828 ms.
+=============================================
+
+Warning: unknow language
+ Evaluating: data/spmrl.test.fpos.fn.conll
+  Tokens: 49642
+  Sentences: 1788
+  UAS=0.905141	LAS=0.883163	CAS=0.172819	[110.23s]
+  Pruning Recall: 0.9888	Effcy: 0.1093
+
+WARNING: Pruning recall is less than 99%!
+Current pruning-weight=0.20. Consider using a smaller value between (0,1)
+
