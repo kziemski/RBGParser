@@ -1097,7 +1097,7 @@ public class LocalFeatureData {
     		int type2 = predLabs[mod];
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
-    		if (head != head2 || type != type2) {
+    		if (head == head2 && type != type2) {
     			dlfv.addEntries(getLabelFeature(actArcLis, actDeps, mod, type));
     			dlfv.addEntries(getLabelFeature(predArcLis, predDeps, mod, type2), -1.0);
     			
@@ -1110,6 +1110,7 @@ public class LocalFeatureData {
     		}
     	}
 		
+    	dlfv.rescale(0.5);
 		return dlfv;
 	}
 	

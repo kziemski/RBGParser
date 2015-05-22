@@ -580,13 +580,14 @@ public class Parameters implements Serializable {
     		int head2 = predDeps[mod];
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (head == head2 && lab == lab2) continue;
+    		if (!(head == head2 && lab != lab2)) continue;
     		int dis = getBinnedDistance(head-mod);
     		int dis2 = getBinnedDistance(head2-mod);
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
     		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1]));
     		dU.addEntries(wordFvs[head2], - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis2-1]));
     	}
+    	dU.rescale(0.5);
     	return dU;
     }
     
@@ -620,7 +621,7 @@ public class Parameters implements Serializable {
     		int head2 = predDeps[mod];
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (head == head2 && lab == lab2) continue;
+    		if (!(head == head2 && lab != lab2)) continue;
     		int dis = getBinnedDistance(head-mod);
     		int dis2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
@@ -628,6 +629,7 @@ public class Parameters implements Serializable {
     		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
     									- dotu2 * (WL[k][lab2] + WL[k][T+lab2*2*d+dis2-1]));    		
     	}
+    	dV.rescale(0.5);
     	return dV;
     }
     
@@ -667,7 +669,7 @@ public class Parameters implements Serializable {
     		int head2 = predDeps[mod];
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (head == head2 && lab == lab2) continue;
+    		if (!(head == head2 && lab != lab2)) continue;
     		int dis = getBinnedDistance(head-mod);
     		int dis2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
@@ -682,6 +684,7 @@ public class Parameters implements Serializable {
     	FeatureVector dWL2 = new FeatureVector(DL);
     	for (int i = 0; i < DL; ++i)
     		dWL2.addEntry(i, dWL[i]);
+    	dWL2.rescale(0.5);
     	return dWL2;
     }
     
