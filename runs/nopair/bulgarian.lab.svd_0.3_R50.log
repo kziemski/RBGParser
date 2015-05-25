@@ -1,0 +1,445 @@
+------
+FLAGS
+------
+train-file: data/bulgarian.train.lab.svd_0.3_R50
+test-file: data/bulgarian.test.lab.svd_0.3_R50
+model-name: runs/bulgarian.model.lab.svd_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 20
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.3
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Creating dictionaries ... 
+Filtered DEPLABEL (21-->19)
+4 8
+Lexical items: 32026 (15 bits)
+Tag/label items: 122 (7 bits)  19 (5 bits)
+Flag Bits: 9
+Creation took [712 ms]
+Creating Alphabet ... [4871 ms]
+Hash collision: 0.5707% (38022 / 6662218)
+Num of CONLL fine POS tags: 55
+Num of CONLL coarse POS tags: 13
+Num of labels: 19
+Num of Syntactic Features: 110452 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000 12823 [520 ms]
+=============================================
+ Pre-training:
+=============================================
+Running MIRA ... 
+  1282 (time=6s)  2564 (time=11s)  3846 (time=17s)  5128 (time=23s)  6410 (time=29s)  7692 (time=36s)  8974 (time=43s)  10256 (time=50s)  11538 (time=58s)  12820 (time=63s)
+  Iter 1	loss=89354.2589	uas=0.6441	las=0.8185	[63s]
+
+ |U|^2: 0.000000 min: Infinity	max: -Infinity
+ |V|^2: 0.000000 min: Infinity	max: -Infinity
+ |W|^2: 0.000000 min: Infinity	max: -Infinity
+ |WL|^2: 0.000000 min: Infinity	max: -Infinity
+
+Init tensor ... 
+  Unfolding matrix: 1715651 / (110452*1656780)  0.00% entries.
+  Rank: 50 (max:50)  Sigma: max=2.249309 cut=0.347873
+
+ |U|^2: 50.000000 min: -0.598130	max: 0.965043
+ |V|^2: 50.000000 min: -0.971397	max: 0.630173
+ |W|^2: 17.387449 min: -2.051523	max: 0.671809
+
+Pre-training took 75370 ms.
+=============================================
+
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1282 (time=5s)  2564 (time=10s)  3846 (time=17s)  5128 (time=24s)  6410 (time=31s)  7692 (time=38s)  8974 (time=45s)  10256 (time=53s)  11538 (time=61s)  12820 (time=67s)
+  Iter 1	loss=79957.5138	uas=0.6922	las=0.8182	[67s]
+
+ |U|^2: 149.499118 min: -0.888036	max: 1.347802
+ |V|^2: 151.598767 min: -0.781036	max: 0.678235
+ |W|^2: 25.980198 min: -0.874603	max: 0.871899
+ |WL|^2: 9.232572 min: -0.672980	max: 0.661612
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.904448	LAS=0.853381	CAS=0.278894	[1.40s]
+
+_____________________________________________
+
+  1282 (time=4s)  2564 (time=9s)  3846 (time=16s)  5128 (time=22s)  6410 (time=29s)  7692 (time=37s)  8974 (time=44s)  10256 (time=52s)  11538 (time=60s)  12820 (time=66s)
+  Iter 2	loss=49885.3358	uas=0.7817	las=0.8857	[66s]
+
+ |U|^2: 215.028301 min: -0.911351	max: 1.298930
+ |V|^2: 221.274552 min: -0.776267	max: 0.753141
+ |W|^2: 33.758122 min: -0.898320	max: 0.891367
+ |WL|^2: 12.642254 min: -0.840634	max: 0.784851
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.914821	LAS=0.866746	CAS=0.291457	[1.52s]
+
+_____________________________________________
+
+  1282 (time=4s)  2564 (time=8s)  3846 (time=16s)  5128 (time=22s)  6410 (time=29s)  7692 (time=35s)  8974 (time=42s)  10256 (time=49s)  11538 (time=57s)  12820 (time=63s)
+  Iter 3	loss=37824.2102	uas=0.8166	las=0.9028	[63s]
+
+ |U|^2: 276.073279 min: -0.896718	max: 1.249414
+ |V|^2: 286.502772 min: -0.747813	max: 0.770642
+ |W|^2: 44.155992 min: -0.949478	max: 0.983687
+ |WL|^2: 16.084838 min: -0.932946	max: 0.858710
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.920207	LAS=0.874726	CAS=0.304020	[1.41s]
+
+_____________________________________________
+
+  1282 (time=4s)  2564 (time=8s)  3846 (time=15s)  5128 (time=21s)  6410 (time=28s)  7692 (time=35s)  8974 (time=42s)  10256 (time=49s)  11538 (time=56s)  12820 (time=62s)
+  Iter 4	loss=30193.8341	uas=0.8424	las=0.9119	[62s]
+
+ |U|^2: 329.573879 min: -0.873053	max: 1.236722
+ |V|^2: 346.052577 min: -0.739990	max: 0.770832
+ |W|^2: 55.568764 min: -1.055341	max: 1.004008
+ |WL|^2: 19.376417 min: -0.990068	max: 0.923544
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.922601	LAS=0.879114	CAS=0.309045	[1.53s]
+
+_____________________________________________
+
+  1282 (time=4s)  2564 (time=8s)  3846 (time=15s)  5128 (time=21s)  6410 (time=27s)  7692 (time=33s)  8974 (time=40s)  10256 (time=47s)  11538 (time=55s)  12820 (time=60s)
+  Iter 5	loss=24445.6459	uas=0.8635	las=0.9190	[60s]
+
+ |U|^2: 375.372687 min: -0.855220	max: 1.199678
+ |V|^2: 399.022160 min: -0.742552	max: 0.750865
+ |W|^2: 68.117785 min: -1.177129	max: 1.054399
+ |WL|^2: 23.105401 min: -1.065207	max: 1.037546
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.922601	LAS=0.880311	CAS=0.321608	[1.53s]
+
+_____________________________________________
+
+  1282 (time=4s)  2564 (time=8s)  3846 (time=15s)  5128 (time=21s)  6410 (time=27s)  7692 (time=34s)  8974 (time=40s)  10256 (time=47s)  11538 (time=55s)  12820 (time=61s)
+  Iter 6	loss=19820.0150	uas=0.8816	las=0.9249	[61s]
+
+ |U|^2: 412.455076 min: -0.845921	max: 1.162372
+ |V|^2: 445.103283 min: -0.761150	max: 0.782489
+ |W|^2: 79.905901 min: -1.301910	max: 1.079015
+ |WL|^2: 26.913807 min: -1.148049	max: 1.088469
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.922202	LAS=0.880511	CAS=0.326633	[1.45s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=8s)  3846 (time=14s)  5128 (time=20s)  6410 (time=26s)  7692 (time=33s)  8974 (time=40s)  10256 (time=47s)  11538 (time=54s)  12820 (time=60s)
+  Iter 7	loss=16134.9442	uas=0.8967	las=0.9291	[60s]
+
+ |U|^2: 443.130451 min: -0.838021	max: 1.157166
+ |V|^2: 485.829684 min: -0.757498	max: 0.802175
+ |W|^2: 90.947100 min: -1.421499	max: 1.143240
+ |WL|^2: 31.049098 min: -1.208703	max: 1.207202
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923399	LAS=0.881907	CAS=0.326633	[1.43s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=8s)  3846 (time=14s)  5128 (time=20s)  6410 (time=26s)  7692 (time=32s)  8974 (time=39s)  10256 (time=46s)  11538 (time=53s)  12820 (time=59s)
+  Iter 8	loss=13212.8006	uas=0.9099	las=0.9328	[59s]
+
+ |U|^2: 467.632042 min: -0.836771	max: 1.161611
+ |V|^2: 520.188163 min: -0.787499	max: 0.834216
+ |W|^2: 100.029807 min: -1.505202	max: 1.175464
+ |WL|^2: 35.258975 min: -1.308301	max: 1.293683
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.922801	LAS=0.881109	CAS=0.326633	[1.51s]
+
+_____________________________________________
+
+  1282 (time=4s)  2564 (time=8s)  3846 (time=14s)  5128 (time=20s)  6410 (time=26s)  7692 (time=32s)  8974 (time=38s)  10256 (time=45s)  11538 (time=52s)  12820 (time=58s)
+  Iter 9	loss=10909.8003	uas=0.9201	las=0.9369	[58s]
+
+ |U|^2: 487.965208 min: -0.846362	max: 1.140910
+ |V|^2: 549.268905 min: -0.792142	max: 0.877096
+ |W|^2: 107.742867 min: -1.580775	max: 1.202120
+ |WL|^2: 39.431634 min: -1.375340	max: 1.372738
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.922801	LAS=0.881309	CAS=0.329146	[1.46s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=14s)  5128 (time=19s)  6410 (time=26s)  7692 (time=32s)  8974 (time=38s)  10256 (time=45s)  11538 (time=52s)  12820 (time=58s)
+  Iter 10	loss=9009.5549	uas=0.9290	las=0.9412	[58s]
+
+ |U|^2: 504.545594 min: -0.851987	max: 1.163663
+ |V|^2: 572.654417 min: -0.805627	max: 0.906393
+ |W|^2: 113.838073 min: -1.638445	max: 1.218746
+ |WL|^2: 43.629486 min: -1.465011	max: 1.439486
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923399	LAS=0.881508	CAS=0.331658	[1.40s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=14s)  5128 (time=19s)  6410 (time=25s)  7692 (time=31s)  8974 (time=38s)  10256 (time=44s)  11538 (time=51s)  12820 (time=57s)
+  Iter 11	loss=7461.8023	uas=0.9370	las=0.9452	[57s]
+
+ |U|^2: 518.068917 min: -0.868981	max: 1.204539
+ |V|^2: 591.395567 min: -0.811857	max: 0.941074
+ |W|^2: 118.894897 min: -1.687375	max: 1.231043
+ |WL|^2: 47.345003 min: -1.534023	max: 1.505568
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923798	LAS=0.881708	CAS=0.334171	[1.40s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=14s)  5128 (time=19s)  6410 (time=25s)  7692 (time=30s)  8974 (time=37s)  10256 (time=43s)  11538 (time=50s)  12820 (time=56s)
+  Iter 12	loss=6266.3516	uas=0.9426	las=0.9491	[56s]
+
+ |U|^2: 529.284082 min: -0.869214	max: 1.213142
+ |V|^2: 606.586734 min: -0.826740	max: 0.962177
+ |W|^2: 122.890535 min: -1.729371	max: 1.244801
+ |WL|^2: 50.904131 min: -1.592088	max: 1.555142
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923200	LAS=0.881309	CAS=0.334171	[1.42s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=19s)  6410 (time=24s)  7692 (time=30s)  8974 (time=36s)  10256 (time=43s)  11538 (time=50s)  12820 (time=55s)
+  Iter 13	loss=5320.7309	uas=0.9473	las=0.9526	[55s]
+
+ |U|^2: 538.602156 min: -0.869023	max: 1.243070
+ |V|^2: 618.950171 min: -0.818817	max: 0.992299
+ |W|^2: 126.192767 min: -1.760059	max: 1.255967
+ |WL|^2: 54.038783 min: -1.638171	max: 1.592439
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923599	LAS=0.881309	CAS=0.331658	[1.56s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=24s)  7692 (time=30s)  8974 (time=36s)  10256 (time=42s)  11538 (time=49s)  12820 (time=54s)
+  Iter 14	loss=4585.0640	uas=0.9516	las=0.9557	[54s]
+
+ |U|^2: 546.494236 min: -0.877552	max: 1.253909
+ |V|^2: 629.190100 min: -0.836789	max: 1.014362
+ |W|^2: 128.935467 min: -1.786322	max: 1.259757
+ |WL|^2: 56.868964 min: -1.681749	max: 1.623988
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923599	LAS=0.881109	CAS=0.326633	[1.39s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=24s)  7692 (time=29s)  8974 (time=35s)  10256 (time=42s)  11538 (time=48s)  12820 (time=53s)
+  Iter 15	loss=3968.7313	uas=0.9547	las=0.9584	[53s]
+
+ |U|^2: 553.093743 min: -0.877948	max: 1.264911
+ |V|^2: 637.676312 min: -0.833362	max: 1.048792
+ |W|^2: 131.150633 min: -1.805658	max: 1.272242
+ |WL|^2: 59.337348 min: -1.719472	max: 1.654740
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.924197	LAS=0.881508	CAS=0.321608	[1.38s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=24s)  7692 (time=29s)  8974 (time=35s)  10256 (time=41s)  11538 (time=48s)  12820 (time=53s)
+  Iter 16	loss=3472.3186	uas=0.9581	las=0.9603	[53s]
+
+ |U|^2: 558.809340 min: -0.882482	max: 1.272784
+ |V|^2: 644.970718 min: -0.847988	max: 1.070874
+ |W|^2: 132.992023 min: -1.822707	max: 1.278667
+ |WL|^2: 61.560435 min: -1.743114	max: 1.678512
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923998	LAS=0.881508	CAS=0.314070	[1.38s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=24s)  7692 (time=29s)  8974 (time=35s)  10256 (time=41s)  11538 (time=48s)  12820 (time=53s)
+  Iter 17	loss=3090.5952	uas=0.9603	las=0.9622	[53s]
+
+ |U|^2: 563.691947 min: -0.883335	max: 1.281100
+ |V|^2: 651.219336 min: -0.856775	max: 1.087395
+ |W|^2: 134.491571 min: -1.840001	max: 1.286092
+ |WL|^2: 63.514592 min: -1.768562	max: 1.697621
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923798	LAS=0.880910	CAS=0.309045	[1.38s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=23s)  7692 (time=29s)  8974 (time=35s)  10256 (time=41s)  11538 (time=48s)  12820 (time=53s)
+  Iter 18	loss=2773.3623	uas=0.9626	las=0.9639	[53s]
+
+ |U|^2: 567.999985 min: -0.885835	max: 1.282872
+ |V|^2: 656.681235 min: -0.858098	max: 1.109710
+ |W|^2: 135.789737 min: -1.852833	max: 1.288714
+ |WL|^2: 65.242820 min: -1.792891	max: 1.716091
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.924397	LAS=0.881508	CAS=0.316583	[1.38s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=23s)  7692 (time=29s)  8974 (time=35s)  10256 (time=41s)  11538 (time=47s)  12820 (time=52s)
+  Iter 19	loss=2518.2660	uas=0.9638	las=0.9661	[53s]
+
+ |U|^2: 571.821074 min: -0.884321	max: 1.283859
+ |V|^2: 661.524394 min: -0.859264	max: 1.125444
+ |W|^2: 136.879807 min: -1.862325	max: 1.291939
+ |WL|^2: 66.800063 min: -1.811527	max: 1.733117
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.924197	LAS=0.880910	CAS=0.316583	[1.43s]
+
+_____________________________________________
+
+  1282 (time=3s)  2564 (time=7s)  3846 (time=13s)  5128 (time=18s)  6410 (time=23s)  7692 (time=29s)  8974 (time=35s)  10256 (time=41s)  11538 (time=47s)  12820 (time=52s)
+  Iter 20	loss=2300.1886	uas=0.9657	las=0.9672	[52s]
+
+ |U|^2: 575.242100 min: -0.880176	max: 1.284708
+ |V|^2: 665.884295 min: -0.859783	max: 1.139245
+ |W|^2: 137.824101 min: -1.871983	max: 1.294859
+ |WL|^2: 68.183060 min: -1.826662	max: 1.746354
+
+_____________________________________________
+
+ Evaluation: data/bulgarian.test.lab.svd_0.3_R50
+
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923998	LAS=0.880710	CAS=0.316583	[1.38s]
+
+_____________________________________________
+
+
+Training took 1226791 ms.
+=============================================
+
+ Evaluating: data/bulgarian.test.lab.svd_0.3_R50
+  Tokens: 5013
+  Sentences: 398
+  UAS=0.923998	LAS=0.880710	CAS=0.316583	[1.40s]

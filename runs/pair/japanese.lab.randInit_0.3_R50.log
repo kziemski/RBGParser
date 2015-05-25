@@ -1,0 +1,422 @@
+------
+FLAGS
+------
+train-file: data/japanese.train.lab.randInit_0.3_R50
+test-file: data/japanese.test.lab.randInit_0.3_R50
+model-name: runs/japanese.model.lab.randInit_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 20
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.3
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Creating dictionaries ... 
+Filtered DEPLABEL (10-->9)
+4 8
+Lexical items: 3239 (12 bits)
+Tag/label items: 112 (7 bits)  9 (4 bits)
+Flag Bits: 8
+Creation took [1713 ms]
+Creating Alphabet ... [3155 ms]
+Hash collision: 0.0821% (800 / 973880)
+Num of CONLL fine POS tags: 81
+Num of CONLL coarse POS tags: 23
+Num of labels: 9
+Num of Syntactic Features: 27398 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000 13000 14000 15000 16000 17000 17044 [433 ms]
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1704 (time=5s)  3408 (time=18s)  5112 (time=23s)  6816 (time=27s)  8520 (time=31s)  10224 (time=34s)  11928 (time=38s)  13632 (time=41s)  15336 (time=45s)  17040 (time=49s)
+  Iter 1	loss=38416.2991	uas=0.7985	las=0.8890	[49s]
+
+ |U|^2: 76.281970 min: -0.429227	max: 0.514718
+ |V|^2: 70.542405 min: -0.440941	max: 0.614362
+ |W|^2: 56.100660 min: -0.657051	max: 1.086582
+ |WL|^2: 51.105381 min: -0.305481	max: 0.306262
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.913052	LAS=0.880672	CAS=0.685472	[1.37s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=8s)  6816 (time=12s)  8520 (time=18s)  10224 (time=20s)  11928 (time=24s)  13632 (time=27s)  15336 (time=30s)  17040 (time=34s)
+  Iter 2	loss=25842.9456	uas=0.8608	las=0.9356	[34s]
+
+ |U|^2: 99.032470 min: -0.505335	max: 0.623762
+ |V|^2: 93.009122 min: -0.519792	max: 0.577948
+ |W|^2: 59.089852 min: -0.754215	max: 1.303079
+ |WL|^2: 52.570212 min: -0.418309	max: 0.457989
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.924645	LAS=0.893264	CAS=0.700987	[1.36s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=8s)  6816 (time=13s)  8520 (time=18s)  10224 (time=21s)  11928 (time=25s)  13632 (time=29s)  15336 (time=33s)  17040 (time=37s)
+  Iter 3	loss=21482.6999	uas=0.8747	las=0.9445	[37s]
+
+ |U|^2: 123.187986 min: -0.528893	max: 0.701611
+ |V|^2: 120.150798 min: -0.565863	max: 0.561284
+ |W|^2: 62.985622 min: -0.801011	max: 1.463246
+ |WL|^2: 53.936584 min: -0.477162	max: 0.551988
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.928443	LAS=0.897661	CAS=0.715092	[1.33s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=11s)  8520 (time=15s)  10224 (time=18s)  11928 (time=21s)  13632 (time=24s)  15336 (time=28s)  17040 (time=33s)
+  Iter 4	loss=18382.5685	uas=0.8840	las=0.9492	[33s]
+
+ |U|^2: 148.494857 min: -0.506548	max: 0.743484
+ |V|^2: 151.179761 min: -0.572642	max: 0.483019
+ |W|^2: 67.979012 min: -0.914052	max: 1.590751
+ |WL|^2: 55.156951 min: -0.546074	max: 0.609046
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.930042	LAS=0.899660	CAS=0.719323	[0.98s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=8s)  6816 (time=11s)  8520 (time=15s)  10224 (time=18s)  11928 (time=21s)  13632 (time=24s)  15336 (time=28s)  17040 (time=31s)
+  Iter 5	loss=15877.9885	uas=0.8915	las=0.9528	[31s]
+
+ |U|^2: 174.921463 min: -0.487760	max: 0.776438
+ |V|^2: 185.283436 min: -0.575041	max: 0.463537
+ |W|^2: 74.175960 min: -1.019798	max: 1.742962
+ |WL|^2: 56.441748 min: -0.583749	max: 0.657578
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.932640	LAS=0.904457	CAS=0.723554	[1.00s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=8s)  6816 (time=12s)  8520 (time=16s)  10224 (time=19s)  11928 (time=22s)  13632 (time=25s)  15336 (time=28s)  17040 (time=31s)
+  Iter 6	loss=13809.6096	uas=0.8986	las=0.9553	[31s]
+
+ |U|^2: 200.826950 min: -0.496367	max: 0.788934
+ |V|^2: 220.312054 min: -0.575792	max: 0.445172
+ |W|^2: 80.905750 min: -1.107700	max: 1.851199
+ |WL|^2: 57.805136 min: -0.646555	max: 0.703557
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.934239	LAS=0.906456	CAS=0.729196	[1.14s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=11s)  8520 (time=15s)  10224 (time=18s)  11928 (time=21s)  13632 (time=24s)  15336 (time=27s)  17040 (time=30s)
+  Iter 7	loss=11977.6932	uas=0.9050	las=0.9572	[30s]
+
+ |U|^2: 225.070155 min: -0.524882	max: 0.768817
+ |V|^2: 254.051664 min: -0.575850	max: 0.460164
+ |W|^2: 88.259006 min: -1.213018	max: 1.988384
+ |WL|^2: 59.236104 min: -0.652795	max: 0.744199
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.934839	LAS=0.907855	CAS=0.732017	[1.01s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=15s)  10224 (time=17s)  11928 (time=20s)  13632 (time=23s)  15336 (time=27s)  17040 (time=30s)
+  Iter 8	loss=10483.6375	uas=0.9116	las=0.9592	[30s]
+
+ |U|^2: 246.831211 min: -0.563807	max: 0.725872
+ |V|^2: 285.194097 min: -0.569447	max: 0.453447
+ |W|^2: 95.335174 min: -1.311429	max: 2.083059
+ |WL|^2: 60.754002 min: -0.701182	max: 0.794878
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.936638	LAS=0.910054	CAS=0.740480	[1.30s]
+
+_____________________________________________
+
+  1704 (time=3s)  3408 (time=6s)  5112 (time=9s)  6816 (time=13s)  8520 (time=17s)  10224 (time=19s)  11928 (time=23s)  13632 (time=26s)  15336 (time=29s)  17040 (time=32s)
+  Iter 9	loss=9155.8956	uas=0.9168	las=0.9611	[32s]
+
+ |U|^2: 266.596595 min: -0.610499	max: 0.748849
+ |V|^2: 313.840793 min: -0.573413	max: 0.480514
+ |W|^2: 102.497747 min: -1.411801	max: 2.156818
+ |WL|^2: 62.310706 min: -0.733936	max: 0.836459
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937637	LAS=0.911853	CAS=0.741890	[1.64s]
+
+_____________________________________________
+
+  1704 (time=3s)  3408 (time=6s)  5112 (time=9s)  6816 (time=12s)  8520 (time=16s)  10224 (time=19s)  11928 (time=22s)  13632 (time=24s)  15336 (time=28s)  17040 (time=31s)
+  Iter 10	loss=8080.0944	uas=0.9223	las=0.9625	[31s]
+
+ |U|^2: 284.400265 min: -0.635352	max: 0.807749
+ |V|^2: 339.530975 min: -0.571383	max: 0.488528
+ |W|^2: 109.337723 min: -1.507452	max: 2.212750
+ |WL|^2: 63.881988 min: -0.772098	max: 0.881430
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937837	LAS=0.911653	CAS=0.739069	[1.79s]
+
+_____________________________________________
+
+  1704 (time=3s)  3408 (time=5s)  5112 (time=8s)  6816 (time=12s)  8520 (time=16s)  10224 (time=18s)  11928 (time=21s)  13632 (time=24s)  15336 (time=27s)  17040 (time=30s)
+  Iter 11	loss=7182.9570	uas=0.9277	las=0.9641	[30s]
+
+ |U|^2: 299.891677 min: -0.673875	max: 0.831454
+ |V|^2: 362.132164 min: -0.565417	max: 0.498158
+ |W|^2: 115.184165 min: -1.552998	max: 2.268004
+ |WL|^2: 65.578991 min: -0.832725	max: 0.924664
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938837	LAS=0.912253	CAS=0.741890	[1.14s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=15s)  10224 (time=17s)  11928 (time=20s)  13632 (time=23s)  15336 (time=26s)  17040 (time=29s)
+  Iter 12	loss=6420.6530	uas=0.9316	las=0.9654	[29s]
+
+ |U|^2: 314.152201 min: -0.730078	max: 0.889018
+ |V|^2: 382.732306 min: -0.567636	max: 0.490401
+ |W|^2: 121.056966 min: -1.628271	max: 2.311085
+ |WL|^2: 67.196954 min: -0.878127	max: 0.959903
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.939236	LAS=0.912852	CAS=0.743300	[1.01s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=10s)  8520 (time=14s)  10224 (time=16s)  11928 (time=19s)  13632 (time=22s)  15336 (time=26s)  17040 (time=29s)
+  Iter 13	loss=5783.5418	uas=0.9355	las=0.9671	[29s]
+
+ |U|^2: 326.745357 min: -0.737167	max: 0.903215
+ |V|^2: 401.048727 min: -0.568010	max: 0.494080
+ |W|^2: 126.343920 min: -1.690686	max: 2.360252
+ |WL|^2: 68.732230 min: -0.920474	max: 1.010212
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938837	LAS=0.912453	CAS=0.744711	[1.21s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=14s)  10224 (time=16s)  11928 (time=19s)  13632 (time=22s)  15336 (time=25s)  17040 (time=28s)
+  Iter 14	loss=5202.8983	uas=0.9395	las=0.9683	[28s]
+
+ |U|^2: 337.907481 min: -0.775991	max: 0.918014
+ |V|^2: 417.152977 min: -0.569739	max: 0.496228
+ |W|^2: 130.863736 min: -1.733991	max: 2.396942
+ |WL|^2: 70.337528 min: -0.952782	max: 1.042411
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938837	LAS=0.912053	CAS=0.743300	[1.02s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=14s)  10224 (time=16s)  11928 (time=19s)  13632 (time=22s)  15336 (time=25s)  17040 (time=28s)
+  Iter 15	loss=4747.2158	uas=0.9426	las=0.9699	[28s]
+
+ |U|^2: 347.949039 min: -0.783284	max: 0.925477
+ |V|^2: 431.619122 min: -0.570569	max: 0.507433
+ |W|^2: 135.110920 min: -1.791527	max: 2.427075
+ |WL|^2: 71.675412 min: -0.982442	max: 1.074941
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938637	LAS=0.911853	CAS=0.741890	[1.01s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=6s)  6816 (time=11s)  8520 (time=15s)  10224 (time=17s)  11928 (time=20s)  13632 (time=22s)  15336 (time=25s)  17040 (time=28s)
+  Iter 16	loss=4344.9368	uas=0.9457	las=0.9710	[28s]
+
+ |U|^2: 357.187276 min: -0.799489	max: 0.942893
+ |V|^2: 444.831438 min: -0.570768	max: 0.521422
+ |W|^2: 139.058216 min: -1.839295	max: 2.447287
+ |WL|^2: 72.984598 min: -1.008094	max: 1.100860
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938637	LAS=0.912053	CAS=0.740480	[1.51s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=7s)  6816 (time=11s)  8520 (time=14s)  10224 (time=17s)  11928 (time=19s)  13632 (time=22s)  15336 (time=26s)  17040 (time=28s)
+  Iter 17	loss=3975.9022	uas=0.9478	las=0.9724	[28s]
+
+ |U|^2: 365.395291 min: -0.807779	max: 0.952292
+ |V|^2: 456.581063 min: -0.570938	max: 0.552283
+ |W|^2: 142.488859 min: -1.875867	max: 2.469694
+ |WL|^2: 74.177321 min: -1.028093	max: 1.121680
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938437	LAS=0.911853	CAS=0.743300	[1.42s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=10s)  8520 (time=14s)  10224 (time=16s)  11928 (time=19s)  13632 (time=21s)  15336 (time=25s)  17040 (time=28s)
+  Iter 18	loss=3695.2457	uas=0.9497	las=0.9731	[28s]
+
+ |U|^2: 373.025749 min: -0.820028	max: 0.957861
+ |V|^2: 467.385934 min: -0.571025	max: 0.563757
+ |W|^2: 145.640584 min: -1.918781	max: 2.489991
+ |WL|^2: 75.378992 min: -1.052341	max: 1.150615
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.939037	LAS=0.912453	CAS=0.743300	[0.97s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=16s)  11928 (time=19s)  13632 (time=21s)  15336 (time=24s)  17040 (time=27s)
+  Iter 19	loss=3433.3726	uas=0.9517	las=0.9740	[27s]
+
+ |U|^2: 380.119882 min: -0.824960	max: 0.960424
+ |V|^2: 477.430888 min: -0.571445	max: 0.576839
+ |W|^2: 148.659870 min: -1.941178	max: 2.511151
+ |WL|^2: 76.466831 min: -1.070258	max: 1.166721
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938237	LAS=0.911453	CAS=0.741890	[1.00s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=6s)  6816 (time=9s)  8520 (time=14s)  10224 (time=16s)  11928 (time=19s)  13632 (time=21s)  15336 (time=25s)  17040 (time=27s)
+  Iter 20	loss=3200.1368	uas=0.9532	las=0.9750	[27s]
+
+ |U|^2: 386.677841 min: -0.840420	max: 0.964025
+ |V|^2: 486.636172 min: -0.572486	max: 0.600773
+ |W|^2: 151.365983 min: -1.971450	max: 2.528063
+ |WL|^2: 77.540590 min: -1.095567	max: 1.186938
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.randInit_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937837	LAS=0.911253	CAS=0.743300	[0.96s]
+
+_____________________________________________
+
+
+Training took 708576 ms.
+=============================================
+
+ Evaluating: data/japanese.test.lab.randInit_0.3_R50
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937837	LAS=0.911253	CAS=0.743300	[1.66s]

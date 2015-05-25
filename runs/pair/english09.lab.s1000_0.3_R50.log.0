@@ -1,0 +1,266 @@
+------
+FLAGS
+------
+train-file: data/english09.train.lab
+test-file: data/english09.dev.lab
+model-name: cmpruns/english09.model.lab.s1000_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 10
+label: true
+max-sent: 1000
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.0
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-09
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Warning: couldn't find coarse POS map for this language
+Creating dictionaries ... 
+Filtered DEPLABEL (53-->39)
+4 8
+Lexical items: 8886 (14 bits)
+Tag/label items: 94 (7 bits)  39 (6 bits)
+Flag Bits: 10
+Creation took [198 ms]
+Creating Alphabet ... [593 ms]
+Hash collision: 0.0957% (1131 / 1182346)
+Num of CONLL fine POS tags: 45
+Num of CONLL coarse POS tags: 45
+Num of labels: 39
+Num of Syntactic Features: 38215 1073741823
+Creating instances ... 1000 [110 ms]
+=============================================
+ Pre-training:
+=============================================
+Running MIRA ... 
+  1000 (time=15s)
+  Iter 1	loss=14267.6830	uas=0.4371	las=0.3402	[15s]
+
+ |U|^2: 0.000000 min: Infinity	max: -Infinity
+ |V|^2: 0.000000 min: Infinity	max: -Infinity
+ |W|^2: 0.000000 min: Infinity	max: -Infinity
+ |WL|^2: 0.000000 min: Infinity	max: -Infinity
+
+Init tensor ... 
+  Unfolding matrix: 537826 / (38215*573225)  0.00% entries.
+  Rank: 50 (max:50)  Sigma: max=1.464708 cut=0.192625
+
+ |U|^2: 50.000000 min: -0.794643	max: 0.607044
+ |V|^2: 50.000000 min: -0.979540	max: 0.972112
+ |W|^2: 5.398948 min: -1.123764	max: 0.343839
+
+Pre-training took 20051 ms.
+=============================================
+
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1000 (time=17s)
+  Iter 1	loss=13911.0809	uas=0.4957	las=0.3042	[17s]
+
+ |U|^2: 106.516002 min: -0.835567	max: 0.725920
+ |V|^2: 86.934460 min: -1.238458	max: 1.075798
+ |W|^2: 21.547635 min: -0.887163	max: 0.804482
+ |WL|^2: 4.825196 min: -0.513978	max: 0.285321
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.817670	LAS=0.636953	CAS=0.014243	[18.85s]
+
+_____________________________________________
+
+  1000 (time=15s)
+  Iter 2	loss=8635.9215	uas=0.6775	las=0.4913	[15s]
+
+ |U|^2: 144.631954 min: -0.887647	max: 0.731418
+ |V|^2: 115.011527 min: -1.289134	max: 1.146740
+ |W|^2: 31.643833 min: -1.015093	max: 0.929466
+ |WL|^2: 8.866101 min: -0.712617	max: 0.336265
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.831115	LAS=0.682295	CAS=0.020240	[14.30s]
+
+_____________________________________________
+
+  1000 (time=14s)
+  Iter 3	loss=5941.7124	uas=0.7743	las=0.5854	[14s]
+
+ |U|^2: 171.964749 min: -0.942280	max: 0.738151
+ |V|^2: 135.694860 min: -1.354143	max: 1.211572
+ |W|^2: 40.620078 min: -1.168379	max: 0.987506
+ |WL|^2: 12.009700 min: -0.844173	max: 0.368701
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.837769	LAS=0.715702	CAS=0.027736	[14.20s]
+
+_____________________________________________
+
+  1000 (time=13s)
+  Iter 4	loss=4365.4805	uas=0.8425	las=0.6531	[13s]
+
+ |U|^2: 191.815286 min: -0.959956	max: 0.735772
+ |V|^2: 151.077973 min: -1.397738	max: 1.264598
+ |W|^2: 48.092026 min: -1.296756	max: 1.045657
+ |WL|^2: 14.836023 min: -0.953249	max: 0.388464
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.840547	LAS=0.733297	CAS=0.035982	[17.53s]
+
+_____________________________________________
+
+  1000 (time=13s)
+  Iter 5	loss=3483.5987	uas=0.8885	las=0.7036	[13s]
+
+ |U|^2: 207.437017 min: -0.962977	max: 0.739193
+ |V|^2: 163.150950 min: -1.450569	max: 1.308483
+ |W|^2: 54.119076 min: -1.384270	max: 1.089568
+ |WL|^2: 17.432228 min: -0.999100	max: 0.407485
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.842262	LAS=0.744615	CAS=0.044228	[14.37s]
+
+_____________________________________________
+
+  1000 (time=13s)
+  Iter 6	loss=2843.6449	uas=0.9225	las=0.7475	[13s]
+
+ |U|^2: 219.479779 min: -0.963725	max: 0.779555
+ |V|^2: 172.641401 min: -1.474461	max: 1.352192
+ |W|^2: 58.790113 min: -1.432626	max: 1.117972
+ |WL|^2: 20.034545 min: -1.017618	max: 0.417283
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.842605	LAS=0.751818	CAS=0.044228	[14.39s]
+
+_____________________________________________
+
+  1000 (time=12s)
+  Iter 7	loss=2463.3702	uas=0.9412	las=0.7774	[12s]
+
+ |U|^2: 229.165422 min: -1.001449	max: 0.839434
+ |V|^2: 180.307688 min: -1.482649	max: 1.386563
+ |W|^2: 62.282924 min: -1.478718	max: 1.142350
+ |WL|^2: 22.647888 min: -1.040495	max: 0.432933
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.843120	LAS=0.758575	CAS=0.047976	[14.24s]
+
+_____________________________________________
+
+  1000 (time=12s)
+  Iter 8	loss=2122.4216	uas=0.9558	las=0.8056	[12s]
+
+ |U|^2: 237.461707 min: -0.989255	max: 0.906670
+ |V|^2: 186.956598 min: -1.533205	max: 1.415901
+ |W|^2: 65.131927 min: -1.496372	max: 1.188722
+ |WL|^2: 25.531774 min: -1.061819	max: 0.444403
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.843257	LAS=0.763616	CAS=0.053223	[14.24s]
+
+_____________________________________________
+
+  1000 (time=12s)
+  Iter 9	loss=1850.4910	uas=0.9649	las=0.8274	[12s]
+
+ |U|^2: 244.263663 min: -0.992207	max: 0.973317
+ |V|^2: 192.651947 min: -1.562667	max: 1.449459
+ |W|^2: 66.977246 min: -1.499049	max: 1.185685
+ |WL|^2: 28.689904 min: -1.102231	max: 0.450906
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.842914	LAS=0.767046	CAS=0.055472	[14.20s]
+
+_____________________________________________
+
+  1000 (time=12s)
+  Iter 10	loss=1612.9949	uas=0.9737	las=0.8496	[12s]
+
+ |U|^2: 250.442644 min: -0.995905	max: 1.039904
+ |V|^2: 198.120062 min: -1.571744	max: 1.482635
+ |W|^2: 68.526576 min: -1.524871	max: 1.213213
+ |WL|^2: 32.076724 min: -1.108640	max: 0.454039
+
+_____________________________________________
+
+ Evaluation: data/english09.dev.lab
+
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.842845	LAS=0.769962	CAS=0.059970	[14.32s]
+
+_____________________________________________
+
+
+Training took 308374 ms.
+=============================================
+
+ Evaluating: data/english09.dev.lab
+  Tokens: 29156
+  Sentences: 1334
+  UAS=0.842845	LAS=0.769962	CAS=0.059970	[14.30s]

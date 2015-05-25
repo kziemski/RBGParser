@@ -1,0 +1,445 @@
+------
+FLAGS
+------
+train-file: data/japanese.train.lab.svd_0.3_R50
+test-file: data/japanese.test.lab.svd_0.3_R50
+model-name: runs/japanese.model.lab.svd_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 20
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.3
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Creating dictionaries ... 
+Filtered DEPLABEL (10-->9)
+4 8
+Lexical items: 3239 (12 bits)
+Tag/label items: 112 (7 bits)  9 (4 bits)
+Flag Bits: 8
+Creation took [1071 ms]
+Creating Alphabet ... [2628 ms]
+Hash collision: 0.0821% (800 / 973880)
+Num of CONLL fine POS tags: 81
+Num of CONLL coarse POS tags: 23
+Num of labels: 9
+Num of Syntactic Features: 27398 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000 13000 14000 15000 16000 17000 17044 [655 ms]
+=============================================
+ Pre-training:
+=============================================
+Running MIRA ... 
+  1704 (time=2s)  3408 (time=4s)  5112 (time=8s)  6816 (time=14s)  8520 (time=18s)  10224 (time=20s)  11928 (time=23s)  13632 (time=26s)  15336 (time=29s)  17040 (time=32s)
+  Iter 1	loss=37654.6502	uas=0.8140	las=0.9094	[32s]
+
+ |U|^2: 0.000000 min: Infinity	max: -Infinity
+ |V|^2: 0.000000 min: Infinity	max: -Infinity
+ |W|^2: 0.000000 min: Infinity	max: -Infinity
+ |WL|^2: 0.000000 min: Infinity	max: -Infinity
+
+Init tensor ... 
+  Unfolding matrix: 491763 / (27398*410970)  0.00% entries.
+  Rank: 50 (max:50)  Sigma: max=1.826614 cut=0.301176
+
+ |U|^2: 50.000000 min: -0.982173	max: 0.684852
+ |V|^2: 50.000000 min: -0.990972	max: 0.986112
+ |W|^2: 13.765480 min: -1.147203	max: 1.603341
+
+Pre-training took 38751 ms.
+=============================================
+
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1704 (time=2s)  3408 (time=5s)  5112 (time=9s)  6816 (time=13s)  8520 (time=19s)  10224 (time=22s)  11928 (time=26s)  13632 (time=29s)  15336 (time=33s)  17040 (time=37s)
+  Iter 1	loss=34484.7507	uas=0.8326	las=0.9026	[37s]
+
+ |U|^2: 121.051782 min: -1.301225	max: 0.686870
+ |V|^2: 117.377150 min: -1.141461	max: 1.122293
+ |W|^2: 25.145306 min: -1.020851	max: 1.251273
+ |WL|^2: 8.154282 min: -0.747324	max: 1.115054
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.926644	LAS=0.893464	CAS=0.706629	[1.30s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=9s)  6816 (time=12s)  8520 (time=18s)  10224 (time=20s)  11928 (time=24s)  13632 (time=27s)  15336 (time=31s)  17040 (time=34s)
+  Iter 2	loss=23746.8378	uas=0.8716	las=0.9399	[34s]
+
+ |U|^2: 164.541957 min: -1.161585	max: 0.673755
+ |V|^2: 163.358234 min: -0.984155	max: 1.117983
+ |W|^2: 32.480829 min: -1.060282	max: 1.366795
+ |WL|^2: 10.691404 min: -0.771697	max: 1.218198
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.930642	LAS=0.900660	CAS=0.720733	[0.92s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=11s)  8520 (time=17s)  10224 (time=20s)  11928 (time=23s)  13632 (time=27s)  15336 (time=31s)  17040 (time=34s)
+  Iter 3	loss=19145.6114	uas=0.8851	las=0.9475	[34s]
+
+ |U|^2: 206.406026 min: -1.108632	max: 0.666945
+ |V|^2: 209.413624 min: -0.953608	max: 1.158698
+ |W|^2: 41.449667 min: -1.080567	max: 1.429387
+ |WL|^2: 12.815129 min: -0.833864	max: 1.287592
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.935239	LAS=0.905856	CAS=0.729196	[0.97s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=11s)  8520 (time=15s)  10224 (time=18s)  11928 (time=21s)  13632 (time=24s)  15336 (time=28s)  17040 (time=31s)
+  Iter 4	loss=15768.8275	uas=0.8950	las=0.9518	[31s]
+
+ |U|^2: 243.980470 min: -1.089861	max: 0.665410
+ |V|^2: 253.182810 min: -0.973391	max: 1.172094
+ |W|^2: 51.035132 min: -1.126092	max: 1.489926
+ |WL|^2: 15.079800 min: -0.902935	max: 1.370455
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.935039	LAS=0.906856	CAS=0.732017	[0.99s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=14s)  10224 (time=17s)  11928 (time=21s)  13632 (time=24s)  15336 (time=28s)  17040 (time=31s)
+  Iter 5	loss=13113.5501	uas=0.9048	las=0.9553	[31s]
+
+ |U|^2: 276.235370 min: -1.092969	max: 0.667797
+ |V|^2: 291.808143 min: -0.999380	max: 1.191143
+ |W|^2: 60.386684 min: -1.195576	max: 1.532711
+ |WL|^2: 17.469039 min: -0.971463	max: 1.436494
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.936238	LAS=0.908455	CAS=0.734838	[1.13s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=11s)  8520 (time=15s)  10224 (time=17s)  11928 (time=20s)  13632 (time=23s)  15336 (time=27s)  17040 (time=30s)
+  Iter 6	loss=10996.1278	uas=0.9139	las=0.9576	[30s]
+
+ |U|^2: 303.625345 min: -1.080853	max: 0.678362
+ |V|^2: 325.166392 min: -1.046163	max: 1.222969
+ |W|^2: 69.032385 min: -1.239799	max: 1.565117
+ |WL|^2: 20.054685 min: -1.037126	max: 1.512907
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.936438	LAS=0.909454	CAS=0.733427	[1.14s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=15s)  10224 (time=17s)  11928 (time=21s)  13632 (time=26s)  15336 (time=30s)  17040 (time=34s)
+  Iter 7	loss=9328.7192	uas=0.9213	las=0.9600	[34s]
+
+ |U|^2: 326.522632 min: -1.116579	max: 0.675337
+ |V|^2: 353.363155 min: -1.059281	max: 1.221011
+ |W|^2: 77.051224 min: -1.273488	max: 1.619859
+ |WL|^2: 22.313963 min: -1.096773	max: 1.567542
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937038	LAS=0.909254	CAS=0.732017	[1.58s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=9s)  6816 (time=13s)  8520 (time=18s)  10224 (time=21s)  11928 (time=25s)  13632 (time=29s)  15336 (time=33s)  17040 (time=37s)
+  Iter 8	loss=8056.6091	uas=0.9277	las=0.9621	[37s]
+
+ |U|^2: 345.849406 min: -1.094987	max: 0.686502
+ |V|^2: 377.497924 min: -1.080450	max: 1.234215
+ |W|^2: 84.119657 min: -1.320717	max: 1.636540
+ |WL|^2: 24.508912 min: -1.151102	max: 1.615295
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938237	LAS=0.910254	CAS=0.730606	[1.34s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=15s)  10224 (time=17s)  11928 (time=20s)  13632 (time=22s)  15336 (time=26s)  17040 (time=29s)
+  Iter 9	loss=7001.4337	uas=0.9337	las=0.9641	[29s]
+
+ |U|^2: 362.521927 min: -1.075920	max: 0.694244
+ |V|^2: 398.325808 min: -1.118765	max: 1.248234
+ |W|^2: 90.067056 min: -1.348168	max: 1.670864
+ |WL|^2: 26.909349 min: -1.193361	max: 1.672592
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938037	LAS=0.910054	CAS=0.726375	[1.10s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=10s)  8520 (time=14s)  10224 (time=16s)  11928 (time=19s)  13632 (time=22s)  15336 (time=25s)  17040 (time=29s)
+  Iter 10	loss=6154.4693	uas=0.9387	las=0.9661	[29s]
+
+ |U|^2: 377.038041 min: -1.064164	max: 0.695468
+ |V|^2: 416.431254 min: -1.144003	max: 1.249656
+ |W|^2: 95.447246 min: -1.380994	max: 1.694665
+ |WL|^2: 29.039222 min: -1.237405	max: 1.724697
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938037	LAS=0.909654	CAS=0.723554	[1.71s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=10s)  8520 (time=14s)  10224 (time=17s)  11928 (time=19s)  13632 (time=22s)  15336 (time=25s)  17040 (time=28s)
+  Iter 11	loss=5494.4837	uas=0.9423	las=0.9680	[28s]
+
+ |U|^2: 389.622494 min: -1.036638	max: 0.697429
+ |V|^2: 432.154247 min: -1.163517	max: 1.267303
+ |W|^2: 100.011148 min: -1.412605	max: 1.720377
+ |WL|^2: 31.023473 min: -1.270221	max: 1.760067
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938437	LAS=0.910254	CAS=0.724965	[0.93s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=4s)  5112 (time=7s)  6816 (time=9s)  8520 (time=13s)  10224 (time=16s)  11928 (time=18s)  13632 (time=21s)  15336 (time=24s)  17040 (time=27s)
+  Iter 12	loss=4905.5587	uas=0.9458	las=0.9698	[27s]
+
+ |U|^2: 400.949975 min: -1.058380	max: 0.699260
+ |V|^2: 446.223070 min: -1.172248	max: 1.269622
+ |W|^2: 104.101562 min: -1.438428	max: 1.740211
+ |WL|^2: 33.016759 min: -1.300173	max: 1.806033
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.939836	LAS=0.911253	CAS=0.724965	[0.97s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=3s)  5112 (time=6s)  6816 (time=11s)  8520 (time=16s)  10224 (time=19s)  11928 (time=22s)  13632 (time=24s)  15336 (time=27s)  17040 (time=30s)
+  Iter 13	loss=4433.5516	uas=0.9491	las=0.9714	[31s]
+
+ |U|^2: 411.009614 min: -1.051662	max: 0.695998
+ |V|^2: 458.735778 min: -1.192532	max: 1.270374
+ |W|^2: 107.786751 min: -1.462919	max: 1.756426
+ |WL|^2: 34.771290 min: -1.321341	max: 1.846624
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.939636	LAS=0.911453	CAS=0.729196	[0.98s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=15s)  11928 (time=18s)  13632 (time=21s)  15336 (time=24s)  17040 (time=27s)
+  Iter 14	loss=4009.1148	uas=0.9519	las=0.9726	[27s]
+
+ |U|^2: 419.923557 min: -1.051642	max: 0.697189
+ |V|^2: 469.853666 min: -1.207652	max: 1.275438
+ |W|^2: 110.974648 min: -1.475337	max: 1.767107
+ |WL|^2: 36.416262 min: -1.347873	max: 1.877492
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.939236	LAS=0.911053	CAS=0.729196	[0.98s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=15s)  11928 (time=18s)  13632 (time=21s)  15336 (time=24s)  17040 (time=27s)
+  Iter 15	loss=3696.0985	uas=0.9538	las=0.9737	[27s]
+
+ |U|^2: 428.140094 min: -1.058399	max: 0.695114
+ |V|^2: 480.075559 min: -1.217586	max: 1.280941
+ |W|^2: 113.886091 min: -1.493604	max: 1.779313
+ |WL|^2: 38.013112 min: -1.368736	max: 1.912256
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.938837	LAS=0.911053	CAS=0.727786	[1.19s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=15s)  11928 (time=18s)  13632 (time=21s)  15336 (time=24s)  17040 (time=28s)
+  Iter 16	loss=3416.2819	uas=0.9560	las=0.9749	[28s]
+
+ |U|^2: 435.489313 min: -1.042316	max: 0.695894
+ |V|^2: 489.272602 min: -1.227406	max: 1.283511
+ |W|^2: 116.449826 min: -1.505940	max: 1.784733
+ |WL|^2: 39.409966 min: -1.387505	max: 1.933722
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937637	LAS=0.909454	CAS=0.726375	[1.38s]
+
+_____________________________________________
+
+  1704 (time=2s)  3408 (time=5s)  5112 (time=9s)  6816 (time=13s)  8520 (time=17s)  10224 (time=20s)  11928 (time=22s)  13632 (time=25s)  15336 (time=28s)  17040 (time=32s)
+  Iter 17	loss=3187.7826	uas=0.9571	las=0.9763	[32s]
+
+ |U|^2: 442.353460 min: -1.055687	max: 0.701189
+ |V|^2: 497.807353 min: -1.236206	max: 1.288269
+ |W|^2: 118.837805 min: -1.517071	max: 1.794039
+ |WL|^2: 40.754473 min: -1.409415	max: 1.958848
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937837	LAS=0.909854	CAS=0.729196	[0.99s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=3s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=15s)  11928 (time=18s)  13632 (time=20s)  15336 (time=24s)  17040 (time=26s)
+  Iter 18	loss=2944.4344	uas=0.9592	las=0.9769	[26s]
+
+ |U|^2: 448.542370 min: -1.058972	max: 0.695398
+ |V|^2: 505.567633 min: -1.242525	max: 1.290242
+ |W|^2: 120.900183 min: -1.527458	max: 1.800122
+ |WL|^2: 41.993184 min: -1.428051	max: 1.981397
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937038	LAS=0.909055	CAS=0.726375	[0.93s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=4s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=15s)  11928 (time=17s)  13632 (time=20s)  15336 (time=23s)  17040 (time=26s)
+  Iter 19	loss=2781.5130	uas=0.9598	las=0.9780	[26s]
+
+ |U|^2: 454.278648 min: -1.056208	max: 0.696013
+ |V|^2: 512.811173 min: -1.252317	max: 1.291789
+ |W|^2: 122.845454 min: -1.534243	max: 1.809155
+ |WL|^2: 43.109289 min: -1.442567	max: 1.999312
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937238	LAS=0.909055	CAS=0.726375	[0.94s]
+
+_____________________________________________
+
+  1704 (time=1s)  3408 (time=3s)  5112 (time=6s)  6816 (time=9s)  8520 (time=13s)  10224 (time=15s)  11928 (time=18s)  13632 (time=20s)  15336 (time=23s)  17040 (time=26s)
+  Iter 20	loss=2630.1575	uas=0.9608	las=0.9787	[26s]
+
+ |U|^2: 459.514141 min: -1.063798	max: 0.695775
+ |V|^2: 519.437551 min: -1.261197	max: 1.297064
+ |W|^2: 124.533706 min: -1.546672	max: 1.817634
+ |WL|^2: 44.119438 min: -1.450831	max: 2.009812
+
+_____________________________________________
+
+ Evaluation: data/japanese.test.lab.svd_0.3_R50
+
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937238	LAS=0.908655	CAS=0.726375	[0.95s]
+
+_____________________________________________
+
+
+Training took 684825 ms.
+=============================================
+
+ Evaluating: data/japanese.test.lab.svd_0.3_R50
+  Tokens: 5003
+  Sentences: 709
+  UAS=0.937238	LAS=0.908655	CAS=0.726375	[1.00s]

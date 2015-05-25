@@ -1,0 +1,54 @@
+------
+FLAGS
+------
+train-file: data/dutch.train.lab.randInit_0.3_R50
+test-file: data/dutch.test.lab.randInit_0.3_R50
+model-name: runs/dutch.model.lab.randInit_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 20
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.3
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Creating dictionaries ... 
+Filtered DEPLABEL (28-->23)
+4 8
+Lexical items: 48493 (16 bits)
+Tag/label items: 634 (10 bits)  23 (5 bits)
+Flag Bits: 9
+Creation took [2327 ms]
+Creating Alphabet ... [13051 ms]
+Hash collision: 1.1444% (153976 / 13454282)
+Num of CONLL fine POS tags: 303
+Num of CONLL coarse POS tags: 14
+Num of labels: 23
+Num of Syntactic Features: 253650 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 12000 13000 13349 [929 ms]
+=============================================
+ Training:
+=============================================
+Running MIRA ... 

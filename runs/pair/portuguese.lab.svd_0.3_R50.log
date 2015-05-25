@@ -1,0 +1,445 @@
+------
+FLAGS
+------
+train-file: data/portuguese.train.lab.svd_0.3_R50
+test-file: data/portuguese.test.lab.svd_0.3_R50
+model-name: runs/portuguese.model.lab.svd_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 20
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.3
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Creating dictionaries ... 
+Filtered DEPLABEL (57-->39)
+4 8
+Lexical items: 46745 (16 bits)
+Tag/label items: 190 (8 bits)  39 (6 bits)
+Flag Bits: 10
+Creation took [2334 ms]
+Creating Alphabet ... [7555 ms]
+Hash collision: 0.7841% (71712 / 9145880)
+Num of CONLL fine POS tags: 23
+Num of CONLL coarse POS tags: 17
+Num of labels: 39
+Num of Syntactic Features: 211880 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 9071 [1223 ms]
+=============================================
+ Pre-training:
+=============================================
+Running MIRA ... 
+  1000 (time=26s)  2000 (time=48s)  3000 (time=69s)  4000 (time=95s)  5000 (time=117s)  6000 (time=133s)  7000 (time=146s)  8000 (time=160s)  9000 (time=173s)
+  Iter 1	loss=96772.5731	uas=0.6736	las=0.8439	[174s]
+
+ |U|^2: 0.000000 min: Infinity	max: -Infinity
+ |V|^2: 0.000000 min: Infinity	max: -Infinity
+ |W|^2: 0.000000 min: Infinity	max: -Infinity
+ |WL|^2: 0.000000 min: Infinity	max: -Infinity
+
+Init tensor ... 
+  Unfolding matrix: 4400721 / (211880*3178200)  0.00% entries.
+  Rank: 50 (max:50)  Sigma: max=2.410410 cut=0.383346
+
+ |U|^2: 50.000000 min: -0.967175	max: 0.830028
+ |V|^2: 50.000000 min: -0.975633	max: 0.932692
+ |W|^2: 19.522156 min: -2.271867	max: 0.423638
+
+Pre-training took 204774 ms.
+=============================================
+
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1000 (time=23s)  2000 (time=50s)  3000 (time=74s)  4000 (time=97s)  5000 (time=119s)  6000 (time=133s)  7000 (time=149s)  8000 (time=164s)  9000 (time=178s)
+  Iter 1	loss=89490.7306	uas=0.6898	las=0.8464	[179s]
+
+ |U|^2: 177.628669 min: -0.949078	max: 0.963624
+ |V|^2: 165.041369 min: -0.752517	max: 0.773415
+ |W|^2: 20.314103 min: -1.082490	max: 0.675796
+ |WL|^2: 14.504972 min: -0.688315	max: 0.372365
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.908764	LAS=0.864444	CAS=0.267361	[4.53s]
+
+_____________________________________________
+
+  1000 (time=20s)  2000 (time=51s)  3000 (time=82s)  4000 (time=105s)  5000 (time=129s)  6000 (time=144s)  7000 (time=159s)  8000 (time=175s)  9000 (time=190s)
+  Iter 2	loss=58596.1744	uas=0.7636	las=0.8971	[191s]
+
+ |U|^2: 283.038081 min: -0.939244	max: 0.907631
+ |V|^2: 242.794632 min: -0.743222	max: 0.768082
+ |W|^2: 29.766809 min: -1.098615	max: 0.766175
+ |WL|^2: 19.667992 min: -0.746550	max: 0.415761
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.912158	LAS=0.872629	CAS=0.284722	[4.75s]
+
+_____________________________________________
+
+  1000 (time=20s)  2000 (time=45s)  3000 (time=75s)  4000 (time=100s)  5000 (time=122s)  6000 (time=137s)  7000 (time=152s)  8000 (time=168s)  9000 (time=183s)
+  Iter 3	loss=42230.9124	uas=0.8025	las=0.9106	[184s]
+
+ |U|^2: 374.117486 min: -0.922037	max: 0.836427
+ |V|^2: 301.682183 min: -0.784847	max: 0.831033
+ |W|^2: 43.230150 min: -1.183538	max: 0.881062
+ |WL|^2: 24.573726 min: -0.809129	max: 0.459423
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916949	LAS=0.878020	CAS=0.305556	[4.26s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=42s)  3000 (time=65s)  4000 (time=88s)  5000 (time=111s)  6000 (time=125s)  7000 (time=138s)  8000 (time=154s)  9000 (time=168s)
+  Iter 4	loss=30952.1320	uas=0.8369	las=0.9204	[169s]
+
+ |U|^2: 442.071552 min: -0.906654	max: 0.793884
+ |V|^2: 343.668456 min: -0.847344	max: 0.902681
+ |W|^2: 58.886206 min: -1.300081	max: 0.989809
+ |WL|^2: 29.219968 min: -0.866905	max: 0.460087
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916750	LAS=0.879617	CAS=0.315972	[4.25s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=41s)  3000 (time=62s)  4000 (time=82s)  5000 (time=102s)  6000 (time=116s)  7000 (time=129s)  8000 (time=143s)  9000 (time=156s)
+  Iter 5	loss=23129.0494	uas=0.8657	las=0.9278	[157s]
+
+ |U|^2: 490.432603 min: -0.946058	max: 0.816678
+ |V|^2: 373.523721 min: -0.926216	max: 0.980357
+ |W|^2: 72.510232 min: -1.374120	max: 1.059004
+ |WL|^2: 33.849546 min: -0.934883	max: 0.474662
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916550	LAS=0.879816	CAS=0.315972	[4.27s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=44s)  3000 (time=65s)  4000 (time=93s)  5000 (time=113s)  6000 (time=126s)  7000 (time=140s)  8000 (time=154s)  9000 (time=167s)
+  Iter 6	loss=17794.4916	uas=0.8876	las=0.9345	[168s]
+
+ |U|^2: 526.810711 min: -0.967796	max: 0.796579
+ |V|^2: 396.453731 min: -0.973419	max: 1.036815
+ |W|^2: 83.667935 min: -1.508604	max: 1.109553
+ |WL|^2: 38.556298 min: -0.975825	max: 0.507501
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916351	LAS=0.880016	CAS=0.315972	[4.31s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=42s)  3000 (time=62s)  4000 (time=83s)  5000 (time=104s)  6000 (time=117s)  7000 (time=130s)  8000 (time=145s)  9000 (time=159s)
+  Iter 7	loss=14046.4849	uas=0.9035	las=0.9402	[160s]
+
+ |U|^2: 555.485170 min: -1.003222	max: 0.815794
+ |V|^2: 414.914056 min: -1.057022	max: 1.094672
+ |W|^2: 92.887071 min: -1.591347	max: 1.151407
+ |WL|^2: 43.089278 min: -1.005267	max: 0.531716
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916949	LAS=0.880815	CAS=0.319444	[4.25s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=42s)  3000 (time=63s)  4000 (time=83s)  5000 (time=103s)  6000 (time=117s)  7000 (time=130s)  8000 (time=143s)  9000 (time=156s)
+  Iter 8	loss=11239.8744	uas=0.9161	las=0.9459	[157s]
+
+ |U|^2: 578.057318 min: -1.031027	max: 0.812591
+ |V|^2: 429.536501 min: -1.098946	max: 1.131460
+ |W|^2: 100.131291 min: -1.666587	max: 1.200605
+ |WL|^2: 47.095298 min: -1.037145	max: 0.542245
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916949	LAS=0.882212	CAS=0.326389	[4.91s]
+
+_____________________________________________
+
+  1000 (time=18s)  2000 (time=40s)  3000 (time=61s)  4000 (time=81s)  5000 (time=101s)  6000 (time=114s)  7000 (time=130s)  8000 (time=152s)  9000 (time=166s)
+  Iter 9	loss=9225.7253	uas=0.9257	las=0.9504	[166s]
+
+ |U|^2: 596.441567 min: -1.067012	max: 0.812577
+ |V|^2: 441.871039 min: -1.139192	max: 1.173037
+ |W|^2: 106.097330 min: -1.732581	max: 1.221232
+ |WL|^2: 50.878832 min: -1.047744	max: 0.556587
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916550	LAS=0.881813	CAS=0.322917	[4.19s]
+
+_____________________________________________
+
+  1000 (time=18s)  2000 (time=40s)  3000 (time=62s)  4000 (time=84s)  5000 (time=107s)  6000 (time=122s)  7000 (time=137s)  8000 (time=153s)  9000 (time=168s)
+  Iter 10	loss=7619.6494	uas=0.9339	las=0.9541	[169s]
+
+ |U|^2: 611.781213 min: -1.095021	max: 0.811763
+ |V|^2: 452.533303 min: -1.168350	max: 1.201057
+ |W|^2: 111.256290 min: -1.781124	max: 1.245251
+ |WL|^2: 54.328310 min: -1.051691	max: 0.574097
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.916550	LAS=0.882412	CAS=0.322917	[5.20s]
+
+_____________________________________________
+
+  1000 (time=20s)  2000 (time=44s)  3000 (time=66s)  4000 (time=89s)  5000 (time=111s)  6000 (time=127s)  7000 (time=140s)  8000 (time=156s)  9000 (time=171s)
+  Iter 11	loss=6459.3096	uas=0.9393	las=0.9582	[173s]
+
+ |U|^2: 624.535971 min: -1.111416	max: 0.824246
+ |V|^2: 461.597641 min: -1.202674	max: 1.222803
+ |W|^2: 115.528712 min: -1.828327	max: 1.257648
+ |WL|^2: 57.378655 min: -1.070985	max: 0.607939
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.915951	LAS=0.882012	CAS=0.319444	[6.50s]
+
+_____________________________________________
+
+  1000 (time=21s)  2000 (time=45s)  3000 (time=65s)  4000 (time=85s)  5000 (time=105s)  6000 (time=119s)  7000 (time=134s)  8000 (time=149s)  9000 (time=163s)
+  Iter 12	loss=5503.4102	uas=0.9442	las=0.9612	[164s]
+
+ |U|^2: 635.210975 min: -1.128438	max: 0.815891
+ |V|^2: 469.385522 min: -1.227254	max: 1.240450
+ |W|^2: 119.074650 min: -1.874224	max: 1.274773
+ |WL|^2: 60.089385 min: -1.071544	max: 0.626078
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.915552	LAS=0.882012	CAS=0.319444	[4.95s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=46s)  3000 (time=67s)  4000 (time=88s)  5000 (time=111s)  6000 (time=125s)  7000 (time=139s)  8000 (time=152s)  9000 (time=166s)
+  Iter 13	loss=4709.3570	uas=0.9491	las=0.9643	[167s]
+
+ |U|^2: 644.206038 min: -1.151774	max: 0.827242
+ |V|^2: 476.081351 min: -1.242932	max: 1.252375
+ |W|^2: 122.014087 min: -1.906915	max: 1.279430
+ |WL|^2: 62.545740 min: -1.074120	max: 0.655180
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.914753	LAS=0.881413	CAS=0.319444	[4.77s]
+
+_____________________________________________
+
+  1000 (time=20s)  2000 (time=42s)  3000 (time=67s)  4000 (time=91s)  5000 (time=113s)  6000 (time=128s)  7000 (time=145s)  8000 (time=162s)  9000 (time=177s)
+  Iter 14	loss=4076.4263	uas=0.9527	las=0.9660	[178s]
+
+ |U|^2: 652.003818 min: -1.167780	max: 0.830051
+ |V|^2: 482.087384 min: -1.257862	max: 1.276243
+ |W|^2: 124.542358 min: -1.927605	max: 1.292670
+ |WL|^2: 64.910172 min: -1.090704	max: 0.675528
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.914155	LAS=0.881214	CAS=0.319444	[5.04s]
+
+_____________________________________________
+
+  1000 (time=22s)  2000 (time=50s)  3000 (time=73s)  4000 (time=96s)  5000 (time=120s)  6000 (time=137s)  7000 (time=152s)  8000 (time=170s)  9000 (time=186s)
+  Iter 15	loss=3568.8631	uas=0.9563	las=0.9683	[187s]
+
+ |U|^2: 658.682757 min: -1.177623	max: 0.837705
+ |V|^2: 487.296164 min: -1.280057	max: 1.283339
+ |W|^2: 126.751159 min: -1.953206	max: 1.298526
+ |WL|^2: 66.899884 min: -1.090572	max: 0.691244
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.913955	LAS=0.880415	CAS=0.309028	[5.07s]
+
+_____________________________________________
+
+  1000 (time=21s)  2000 (time=46s)  3000 (time=70s)  4000 (time=94s)  5000 (time=114s)  6000 (time=127s)  7000 (time=140s)  8000 (time=154s)  9000 (time=167s)
+  Iter 16	loss=3145.0424	uas=0.9580	las=0.9699	[168s]
+
+ |U|^2: 664.537142 min: -1.195643	max: 0.836632
+ |V|^2: 491.989025 min: -1.292712	max: 1.294510
+ |W|^2: 128.698032 min: -1.973447	max: 1.306278
+ |WL|^2: 68.796064 min: -1.100949	max: 0.709228
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.913755	LAS=0.880216	CAS=0.309028	[4.43s]
+
+_____________________________________________
+
+  1000 (time=19s)  2000 (time=41s)  3000 (time=61s)  4000 (time=81s)  5000 (time=103s)  6000 (time=119s)  7000 (time=133s)  8000 (time=150s)  9000 (time=167s)
+  Iter 17	loss=2801.7699	uas=0.9606	las=0.9720	[168s]
+
+ |U|^2: 669.657627 min: -1.198841	max: 0.847220
+ |V|^2: 496.081401 min: -1.305315	max: 1.305688
+ |W|^2: 130.332934 min: -1.990825	max: 1.312462
+ |WL|^2: 70.460589 min: -1.105064	max: 0.720935
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.913955	LAS=0.881014	CAS=0.309028	[5.04s]
+
+_____________________________________________
+
+  1000 (time=20s)  2000 (time=44s)  3000 (time=66s)  4000 (time=91s)  5000 (time=112s)  6000 (time=126s)  7000 (time=141s)  8000 (time=157s)  9000 (time=172s)
+  Iter 18	loss=2527.3851	uas=0.9624	las=0.9730	[173s]
+
+ |U|^2: 674.308355 min: -1.210644	max: 0.844385
+ |V|^2: 499.872984 min: -1.315668	max: 1.309256
+ |W|^2: 131.884331 min: -2.010571	max: 1.319920
+ |WL|^2: 71.978837 min: -1.108148	max: 0.733058
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.914155	LAS=0.881413	CAS=0.309028	[5.30s]
+
+_____________________________________________
+
+  1000 (time=21s)  2000 (time=45s)  3000 (time=69s)  4000 (time=92s)  5000 (time=116s)  6000 (time=130s)  7000 (time=145s)  8000 (time=160s)  9000 (time=176s)
+  Iter 19	loss=2275.9527	uas=0.9644	las=0.9740	[177s]
+
+ |U|^2: 678.429349 min: -1.220717	max: 0.847234
+ |V|^2: 503.228461 min: -1.323907	max: 1.318441
+ |W|^2: 133.198018 min: -2.025571	max: 1.321945
+ |WL|^2: 73.376737 min: -1.113629	max: 0.738884
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.913755	LAS=0.881014	CAS=0.309028	[6.12s]
+
+_____________________________________________
+
+  1000 (time=24s)  2000 (time=50s)  3000 (time=74s)  4000 (time=96s)  5000 (time=117s)  6000 (time=131s)  7000 (time=145s)  8000 (time=160s)  9000 (time=174s)
+  Iter 20	loss=2070.1700	uas=0.9655	las=0.9749	[175s]
+
+ |U|^2: 682.156591 min: -1.226103	max: 0.849466
+ |V|^2: 506.301467 min: -1.332297	max: 1.327615
+ |W|^2: 134.365999 min: -2.037261	max: 1.326730
+ |WL|^2: 74.670997 min: -1.119060	max: 0.749154
+
+_____________________________________________
+
+ Evaluation: data/portuguese.test.lab.svd_0.3_R50
+
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.913556	LAS=0.880815	CAS=0.309028	[4.71s]
+
+_____________________________________________
+
+
+Training took 3586910 ms.
+=============================================
+
+ Evaluating: data/portuguese.test.lab.svd_0.3_R50
+  Tokens: 5009
+  Sentences: 288
+  UAS=0.913556	LAS=0.880815	CAS=0.309028	[6.53s]

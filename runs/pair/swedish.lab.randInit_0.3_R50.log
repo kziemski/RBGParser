@@ -1,0 +1,422 @@
+------
+FLAGS
+------
+train-file: data/swedish.train.lab.randInit_0.3_R50
+test-file: data/swedish.test.lab.randInit_0.3_R50
+model-name: runs/swedish.model.lab.randInit_0.3_R50
+output-file: null
+train: true
+test: true
+iters: 20
+label: true
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 0.3
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 30
+
+use consecutive siblings: false
+use grandparent: false
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Basic
+------
+
+Creating dictionaries ... 
+Filtered DEPLABEL (66-->58)
+4 8
+Lexical items: 19700 (15 bits)
+Tag/label items: 88 (7 bits)  58 (6 bits)
+Flag Bits: 10
+Creation took [2348 ms]
+Creating Alphabet ... [5397 ms]
+Hash collision: 0.2746% (8596 / 3129968)
+Num of CONLL fine POS tags: 42
+Num of CONLL coarse POS tags: 42
+Num of labels: 58
+Num of Syntactic Features: 71156 1073741823
+Creating instances ... 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000 11000 11042 [946 ms]
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+  1104 (time=49s)  2208 (time=68s)  3312 (time=87s)  4416 (time=109s)  5520 (time=127s)  6624 (time=140s)  7728 (time=153s)  8832 (time=168s)  9936 (time=182s)  11040 (time=202s)
+  Iter 1	loss=127120.3589	uas=0.5648	las=0.6571	[203s]
+
+ |U|^2: 105.959046 min: -0.750784	max: 0.499714
+ |V|^2: 100.527031 min: -0.513097	max: 0.399153
+ |W|^2: 62.627719 min: -0.835604	max: 0.869807
+ |WL|^2: 52.652481 min: -0.267793	max: 0.246612
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.870544	LAS=0.774149	CAS=0.195373	[4.49s]
+
+_____________________________________________
+
+  1104 (time=17s)  2208 (time=34s)  3312 (time=53s)  4416 (time=72s)  5520 (time=94s)  6624 (time=109s)  7728 (time=125s)  8832 (time=142s)  9936 (time=157s)  11040 (time=184s)
+  Iter 2	loss=87303.4379	uas=0.6996	las=0.7568	[184s]
+
+ |U|^2: 172.660141 min: -0.938783	max: 0.608565
+ |V|^2: 173.579363 min: -0.566569	max: 0.528730
+ |W|^2: 72.077821 min: -0.858208	max: 1.062753
+ |WL|^2: 58.039067 min: -0.383011	max: 0.527013
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.887473	LAS=0.796256	CAS=0.215938	[4.94s]
+
+_____________________________________________
+
+  1104 (time=25s)  2208 (time=43s)  3312 (time=65s)  4416 (time=86s)  5520 (time=105s)  6624 (time=118s)  7728 (time=132s)  8832 (time=147s)  9936 (time=162s)  11040 (time=184s)
+  Iter 3	loss=70957.1759	uas=0.7381	las=0.7871	[184s]
+
+ |U|^2: 246.971747 min: -0.937411	max: 0.710950
+ |V|^2: 255.335654 min: -0.590466	max: 0.568615
+ |W|^2: 82.192403 min: -0.997307	max: 1.178913
+ |WL|^2: 64.447410 min: -0.438096	max: 0.740884
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.891058	LAS=0.803027	CAS=0.233933	[4.46s]
+
+_____________________________________________
+
+  1104 (time=18s)  2208 (time=36s)  3312 (time=56s)  4416 (time=78s)  5520 (time=96s)  6624 (time=110s)  7728 (time=124s)  8832 (time=139s)  9936 (time=154s)  11040 (time=176s)
+  Iter 4	loss=59493.2623	uas=0.7612	las=0.8074	[176s]
+
+ |U|^2: 327.749696 min: -0.944264	max: 0.668158
+ |V|^2: 342.597102 min: -0.601073	max: 0.560422
+ |W|^2: 94.003165 min: -1.099913	max: 1.276229
+ |WL|^2: 71.347537 min: -0.484716	max: 0.879788
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.894842	LAS=0.810197	CAS=0.244216	[4.46s]
+
+_____________________________________________
+
+  1104 (time=18s)  2208 (time=35s)  3312 (time=51s)  4416 (time=69s)  5520 (time=84s)  6624 (time=96s)  7728 (time=108s)  8832 (time=121s)  9936 (time=135s)  11040 (time=158s)
+  Iter 5	loss=50342.9414	uas=0.7804	las=0.8237	[158s]
+
+ |U|^2: 409.242066 min: -0.956441	max: 0.704457
+ |V|^2: 429.556386 min: -0.571358	max: 0.570133
+ |W|^2: 107.291792 min: -1.234169	max: 1.373636
+ |WL|^2: 78.525441 min: -0.522250	max: 0.924506
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.896435	LAS=0.814579	CAS=0.249357	[5.48s]
+
+_____________________________________________
+
+  1104 (time=26s)  2208 (time=43s)  3312 (time=59s)  4416 (time=77s)  5520 (time=92s)  6624 (time=103s)  7728 (time=115s)  8832 (time=128s)  9936 (time=141s)  11040 (time=161s)
+  Iter 6	loss=42822.1547	uas=0.7958	las=0.8374	[161s]
+
+ |U|^2: 487.460429 min: -0.899580	max: 0.726708
+ |V|^2: 514.020710 min: -0.586164	max: 0.597776
+ |W|^2: 122.462585 min: -1.325049	max: 1.479600
+ |WL|^2: 86.220739 min: -0.592990	max: 0.992874
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.898028	LAS=0.818562	CAS=0.257069	[3.87s]
+
+_____________________________________________
+
+  1104 (time=15s)  2208 (time=30s)  3312 (time=46s)  4416 (time=64s)  5520 (time=81s)  6624 (time=93s)  7728 (time=104s)  8832 (time=118s)  9936 (time=131s)  11040 (time=149s)
+  Iter 7	loss=36443.4095	uas=0.8105	las=0.8486	[150s]
+
+ |U|^2: 558.705648 min: -0.877753	max: 0.726528
+ |V|^2: 592.712531 min: -0.631920	max: 0.654062
+ |W|^2: 138.510334 min: -1.385291	max: 1.629394
+ |WL|^2: 94.118552 min: -0.613464	max: 1.046314
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.898825	LAS=0.820355	CAS=0.262211	[3.95s]
+
+_____________________________________________
+
+  1104 (time=16s)  2208 (time=32s)  3312 (time=48s)  4416 (time=66s)  5520 (time=82s)  6624 (time=93s)  7728 (time=104s)  8832 (time=118s)  9936 (time=133s)  11040 (time=153s)
+  Iter 8	loss=31139.9282	uas=0.8245	las=0.8599	[153s]
+
+ |U|^2: 620.275605 min: -0.796915	max: 0.753438
+ |V|^2: 663.585224 min: -0.657481	max: 0.629691
+ |W|^2: 154.533088 min: -1.500697	max: 1.759387
+ |WL|^2: 102.054034 min: -0.659936	max: 1.057882
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.899422	LAS=0.822744	CAS=0.267352	[3.96s]
+
+_____________________________________________
+
+  1104 (time=17s)  2208 (time=32s)  3312 (time=49s)  4416 (time=66s)  5520 (time=84s)  6624 (time=95s)  7728 (time=107s)  8832 (time=120s)  9936 (time=134s)  11040 (time=152s)
+  Iter 9	loss=26622.8255	uas=0.8396	las=0.8685	[152s]
+
+ |U|^2: 672.426234 min: -0.779455	max: 0.787331
+ |V|^2: 726.134760 min: -0.668547	max: 0.679678
+ |W|^2: 170.202041 min: -1.596519	max: 1.905218
+ |WL|^2: 109.577849 min: -0.686321	max: 1.091000
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.901613	LAS=0.826130	CAS=0.275064	[3.70s]
+
+_____________________________________________
+
+  1104 (time=15s)  2208 (time=30s)  3312 (time=46s)  4416 (time=63s)  5520 (time=78s)  6624 (time=90s)  7728 (time=102s)  8832 (time=115s)  9936 (time=128s)  11040 (time=147s)
+  Iter 10	loss=22798.5459	uas=0.8534	las=0.8761	[147s]
+
+ |U|^2: 716.713994 min: -0.764629	max: 0.838917
+ |V|^2: 781.478271 min: -0.688634	max: 0.745720
+ |W|^2: 185.226216 min: -1.696630	max: 2.013253
+ |WL|^2: 117.155378 min: -0.730292	max: 1.108400
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.902012	LAS=0.827524	CAS=0.275064	[3.83s]
+
+_____________________________________________
+
+  1104 (time=16s)  2208 (time=32s)  3312 (time=47s)  4416 (time=64s)  5520 (time=79s)  6624 (time=91s)  7728 (time=102s)  8832 (time=116s)  9936 (time=129s)  11040 (time=147s)
+  Iter 11	loss=19673.2798	uas=0.8662	las=0.8832	[148s]
+
+ |U|^2: 754.066003 min: -0.796694	max: 0.879588
+ |V|^2: 830.235602 min: -0.695793	max: 0.801819
+ |W|^2: 198.814549 min: -1.775522	max: 2.118872
+ |WL|^2: 124.252218 min: -0.756483	max: 1.136214
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.901613	LAS=0.828520	CAS=0.282776	[4.00s]
+
+_____________________________________________
+
+  1104 (time=15s)  2208 (time=31s)  3312 (time=46s)  4416 (time=64s)  5520 (time=80s)  6624 (time=92s)  7728 (time=104s)  8832 (time=117s)  9936 (time=130s)  11040 (time=149s)
+  Iter 12	loss=17066.8632	uas=0.8773	las=0.8901	[149s]
+
+ |U|^2: 785.924562 min: -0.817756	max: 0.921488
+ |V|^2: 873.519644 min: -0.700841	max: 0.863848
+ |W|^2: 211.207319 min: -1.835127	max: 2.221442
+ |WL|^2: 130.901308 min: -0.772775	max: 1.141192
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.902012	LAS=0.829715	CAS=0.282776	[3.72s]
+
+_____________________________________________
+
+  1104 (time=23s)  2208 (time=38s)  3312 (time=54s)  4416 (time=71s)  5520 (time=86s)  6624 (time=96s)  7728 (time=108s)  8832 (time=120s)  9936 (time=131s)  11040 (time=148s)
+  Iter 13	loss=14909.0653	uas=0.8873	las=0.8962	[148s]
+
+ |U|^2: 813.336185 min: -0.819466	max: 0.947821
+ |V|^2: 912.207059 min: -0.705012	max: 0.907513
+ |W|^2: 221.801494 min: -1.912696	max: 2.313485
+ |WL|^2: 137.609683 min: -0.797570	max: 1.162965
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.901016	LAS=0.829914	CAS=0.280206	[3.69s]
+
+_____________________________________________
+
+  1104 (time=15s)  2208 (time=30s)  3312 (time=47s)  4416 (time=63s)  5520 (time=79s)  6624 (time=90s)  7728 (time=101s)  8832 (time=114s)  9936 (time=126s)  11040 (time=144s)
+  Iter 14	loss=13187.7857	uas=0.8944	las=0.9015	[144s]
+
+ |U|^2: 837.159698 min: -0.857066	max: 0.991247
+ |V|^2: 946.540433 min: -0.706183	max: 0.966633
+ |W|^2: 230.964649 min: -1.971500	max: 2.382500
+ |WL|^2: 144.017161 min: -0.784386	max: 1.212484
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.901016	LAS=0.831906	CAS=0.285347	[3.56s]
+
+_____________________________________________
+
+  1104 (time=14s)  2208 (time=29s)  3312 (time=44s)  4416 (time=60s)  5520 (time=75s)  6624 (time=85s)  7728 (time=96s)  8832 (time=109s)  9936 (time=122s)  11040 (time=140s)
+  Iter 15	loss=11731.2605	uas=0.9021	las=0.9063	[140s]
+
+ |U|^2: 858.046928 min: -0.863344	max: 1.008872
+ |V|^2: 977.217340 min: -0.708994	max: 1.016271
+ |W|^2: 239.032290 min: -2.019554	max: 2.451107
+ |WL|^2: 149.939060 min: -0.820232	max: 1.210303
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.901016	LAS=0.833499	CAS=0.290488	[3.82s]
+
+_____________________________________________
+
+  1104 (time=15s)  2208 (time=30s)  3312 (time=46s)  4416 (time=64s)  5520 (time=80s)  6624 (time=92s)  7728 (time=104s)  8832 (time=119s)  9936 (time=132s)  11040 (time=149s)
+  Iter 16	loss=10548.3978	uas=0.9074	las=0.9117	[150s]
+
+ |U|^2: 876.567080 min: -0.873986	max: 1.036677
+ |V|^2: 1004.727462 min: -0.716592	max: 1.045784
+ |W|^2: 246.107788 min: -2.062914	max: 2.507122
+ |WL|^2: 155.440044 min: -0.818678	max: 1.240263
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.900817	LAS=0.833898	CAS=0.293059	[4.04s]
+
+_____________________________________________
+
+  1104 (time=16s)  2208 (time=30s)  3312 (time=44s)  4416 (time=60s)  5520 (time=75s)  6624 (time=86s)  7728 (time=98s)  8832 (time=111s)  9936 (time=124s)  11040 (time=142s)
+  Iter 17	loss=9488.4770	uas=0.9133	las=0.9152	[142s]
+
+ |U|^2: 893.260000 min: -0.878348	max: 1.066950
+ |V|^2: 1029.695106 min: -0.720525	max: 1.068014
+ |W|^2: 252.303401 min: -2.102043	max: 2.556438
+ |WL|^2: 160.846250 min: -0.841699	max: 1.263522
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.900817	LAS=0.833898	CAS=0.290488	[3.88s]
+
+_____________________________________________
+
+  1104 (time=16s)  2208 (time=31s)  3312 (time=46s)  4416 (time=64s)  5520 (time=80s)  6624 (time=91s)  7728 (time=103s)  8832 (time=116s)  9936 (time=129s)  11040 (time=148s)
+  Iter 18	loss=8599.3740	uas=0.9174	las=0.9196	[148s]
+
+ |U|^2: 908.148018 min: -0.886865	max: 1.091705
+ |V|^2: 1051.969791 min: -0.722259	max: 1.110634
+ |W|^2: 257.649995 min: -2.134254	max: 2.599826
+ |WL|^2: 165.824571 min: -0.862928	max: 1.293362
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.900219	LAS=0.833898	CAS=0.298201	[3.62s]
+
+_____________________________________________
+
+  1104 (time=14s)  2208 (time=29s)  3312 (time=44s)  4416 (time=61s)  5520 (time=76s)  6624 (time=88s)  7728 (time=102s)  8832 (time=114s)  9936 (time=127s)  11040 (time=145s)
+  Iter 19	loss=7809.1588	uas=0.9208	las=0.9224	[145s]
+
+ |U|^2: 921.834040 min: -0.899946	max: 1.110681
+ |V|^2: 1072.157471 min: -0.723865	max: 1.143474
+ |W|^2: 262.522446 min: -2.166666	max: 2.638836
+ |WL|^2: 170.639723 min: -0.889327	max: 1.304285
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.900020	LAS=0.834097	CAS=0.298201	[3.89s]
+
+_____________________________________________
+
+  1104 (time=15s)  2208 (time=30s)  3312 (time=45s)  4416 (time=63s)  5520 (time=77s)  6624 (time=88s)  7728 (time=99s)  8832 (time=111s)  9936 (time=124s)  11040 (time=142s)
+  Iter 20	loss=7163.5818	uas=0.9252	las=0.9258	[142s]
+
+ |U|^2: 934.269362 min: -0.903301	max: 1.124703
+ |V|^2: 1090.364978 min: -0.721730	max: 1.163258
+ |W|^2: 266.750202 min: -2.197172	max: 2.672798
+ |WL|^2: 175.125743 min: -0.889177	max: 1.330043
+
+_____________________________________________
+
+ Evaluation: data/swedish.test.lab.randInit_0.3_R50
+
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.899422	LAS=0.833698	CAS=0.295630	[3.79s]
+
+_____________________________________________
+
+
+Training took 3272268 ms.
+=============================================
+
+ Evaluating: data/swedish.test.lab.randInit_0.3_R50
+  Tokens: 5021
+  Sentences: 389
+  UAS=0.899422	LAS=0.833698	CAS=0.295630	[6.11s]
