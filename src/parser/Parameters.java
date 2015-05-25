@@ -33,7 +33,7 @@ public class Parameters implements Serializable {
 	{
         D = d * 2 + 1;
         T = pipe.types.length;
-        DL = T + T*d*2;
+        DL = T;// + T*d*2;
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -555,8 +555,8 @@ public class Parameters implements Serializable {
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
-    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									 - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));
+    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] /*+ WL[k][T+lab*2*d+dis-1]*/)
+    									 - dotv * (WL[k][lab2] /*+ WL[k][T+lab2*2*d+dis-1]*/));
     	}
     	return dU;
     }
@@ -594,8 +594,8 @@ public class Parameters implements Serializable {
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									- dotu * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));    		
+    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] /*+ WL[k][T+lab*2*d+dis-1]*/)
+    									- dotu * (WL[k][lab2] /*+ WL[k][T+lab2*2*d+dis-1]*/));    		
     	}
     	return dV;
     }
@@ -642,9 +642,9 @@ public class Parameters implements Serializable {
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dWL[lab] += dotu * dotv;
-    		dWL[T+lab*2*d+dis-1] += dotu * dotv;
+    		//dWL[T+lab*2*d+dis-1] += dotu * dotv;
     		dWL[lab2] -= dotu * dotv;
-    		dWL[T+lab2*2*d+dis-1] -= dotu * dotv;
+    		//dWL[T+lab2*2*d+dis-1] -= dotu * dotv;
     	}
     	
     	FeatureVector dWL2 = new FeatureVector(DL);
