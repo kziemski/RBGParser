@@ -35,7 +35,7 @@ public final class Utils {
 			return x + Math.log1p(Math.exp(y-x));
 	}
 	
-	public static double[] getRandomUnitVector(int length) 
+	public static double[] getRandomNormVector(int length, double norm) 
 	{
 		double[] vec = new double[length];
 		double sum = 0;
@@ -43,9 +43,19 @@ public final class Utils {
 			vec[i] = rnd.nextDouble() - 0.5;
 			sum += vec[i] * vec[i];
 		}
-		double invSqrt = 1.0 / Math.sqrt(sum);
+		double invSqrt = Math.sqrt(norm / sum);
 		for (int i = 0; i < length; ++i) 
 			vec[i] *= invSqrt;
+		return vec;
+	}
+	
+	public static double[] getRandomRangeVector(int length, double s) 
+	{
+		double[] vec = new double[length];
+		for (int i = 0; i < length; ++i) {
+			vec[i] = rnd.nextDouble() - 0.5;
+			vec[i] *= s/0.5;
+		}
 		return vec;
 	}
 	
