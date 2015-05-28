@@ -239,7 +239,7 @@ public class DependencyParser implements Serializable {
     		System.out.println();	    
 
         } else {
-        	parameters.randomlyInitUVW();
+        	parameters.randomlyInitTensor();
         }
         
 		System.out.println("=============================================");
@@ -321,6 +321,16 @@ public class DependencyParser implements Serializable {
     		System.out.printf("%n  Iter %d\tloss=%.4f\tuas=%.4f\t[%ds]%n", iIter+1,
     				loss, uas/(tot+0.0),
     				(System.currentTimeMillis() - start)/1000);
+    		
+    		parameters.printUStat();
+    		parameters.printVStat();
+    		parameters.printWStat();
+    		if (options.useGP) {
+	    		parameters.printU2Stat();
+	    		parameters.printV2Stat();
+	    		parameters.printW2Stat();
+	    		parameters.printX2Stat();
+    		}
     		
     		if (options.learningMode != LearningMode.Basic && options.pruning && pruner != null)
     			pruner.printPruningStats();

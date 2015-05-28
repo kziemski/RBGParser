@@ -37,6 +37,7 @@ public class LocalFeatureData {
 	
 	FeatureVector[] wordFvs;		// word feature vectors
 	double[][] wpU, wpV;			// word projections U\phi and V\phi
+	double[][] wpU2, wpV2, wpX2;	// word projections U2\phi V2\phi and X2\phi
 	
 	FeatureVector[] arcFvs;			// 1st order arc feature vectors
 	double[] arcScores;				// 1st order arc scores (including tensor)
@@ -76,6 +77,9 @@ public class LocalFeatureData {
 		wordFvs = new FeatureVector[len];
 		wpU = new double[len][rank];
 		wpV = new double[len][rank];
+		wpU2 = new double[len][rank];
+		wpV2 = new double[len][rank];
+		wpX2 = new double[len][rank];
 		
 		if (isTrain) arcFvs = new FeatureVector[len*len];
 		arcScores = new double[len*len];
@@ -99,9 +103,8 @@ public class LocalFeatureData {
 	private void initFirstOrderTables() 
 	{
 		for (int i = 0; i < len; ++i) {
-			wordFvs[i] = synFactory.createWordFeatures(inst, i);
-			//wpU[i] = parameters.projectU(wordFvs[i]);
-			//wpV[i] = parameters.projectV(wordFvs[i]);
+			if (wordFvs[i] == null)
+				wordFvs[i] = synFactory.createWordFeatures(inst, i);
 			parameters.projectU(wordFvs[i], wpU[i]);
 			parameters.projectV(wordFvs[i], wpV[i]);
 		}
@@ -161,6 +164,13 @@ public class LocalFeatureData {
 			//gpc = new FeatureDataItem[nuparcs*len];
 			gpc = new double[numarcs*len];
 			Arrays.fill(gpc, NULL);
+			
+			for (int i = 0; i < len; ++i) {
+				wordFvs[i] = synFactory.createWordFeatures(inst, i);
+				parameters.projectU2(wordFvs[i], wpU2[i]);
+				parameters.projectV2(wordFvs[i], wpV2[i]);
+				parameters.projectX2(wordFvs[i], wpX2[i]);
+			}
 		}
 		
 		if (options.useHB) {
@@ -346,8 +356,7 @@ public class LocalFeatureData {
 		if (gpc[pos] == NULL) {
 			ScoreCollector col = new ScoreCollector(parameters);
 			synFactory.createGPCFeatureVector(col, inst, gp, h, m);
-			gpc[pos] = col.score * gamma;
-			//getGPCFeatureVector(gp, h, m);
+			gpc[pos] = col.score * gamma + parameters.dotProduct2(wpU2[h], wpV2[m], h-m, wpX2[gp]) * (1-gamma);
 		}
 		
 		return gpc[pos];

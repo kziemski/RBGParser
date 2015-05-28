@@ -1,0 +1,317 @@
+Warning: couldn't find coarse POS map for this language
+Creating dictionaries ... 
+Filtered DEPLABEL (32-->30)
+4 8
+Lexical items: 667 (10 bits)
+Tag/label items: 80 (7 bits)  30 (5 bits)
+Flag Bits: 4
+Creation took [115 ms]
+Creating Alphabet ... [106 ms]
+Hash collision: 12.5617% (9061 / 72132)
+Num of CONLL fine POS tags: 38
+Num of CONLL coarse POS tags: 38
+Num of labels: 30
+Num of Syntactic Features: 3469 262143
+Creating instances ... 32 [19 ms]
+=============================================
+ Training Pruner:
+=============================================
+Running MIRA ... 
+  Iter 1	loss=685.9544	uas=0.0205	[0s]
+  Iter 2	loss=291.5053	uas=0.1425	[0s]
+  Iter 3	loss=117.6416	uas=0.2965	[0s]
+  Iter 4	loss=45.6625	uas=0.4570	[0s]
+  Iter 5	loss=19.2642	uas=0.5481	[0s]
+  Iter 6	loss=9.5223	uas=0.6175	[0s]
+  Iter 7	loss=4.7895	uas=0.6932	[0s]
+  Iter 8	loss=2.4363	uas=0.7291	[0s]
+  Iter 9	loss=1.3445	uas=0.7779	[0s]
+  Iter 10	loss=0.7153	uas=0.8139	[0s]
+
+Training took 1701 ms.
+=============================================
+
+------
+FLAGS
+------
+train-file: data/english.sample.train.lab
+test-file: data/english.sample.test.lab
+model-name: runs/english.sample.model
+output-file: null
+train: true
+test: true
+iters: 10
+label: false
+max-sent: -1
+C: 0.01
+label-loss-type: 0
+gamma: 0.3 1.0
+R: 50
+word-vector:null
+projective: false
+pruning: true
+hill-climbing converge (train): 300
+hill-climbing converge (test): 100
+thread: 4
+file format: CONLL-X
+feature hash bits: 20
+
+use consecutive siblings: false
+use grandparent: true
+use head bigram: false
+use grand siblings: false
+use tri-siblings: false
+use great-grandparent: false
+use parent-sibling-child: false
+use high-order: false
+model: Second
+------
+
+Warning: couldn't find coarse POS map for this language
+Creating dictionaries ... 
+Filtered DEPLABEL (32-->30)
+4 8
+Lexical items: 667 (10 bits)
+Tag/label items: 80 (7 bits)  30 (5 bits)
+Flag Bits: 4
+Creation took [19 ms]
+Creating Alphabet ... [32 ms]
+Hash collision: 6.1275% (8159 / 133154)
+Num of CONLL fine POS tags: 38
+Num of CONLL coarse POS tags: 38
+Num of labels: 30
+Num of Syntactic Features: 3469 1048575
+Creating instances ... 32 [6 ms]
+=============================================
+ Training:
+=============================================
+Running MIRA ... 
+
+  Iter 1	loss=720.4774	uas=0.0051	[6s]
+ |U|^2: 50.039133 min: -0.038677	max: 0.034608
+ |V|^2: 50.038492 min: -0.035311	max: 0.049559
+ |W|^2: 50.010412 min: -0.613828	max: 0.540833
+ |U2|^2: 50.000336 min: -0.029919	max: 0.029983
+ |V2|^2: 50.000330 min: -0.030056	max: 0.029867
+ |W2|^2: 50.000203 min: -0.535286	max: 0.551339
+ |X2|^2: 50.000343 min: -0.029818	max: 0.030335
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.613043	LAS=0.000000	CAS=0.000000	[1.60s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 2	loss=413.0012	uas=0.1322	[7s]
+ |U|^2: 50.156153 min: -0.045766	max: 0.038506
+ |V|^2: 50.151857 min: -0.045614	max: 0.074704
+ |W|^2: 50.098585 min: -0.613854	max: 0.540775
+ |U2|^2: 50.001277 min: -0.030017	max: 0.030247
+ |V2|^2: 50.001265 min: -0.030482	max: 0.029921
+ |W2|^2: 50.001025 min: -0.535283	max: 0.551346
+ |X2|^2: 50.001292 min: -0.029817	max: 0.029905
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.647826	LAS=0.000000	CAS=0.000000	[1.61s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 3	loss=212.2245	uas=0.3081	[6s]
+ |U|^2: 50.267448 min: -0.049779	max: 0.045223
+ |V|^2: 50.259813 min: -0.054981	max: 0.097143
+ |W|^2: 50.193594 min: -0.613971	max: 0.540924
+ |U2|^2: 50.001652 min: -0.030075	max: 0.030437
+ |V2|^2: 50.001635 min: -0.030595	max: 0.029948
+ |W2|^2: 50.001341 min: -0.535280	max: 0.551338
+ |X2|^2: 50.001670 min: -0.029945	max: 0.030093
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.669565	LAS=0.000000	CAS=0.000000	[1.42s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 4	loss=104.1007	uas=0.4917	[7s]
+ |U|^2: 50.333280 min: -0.053065	max: 0.050336
+ |V|^2: 50.323696 min: -0.054144	max: 0.101608
+ |W|^2: 50.253037 min: -0.614054	max: 0.540998
+ |U2|^2: 50.002245 min: -0.030103	max: 0.030561
+ |V2|^2: 50.002227 min: -0.030855	max: 0.029975
+ |W2|^2: 50.001915 min: -0.535274	max: 0.551338
+ |X2|^2: 50.002265 min: -0.029985	max: 0.030171
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.665217	LAS=0.000000	CAS=0.000000	[1.42s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 5	loss=53.5132	uas=0.5944	[8s]
+ |U|^2: 50.374012 min: -0.055133	max: 0.052980
+ |V|^2: 50.363734 min: -0.059917	max: 0.107230
+ |W|^2: 50.291226 min: -0.614213	max: 0.540979
+ |U2|^2: 50.002442 min: -0.030123	max: 0.030676
+ |V2|^2: 50.002423 min: -0.030794	max: 0.029984
+ |W2|^2: 50.002104 min: -0.535274	max: 0.551334
+ |X2|^2: 50.002462 min: -0.030025	max: 0.030202
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.665217	LAS=0.000000	CAS=0.000000	[1.41s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 6	loss=28.6317	uas=0.6611	[9s]
+ |U|^2: 50.397434 min: -0.057217	max: 0.054691
+ |V|^2: 50.386896 min: -0.059585	max: 0.107429
+ |W|^2: 50.313621 min: -0.614307	max: 0.541032
+ |U2|^2: 50.002537 min: -0.030133	max: 0.030772
+ |V2|^2: 50.002518 min: -0.030863	max: 0.030002
+ |W2|^2: 50.002196 min: -0.535274	max: 0.551334
+ |X2|^2: 50.002556 min: -0.030053	max: 0.030204
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.665217	LAS=0.000000	CAS=0.000000	[1.48s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 7	loss=18.6652	uas=0.7137	[9s]
+ |U|^2: 50.412720 min: -0.058874	max: 0.055348
+ |V|^2: 50.401950 min: -0.060500	max: 0.106691
+ |W|^2: 50.328097 min: -0.614365	max: 0.541140
+ |U2|^2: 50.002669 min: -0.030137	max: 0.030815
+ |V2|^2: 50.002650 min: -0.030944	max: 0.030002
+ |W2|^2: 50.002326 min: -0.535274	max: 0.551335
+ |X2|^2: 50.002689 min: -0.030103	max: 0.030209
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.665217	LAS=0.000000	CAS=0.000000	[1.47s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 8	loss=9.6208	uas=0.7253	[8s]
+ |U|^2: 50.422287 min: -0.059090	max: 0.055933
+ |V|^2: 50.411459 min: -0.062906	max: 0.107569
+ |W|^2: 50.337434 min: -0.614405	max: 0.541169
+ |U2|^2: 50.002702 min: -0.030138	max: 0.030837
+ |V2|^2: 50.002683 min: -0.030951	max: 0.030002
+ |W2|^2: 50.002358 min: -0.535274	max: 0.551336
+ |X2|^2: 50.002722 min: -0.030126	max: 0.030204
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.669565	LAS=0.000000	CAS=0.000000	[1.45s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 9	loss=6.6272	uas=0.7677	[7s]
+ |U|^2: 50.428306 min: -0.059881	max: 0.056253
+ |V|^2: 50.417439 min: -0.064667	max: 0.108170
+ |W|^2: 50.343268 min: -0.614439	max: 0.541158
+ |U2|^2: 50.002727 min: -0.030138	max: 0.030852
+ |V2|^2: 50.002708 min: -0.030925	max: 0.030002
+ |W2|^2: 50.002383 min: -0.535274	max: 0.551336
+ |X2|^2: 50.002747 min: -0.030144	max: 0.030202
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.673913	LAS=0.000000	CAS=0.000000	[1.50s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+  Iter 10	loss=3.5848	uas=0.7741	[7s]
+ |U|^2: 50.432377 min: -0.060303	max: 0.056026
+ |V|^2: 50.421472 min: -0.065663	max: 0.107984
+ |W|^2: 50.347229 min: -0.614456	max: 0.541177
+ |U2|^2: 50.002744 min: -0.030138	max: 0.030861
+ |V2|^2: 50.002725 min: -0.030928	max: 0.030002
+ |W2|^2: 50.002399 min: -0.535275	max: 0.551336
+ |X2|^2: 50.002764 min: -0.030159	max: 0.030203
+  Pruning Recall: 1.0000	Effcy: 0.9587
+
+_____________________________________________
+
+ Evaluation: data/english.sample.test.lab
+
+  Tokens: 230
+  Sentences: 11
+  UAS=0.669565	LAS=0.000000	CAS=0.000000	[1.46s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
+
+_____________________________________________
+
+
+Training took 93292 ms.
+=============================================
+
+ Evaluating: data/english.sample.test.lab
+  Tokens: 230
+  Sentences: 11
+  UAS=0.665217	LAS=0.000000	CAS=0.000000	[0.75s]
+  Pruning Recall: 1.0000	Effcy: 0.9907
