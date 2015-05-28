@@ -64,24 +64,26 @@ public class Parameters implements Serializable {
 		dU = new FeatureVector[rank];
 		dV = new FeatureVector[rank];
 		dW = new FeatureVector[rank];
-
-		U2 = new double[rank][N];
-		V2 = new double[rank][N];
-		W2 = new double[rank][D];
-		X2 = new double[rank][N];
-		totalU2 = new double[rank][N];
-		totalV2 = new double[rank][N];
-		totalW2 = new double[rank][D];
-		totalX2 = new double[rank][N];
-		dU2 = new FeatureVector[rank];
-		dV2 = new FeatureVector[rank];
-		dW2 = new FeatureVector[rank];
-		dX2 = new FeatureVector[rank];
+		
+		if (options.useGP) {
+			U2 = new double[rank][N];
+			V2 = new double[rank][N];
+			W2 = new double[rank][D];
+			X2 = new double[rank][N];
+			totalU2 = new double[rank][N];
+			totalV2 = new double[rank][N];
+			totalW2 = new double[rank][D];
+			totalX2 = new double[rank][N];
+			dU2 = new FeatureVector[rank];
+			dV2 = new FeatureVector[rank];
+			dW2 = new FeatureVector[rank];
+			dX2 = new FeatureVector[rank];
+		}
 	}
 	
 	public void randomlyInitTensor() 
 	{
-		for (int i = 0; i < rank; ++i) {
+ 		for (int i = 0; i < rank; ++i) {
 			U[i] = Utils.getRandomUnitVector(N);
 			V[i] = Utils.getRandomUnitVector(M);
 			W[i] = Utils.getRandomUnitVector(D);
@@ -89,14 +91,16 @@ public class Parameters implements Serializable {
 			totalV[i] = V[i].clone();
 			totalW[i] = W[i].clone();
 			
-			U2[i] = Utils.getRandomUnitVector(N);
-			V2[i] = Utils.getRandomUnitVector(N);
-			W2[i] = Utils.getRandomUnitVector(D);
-			X2[i] = Utils.getRandomUnitVector(N);
-			totalU2[i] = U2[i].clone();
-			totalV2[i] = V2[i].clone();
-			totalW2[i] = W2[i].clone();
-			totalX2[i] = X2[i].clone();
+			if (options.useGP) {
+				U2[i] = Utils.getRandomUnitVector(N);
+				V2[i] = Utils.getRandomUnitVector(N);
+				W2[i] = Utils.getRandomUnitVector(D);
+				X2[i] = Utils.getRandomUnitVector(N);
+				totalU2[i] = U2[i].clone();
+				totalV2[i] = V2[i].clone();
+				totalW2[i] = W2[i].clone();
+				totalX2[i] = X2[i].clone();
+			}
 		}
 	}
 	
@@ -126,25 +130,27 @@ public class Parameters implements Serializable {
 				W[i][j] += totalW[i][j]/T;
 			}
 		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				U2[i][j] += totalU2[i][j]/T;
-			}
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				V2[i][j] += totalV2[i][j]/T;
-			}
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < D; ++j) {
-				W2[i][j] += totalW2[i][j]/T;
-			}
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				X2[i][j] += totalX2[i][j]/T;
-			}
+		if (options.useGP) {
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					U2[i][j] += totalU2[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					V2[i][j] += totalV2[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < D; ++j) {
+					W2[i][j] += totalW2[i][j]/T;
+				}
+			
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					X2[i][j] += totalX2[i][j]/T;
+				}
+		}
 	}
 	
 	public void unaverageParameters(int T) 
@@ -173,25 +179,27 @@ public class Parameters implements Serializable {
 				W[i][j] -= totalW[i][j]/T;
 			}
 		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				U2[i][j] -= totalU2[i][j]/T;
-			}
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				V2[i][j] -= totalV2[i][j]/T;
-			}
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < D; ++j) {
-				W2[i][j] -= totalW2[i][j]/T;
-			}
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				X2[i][j] -= totalX2[i][j]/T;
-			}
+		if (options.useGP) {
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					U2[i][j] -= totalU2[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					V2[i][j] -= totalV2[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < D; ++j) {
+					W2[i][j] -= totalW2[i][j]/T;
+				}
+			
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					X2[i][j] -= totalX2[i][j]/T;
+				}
+		}
 	}
 	
 	public void clearTensor() 
@@ -204,14 +212,16 @@ public class Parameters implements Serializable {
 			Arrays.fill(totalV[i], 0);
 			Arrays.fill(totalW[i], 0);
 			
-			Arrays.fill(U2[i], 0);
-			Arrays.fill(V2[i], 0);
-			Arrays.fill(W2[i], 0);
-			Arrays.fill(X2[i], 0);
-			Arrays.fill(totalU2[i], 0);
-			Arrays.fill(totalV2[i], 0);
-			Arrays.fill(totalW2[i], 0);
-			Arrays.fill(totalX2[i], 0);
+			if (options.useGP) {
+				Arrays.fill(U2[i], 0);
+				Arrays.fill(V2[i], 0);
+				Arrays.fill(W2[i], 0);
+				Arrays.fill(X2[i], 0);
+				Arrays.fill(totalU2[i], 0);
+				Arrays.fill(totalV2[i], 0);
+				Arrays.fill(totalW2[i], 0);
+				Arrays.fill(totalX2[i], 0);
+			}
 		}
 	}
 	
