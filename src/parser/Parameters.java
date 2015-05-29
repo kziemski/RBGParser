@@ -87,9 +87,9 @@ public class Parameters implements Serializable {
 			//U[i] = Utils.getRandomNormVector(N, 1);
 			//V[i] = Utils.getRandomNormVector(M, 1);
 			//W[i] = Utils.getRandomNormVector(D, 1);
- 			U[i] = Utils.getRandomRangeVector(N,0.1);
-			V[i] = Utils.getRandomRangeVector(M,0.1);
-			W[i] = Utils.getRandomRangeVector(D,0.1);
+ 			U[i] = Utils.getRandomRangeVector(N,0.01);
+			V[i] = Utils.getRandomRangeVector(M,0.01);
+			W[i] = Utils.getRandomRangeVector(D,0.01);
 			totalU[i] = U[i].clone();
 			totalV[i] = V[i].clone();
 			totalW[i] = W[i].clone();
@@ -99,10 +99,10 @@ public class Parameters implements Serializable {
 				//V2[i] = Utils.getRandomNormVector(N, 10);
 				//W2[i] = Utils.getRandomNormVector(D, 1);
 				//X2[i] = Utils.getRandomNormVector(N, 10);
-				U2[i] = Utils.getRandomRangeVector(N,0.1);
-				V2[i] = Utils.getRandomRangeVector(N,0.1);
-				W2[i] = Utils.getRandomRangeVector(D,0.1);
-				X2[i] = Utils.getRandomRangeVector(N,0.1);
+				U2[i] = Utils.getRandomRangeVector(N,0.01);
+				V2[i] = Utils.getRandomRangeVector(N,0.01);
+				W2[i] = Utils.getRandomRangeVector(D,0.01);
+				X2[i] = Utils.getRandomRangeVector(N,0.01);
 				totalU2[i] = U2[i].clone();
 				totalV2[i] = V2[i].clone();
 				totalW2[i] = W2[i].clone();
