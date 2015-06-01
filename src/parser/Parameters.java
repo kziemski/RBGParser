@@ -84,8 +84,8 @@ public class Parameters implements Serializable {
 	public void randomlyInitTensor() 
 	{
  		for (int i = 0; i < rank; ++i) {
-			U[i] = Utils.getRandomNormVector(N, 10);
-			V[i] = Utils.getRandomNormVector(M, 10);
+			U[i] = Utils.getRandomNormVector(N, 1);
+			V[i] = Utils.getRandomNormVector(M, 1);
 			W[i] = Utils.getRandomNormVector(D, 1);
  			//U[i] = Utils.getRandomRangeVector(N,0.01);
 			//V[i] = Utils.getRandomRangeVector(M,0.01);
@@ -95,10 +95,10 @@ public class Parameters implements Serializable {
 			totalW[i] = W[i].clone();
 			
 			if (options.useGP) {
-				U2[i] = Utils.getRandomNormVector(N, 10);
-				V2[i] = Utils.getRandomNormVector(N, 10);
+				U2[i] = Utils.getRandomNormVector(N, 1);
+				V2[i] = Utils.getRandomNormVector(N, 1);
 				W2[i] = Utils.getRandomNormVector(D, 1); 
-				X2[i] = Utils.getRandomNormVector(N, 10);
+				X2[i] = Utils.getRandomNormVector(N, 1);
 				//U2[i] = Utils.getRandomRangeVector(N,0.01);
 				//V2[i] = Utils.getRandomRangeVector(N,0.01);
 				//W2[i] = Utils.getRandomRangeVector(D,0.01);
@@ -383,12 +383,12 @@ public class Parameters implements Serializable {
 		return sum;
 	}
 	
-	public double dotProduct2(double[] proju, double[] projv, int dist, double[] projx)
+	public double dotProduct2(double[] proju2, double[] projv2, int dist, double[] projx2)
 	{
 		double sum = 0;
 		int binDist = getBinnedDistance(dist);
 		for (int r = 0; r < rank; ++r)
-			sum += proju[r] * projv[r] * (W2[r][binDist] + W2[r][0]) * projx[r];
+			sum += proju2[r] * projv2[r] * (W2[r][binDist] + W2[r][0]) * projx2[r];
 		return sum;
 	}
 	
@@ -495,6 +495,12 @@ public class Parameters implements Serializable {
 	        	dX2[k] = dX2k;
 	    	}
     	}
+    	
+    	
+    	double goldScore = lfd.getScore(gold.heads);
+    	double predScore = lfd.getScore(pred.heads);
+    	if (Math.abs(loss-(predScore-goldScore+Fi)) > 1e-4)
+    		System.out.println("Oh, no!");
 
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);

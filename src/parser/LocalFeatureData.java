@@ -794,6 +794,99 @@ public class LocalFeatureData {
 		return score;
 	}
 	
+	public double getScore(int[] heads)
+	{
+		double score = 0;		
+		
+		// 1st order arc
+		for (int m = 1; m < len; ++m)
+			score += arcScores[heads[m]*len+m];
+		
+		if (options.learningMode != LearningMode.Basic) {
+			
+			DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
+			
+			// 2nd order (h,m,s) & (m,s)
+			for (int h = 0; h < len; ++h) {
+				
+				int st = arcLis.startIndex(h);
+				int ed = arcLis.endIndex(h);
+				
+				for (int p = st; p+1 < ed; ++p) {
+					// mod and sib
+					int m = arcLis.get(p);
+					int s = arcLis.get(p+1);
+					
+					if (options.useCS) {
+						score += getTripsScore(h, m, s);
+						score += getSibScore(m, s);
+					}
+					
+					// gp-sibling
+					int gp = heads[h];
+					if (options.useGS && gp >= 0) {
+						score += getGPSibScore(gp, h, m, s);
+					}
+					
+					// tri-sibling
+					if (options.useTS && p + 2 < ed) {
+						int s2 = arcLis.get(p + 2);
+						score += getTriSibScore(h, m, s, s2);
+					}
+					
+					// parent, sibling and child
+					if (options.usePSC) {
+						// mod's child
+						int mst = arcLis.startIndex(m);
+						int med = arcLis.endIndex(m);
+						
+						for (int mp = mst; mp < med; ++mp) {
+							int c = arcLis.get(mp);
+							score += getPSCScore(h, m, c, s);
+						}
+						
+						// sib's child
+						int sst = arcLis.startIndex(s);
+						int sed = arcLis.endIndex(s);
+						
+						for (int sp = sst; sp < sed; ++sp) {
+							int c = arcLis.get(sp);
+							score += getPSCScore(h, s, c, m);
+						}
+					}
+				}
+			}
+			
+			for (int m = 1; m < len; ++m) {
+				int h = heads[m];
+				
+				Utils.Assert(h >= 0);
+				
+				// grandparent
+				int gp = heads[h];
+				if (options.useGP && gp != -1) {
+					score += getGPCScore(gp, h, m);
+				}
+				
+				// head bigram
+				if (options.useHB && m + 1 < len) {
+					int h2 = heads[m + 1];
+					Utils.Assert(h2 >= 0);
+					
+					score += getHeadBiScore(h, m, h2);
+				}
+				
+				// great-grandparent
+				if (options.useGGP && gp != -1 && heads[gp] != -1) {
+					int ggp = heads[gp];
+					score += getGGPCScore(ggp, gp, h, m);
+				}
+			}
+		}
+		
+		return score;
+	}
+	
 	public FeatureVector getArcFeatureVector(int h, int m)
 	{
 		return arcFvs[h*len+m];

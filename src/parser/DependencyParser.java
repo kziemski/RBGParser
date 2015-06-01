@@ -240,6 +240,15 @@ public class DependencyParser implements Serializable {
 
         } else {
         	parameters.randomlyInitTensor();
+        	parameters.printUStat();
+            parameters.printVStat();
+            parameters.printWStat();
+            if (options.useGP) {
+            	parameters.printU2Stat();
+                parameters.printV2Stat();
+                parameters.printW2Stat();
+                parameters.printX2Stat();
+            }
         }
         
 		System.out.println("=============================================");
