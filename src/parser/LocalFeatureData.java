@@ -356,7 +356,8 @@ public class LocalFeatureData {
 		if (gpc[pos] == NULL) {
 			ScoreCollector col = new ScoreCollector(parameters);
 			synFactory.createGPCFeatureVector(col, inst, gp, h, m);
-			gpc[pos] = col.score * gamma + parameters.dotProduct2(wpU2[h], wpV2[m], h-m, wpX2[gp]) * (1-gamma);
+			int dirFlag = (((gp < h ? 0 : 1) << 1) | (h < m ? 0 : 1)) + 1;
+			gpc[pos] = col.score * gamma + parameters.dotProduct2(wpU2[h], wpV2[m], dirFlag, wpX2[gp]) * (1-gamma);
 		}
 		
 		return gpc[pos];
@@ -881,6 +882,39 @@ public class LocalFeatureData {
 					int ggp = heads[gp];
 					score += getGGPCScore(ggp, gp, h, m);
 				}
+			}
+		}
+		
+		return score;
+	}
+	
+	public double getScoreGPCtheta()
+	{
+		double score = 0;		
+		
+		for (int m = 1; m < len; ++m) {
+			int h = inst.heads[m];
+			int gp = inst.heads[h];
+			if (gp != -1) {	
+				ScoreCollector col = new ScoreCollector(parameters);
+				synFactory.createGPCFeatureVector(col, inst, gp, h, m);
+				score += col.score;
+			}
+		}
+		
+		return score;
+	}
+	
+	public double getScoreGPChtensor()
+	{
+		double score = 0;
+		
+		for (int m = 1; m < len; ++m) {
+			int h = inst.heads[m];
+			int gp = inst.heads[h];
+			if (gp != -1) {
+				int dirFlag = (((gp < h ? 0 : 1) << 1) | (h < m ? 0 : 1)) + 1;
+				score += parameters.dotProduct2(wpU2[h], wpV2[m], dirFlag, wpX2[gp]);
 			}
 		}
 		

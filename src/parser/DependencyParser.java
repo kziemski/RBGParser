@@ -194,12 +194,20 @@ public class DependencyParser implements Serializable {
         if (options.R > 0 && options.gamma < 1 && options.initTensorWithPretrain) {
 
         	Options optionsBak = (Options) options.clone();
-        	options.learningMode = LearningMode.Basic;
+        	if (options.useGP)
+        		options.learningMode = LearningMode.Second;
+        	else options.learningMode = LearningMode.Basic;
+        	options.useCS = false;
+        	options.useHB = false;
+        	options.useGS = false;
+        	options.useTS = false;
+        	options.useGGP = false;
+        	options.usePSC = false;
+        	options.useHO = false;
         	options.R = 0;
         	options.gamma = 1.0;
         	options.gammaLabel = 1.0;
         	options.maxNumIters = options.numPretrainIters;
-            options.useHO = false;
         	parameters.gamma = 1.0;
         	parameters.gammaLabel = 1.0;
         	parameters.rank = 0;
@@ -215,24 +223,41 @@ public class DependencyParser implements Serializable {
     		
     		System.out.println("Init tensor ... ");
     		LowRankParam tensor = new LowRankParam(parameters);
-    		pipe.synFactory.fillParameters(tensor, parameters);
+    		SecondLowRankParam tensor2 = new SecondLowRankParam(parameters);
+    		pipe.synFactory.fillParameters(tensor, tensor2, parameters);
     		tensor.decompose(1, parameters);
+    		if (options.useGP) {
+    			tensor2.decompose(parameters);
+    		}
             System.out.println();
-    		end = System.currentTimeMillis();
+    		end = System.currentTimeMillis();		
     		
-    		options.learningMode = optionsBak.learningMode;
-    		options.R = optionsBak.R;
-    		options.gamma = optionsBak.gamma;
-    		options.gammaLabel = optionsBak.gammaLabel;
-    		options.maxNumIters = optionsBak.maxNumIters;
-            options.useHO = optionsBak.useHO;
+    		options = (Options) optionsBak.clone();
     		parameters.rank = optionsBak.R;
     		parameters.gamma = optionsBak.gamma;
     		parameters.gammaLabel = optionsBak.gammaLabel;
+    		
+    		// check
+//    		if (options.useGP) {
+//	    		for (int i = 0; i < lstTrain.length; ++i) {
+//	    			DependencyInstance inst = lstTrain[i];
+//	    			LocalFeatureData lfd = new LocalFeatureData(inst, this, true, true);
+//	    			double thetaScore = lfd.getScoreGPCtheta();
+//	    			double tensorScore = lfd.getScoreGPChtensor();
+//	    			System.out.println(thetaScore + "\t" + tensorScore + "\t" + Math.abs(thetaScore - tensorScore) / Math.abs(thetaScore));
+//	    		}
+//    		}
+    		
     		parameters.clearTheta();
             parameters.printUStat();
             parameters.printVStat();
             parameters.printWStat();
+            if (options.useGP) {
+            	parameters.printU2Stat();
+                parameters.printV2Stat();
+                parameters.printW2Stat();
+                parameters.printX2Stat();
+            }
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
     		System.out.println("=============================================");

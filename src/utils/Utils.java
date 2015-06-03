@@ -38,14 +38,9 @@ public final class Utils {
 	public static double[] getRandomNormVector(int length, double norm) 
 	{
 		double[] vec = new double[length];
-		double sum = 0;
-		for (int i = 0; i < length; ++i) {
+		for (int i = 0; i < length; ++i)
 			vec[i] = rnd.nextDouble() - 0.5;
-			sum += vec[i] * vec[i];
-		}
-		double invSqrt = Math.sqrt(norm / sum);
-		for (int i = 0; i < length; ++i) 
-			vec[i] *= invSqrt;
+		normalize(vec, norm);
 		return vec;
 	}
 	
@@ -77,7 +72,12 @@ public final class Utils {
 	
 	public static void normalize(double[] vec) 
 	{
-		double coeff = 1.0 / Math.sqrt(squaredSum(vec));
+		normalize(vec, 1);
+	}
+	
+	public static void normalize(double[] vec, double norm) 
+	{
+		double coeff = Math.sqrt(norm / squaredSum(vec));
 		for (int i = 0, N = vec.length; i < N; ++i)
 			vec[i] *= coeff;
 	}
@@ -114,6 +114,12 @@ public final class Utils {
 		return min;
 	}
 
-
+	public static double dot(double[] u, double[] v)
+	{
+		double dot = 0.0;
+		for (int i = 0, N = u.length; i < N; ++i)
+			dot += u[i]*v[i];
+		return dot;
+	}
 	
 }

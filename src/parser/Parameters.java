@@ -20,7 +20,7 @@ public class Parameters implements Serializable {
 	public double C, gamma, gammaLabel;
 	public int size, sizeL;
 	public int rank;
-	public int N, M, T, D;
+	public int N, M, T, D, D2;
 	
 	public float[] params, paramsL;
 	public double[][] U, V, W;
@@ -36,6 +36,7 @@ public class Parameters implements Serializable {
 	{
 		 //T = pipe.types.length;
         D = d * 2 + 1;
+        D2 = 5;
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -68,11 +69,11 @@ public class Parameters implements Serializable {
 		if (options.useGP) {
 			U2 = new double[rank][N];
 			V2 = new double[rank][N];
-			W2 = new double[rank][D];
+			W2 = new double[rank][D2];
 			X2 = new double[rank][N];
 			totalU2 = new double[rank][N];
 			totalV2 = new double[rank][N];
-			totalW2 = new double[rank][D];
+			totalW2 = new double[rank][D2];
 			totalX2 = new double[rank][N];
 			dU2 = new FeatureVector[rank];
 			dV2 = new FeatureVector[rank];
@@ -97,11 +98,11 @@ public class Parameters implements Serializable {
 			if (options.useGP) {
 				U2[i] = Utils.getRandomNormVector(N, 1);
 				V2[i] = Utils.getRandomNormVector(N, 1);
-				W2[i] = Utils.getRandomNormVector(D, 1); 
+				W2[i] = Utils.getRandomNormVector(D2, 1); 
 				X2[i] = Utils.getRandomNormVector(N, 1);
 				//U2[i] = Utils.getRandomRangeVector(N,0.01);
 				//V2[i] = Utils.getRandomRangeVector(N,0.01);
-				//W2[i] = Utils.getRandomRangeVector(D,0.01);
+				//W2[i] = Utils.getRandomRangeVector(D2,0.01);
 				//X2[i] = Utils.getRandomRangeVector(N,0.01);
 				totalU2[i] = U2[i].clone();
 				totalV2[i] = V2[i].clone();
@@ -149,7 +150,7 @@ public class Parameters implements Serializable {
 				}
 	
 			for (int i = 0; i < rank; ++i)
-				for (int j = 0; j < D; ++j) {
+				for (int j = 0; j < D2; ++j) {
 					W2[i][j] += totalW2[i][j]/T;
 				}
 			
@@ -198,7 +199,7 @@ public class Parameters implements Serializable {
 				}
 	
 			for (int i = 0; i < rank; ++i)
-				for (int j = 0; j < D; ++j) {
+				for (int j = 0; j < D2; ++j) {
 					W2[i][j] -= totalW2[i][j]/T;
 				}
 			
@@ -383,12 +384,11 @@ public class Parameters implements Serializable {
 		return sum;
 	}
 	
-	public double dotProduct2(double[] proju2, double[] projv2, int dist, double[] projx2)
+	public double dotProduct2(double[] proju2, double[] projv2, int dirFlag, double[] projx2)
 	{
 		double sum = 0;
-		int binDist = getBinnedDistance(dist);
 		for (int r = 0; r < rank; ++r)
-			sum += proju2[r] * projv2[r] * (W2[r][binDist] + W2[r][0]) * projx2[r];
+			sum += proju2[r] * projv2[r] * (W2[r][dirFlag] + W2[r][0]) * projx2[r];
 		return sum;
 	}
 	
@@ -497,10 +497,11 @@ public class Parameters implements Serializable {
     	}
     	
     	
-    	double goldScore = lfd.getScore(gold.heads);
-    	double predScore = lfd.getScore(pred.heads);
-    	if (Math.abs(loss-(predScore-goldScore+Fi)) > 1e-4)
-    		System.out.println("Oh, no!");
+    	// check
+//    	double goldScore = lfd.getScore(gold.heads);
+//    	double predScore = lfd.getScore(pred.heads);
+//    	if (Math.abs(loss-(predScore-goldScore+Fi)) > 1e-4)
+//    		System.out.println("Oh, no!");
 
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
@@ -702,8 +703,8 @@ public class Parameters implements Serializable {
     		int gp = actDeps[head];
     		int gp2 = predDeps[head2];
     		if (head == head2 && gp == gp2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
+    		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1)
     			dU2.addEntries(wordFvs[head], wpV2[mod][k] * (W2[k][0] + W2[k][d]) * wpX2[gp][k]);
     		if (gp2 != -1)
@@ -724,8 +725,8 @@ public class Parameters implements Serializable {
     		int gp = actDeps[head];
     		int gp2 = predDeps[head2];
     		if (head == head2 && gp == gp2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
+    		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1)
     			dV2.addEntries(wordFvs[mod], wpU2[head][k] * (W2[k][0] + W2[k][d]) * wpX2[gp][k]);
     		if (gp2 != -1)
@@ -745,8 +746,8 @@ public class Parameters implements Serializable {
     		int gp = actDeps[head];
     		int gp2 = predDeps[head2];
     		if (head == head2 && gp == gp2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
+    		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1) {
     			dW2[0] += wpU2[head][k] * wpV2[mod][k] * wpX2[gp][k];
     			dW2[d] += wpU2[head][k] * wpV2[mod][k] * wpX2[gp][k];
@@ -775,8 +776,8 @@ public class Parameters implements Serializable {
     		int gp = actDeps[head];
     		int gp2 = predDeps[head2];
     		if (head == head2 && gp == gp2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
+    		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1)
     			dX2.addEntries(wordFvs[gp], wpU2[head][k] * wpV2[mod][k] * (W2[k][0] + W2[k][d]));
     		if (gp2 != -1)
