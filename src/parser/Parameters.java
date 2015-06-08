@@ -739,7 +739,7 @@ public class Parameters implements Serializable {
     	double[][] wpU2 = lfd.wpU2, wpV2 = lfd.wpV2, wpX2 = lfd.wpX2;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	double[] dW2 = new double[D];
+    	double[] dW2 = new double[D2];
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
@@ -758,8 +758,8 @@ public class Parameters implements Serializable {
     		}
     	}
     	
-    	FeatureVector fdW2 = new FeatureVector(D);
-    	for (int i = 0; i < D; ++i)
+    	FeatureVector fdW2 = new FeatureVector(D2);
+    	for (int i = 0; i < D2; ++i)
     		fdW2.addEntry(i, dW2[i]);
     	return fdW2;
     }
