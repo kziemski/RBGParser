@@ -30,72 +30,73 @@ public class SecondLowRankParam {
 		for (int i = 0; i < maxRank; ++i) {
 			double[] u = new double[N];
 			double[] v = Utils.getRandomNormVector(N, 1);
+			double[] x = Utils.getRandomNormVector(N, 1);
 			double[] w = Utils.getRandomNormVector(D, 1);
-			double[] r = Utils.getRandomNormVector(N, 1);
 			
 			int iter = 0;
 			double norm = 0.0, lastnorm = Double.POSITIVE_INFINITY;
 			for (iter = 0; iter < MAXITER; ++iter) {
 				
-				// u = <T,-,v,w,r>
+				// u = <T,-,v,w,x>
 				for (int j = 0; j < N; ++j)
 					u[j] = 0;
 				for (MatrixEntry e : list) {
-					u[e.x] += e.value * v[e.y] * w[e.z] * r[e.r];
+					u[e.x] += e.value * v[e.y] * w[e.z] * x[e.r];
 				}
 				for (int j = 0; j < i; ++j) {
 					double dot = Utils.dot(v, params.V2[j]) 
 							   * Utils.dot(w, params.W2[j])
-							   * Utils.dot(r, params.X2[j]);
+							   * Utils.dot(x, params.X2[j]);
 					for (int k = 0; k < N; ++k)
 						u[k] -= dot*params.U2[j][k];
 				}
 				Utils.normalize(u);
 				
-				// v = <T,u,-,w,r>
+				// v = <T,u,-,w,x>
 				for (int j = 0; j < N; ++j)
 					v[j] = 0;
 				for (MatrixEntry e : list) {
-					v[e.y] += e.value * u[e.x] * w[e.z] * r[e.r];
+					v[e.y] += e.value * u[e.x] * w[e.z] * x[e.r];
 				}
 				for (int j = 0; j < i; ++j) {
 					double dot = Utils.dot(u, params.U2[j]) 
 							   * Utils.dot(w, params.W2[j])
-							   * Utils.dot(r, params.X2[j]);
+							   * Utils.dot(x, params.X2[j]);
 					for (int k = 0; k < N; ++k)
 						v[k] -= dot*params.V2[j][k];
 				}
 				Utils.normalize(v);
 				
-				// w = <T,u,v,-,r>
-				for (int j = 0; j < D; ++j)
-					w[j] = 0;
-				for (MatrixEntry e : list) {
-					w[e.z] += e.value * u[e.x] * v[e.y] * r[e.r];
-				}
-				for (int j = 0; j < i; ++j) {
-					double dot = Utils.dot(u, params.U2[j]) 
-							   * Utils.dot(v, params.V2[j])
-							   * Utils.dot(r, params.X2[j]);
-					for (int k = 0; k < D; ++k)
-						w[k] -= dot*params.W2[j][k];
-				}
-				Utils.normalize(w);
-				
-				// r = <T,u,v,w,->
+				// x = <T,u,v,w,->
 				for (int j = 0; j < N; ++j)
-					r[j] = 0;
+					x[j] = 0;
 				for (MatrixEntry e : list) {
-					r[e.r] += e.value * u[e.x] * v[e.y] * w[e.z];
+					x[e.r] += e.value * u[e.x] * v[e.y] * w[e.z];
 				}
 				for (int j = 0; j < i; ++j) {
 					double dot = Utils.dot(u, params.U2[j]) 
 							   * Utils.dot(v, params.V2[j])
 							   * Utils.dot(w, params.W2[j]);
 					for (int k = 0; k < N; ++k)
-						r[k] -= dot*params.X2[j][k];
-				}			
-				norm = Math.sqrt(Utils.squaredSum(r));
+						x[k] -= dot*params.X2[j][k];
+				}
+				Utils.normalize(x);
+				
+				// w = <T,u,v,-,x>
+				for (int j = 0; j < D; ++j)
+					w[j] = 0;
+				for (MatrixEntry e : list) {
+					w[e.z] += e.value * u[e.x] * v[e.y] * x[e.r];
+				}
+				for (int j = 0; j < i; ++j) {
+					double dot = Utils.dot(u, params.U2[j]) 
+							   * Utils.dot(v, params.V2[j])
+							   * Utils.dot(x, params.X2[j]);
+					for (int k = 0; k < D; ++k)
+						w[k] -= dot*params.W2[j][k];
+				}
+							
+				norm = Math.sqrt(Utils.squaredSum(w));
 				if (lastnorm != Double.POSITIVE_INFINITY && Math.abs(norm-lastnorm) < eps)
 					break;
 				lastnorm = norm;
@@ -111,7 +112,7 @@ public class SecondLowRankParam {
 			params.U2[i] = u;
 			params.V2[i] = v;
 			params.W2[i] = w;
-			params.X2[i] = r;
+			params.X2[i] = x;
 		}
 		System.out.println();
 		
