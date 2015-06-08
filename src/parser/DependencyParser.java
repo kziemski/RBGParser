@@ -227,10 +227,12 @@ public class DependencyParser implements Serializable {
     		pipe.synFactory.fillParameters(tensor, tensor2g, tensor2s, parameters);
     		tensor.decompose(1, parameters);
     		if (options.useGP) {
-    			tensor2g.decompose(parameters.U2g,parameters.V2g,parameters.W2g,parameters.X2g);
+    			tensor2g.decompose(parameters.U2g, parameters.V2g, parameters.W2g, parameters.X2g,
+    					parameters.totalU2g, parameters.totalV2g, parameters.totalW2g, parameters.totalX2g);
     		}
     		if (options.useCS) {
-    			tensor2s.decompose(parameters.U2s,parameters.V2s,parameters.W2s,parameters.X2s);
+    			tensor2s.decompose(parameters.U2s,parameters.V2s,parameters.W2s,parameters.X2s,
+    					parameters.totalU2s, parameters.totalV2s, parameters.totalW2s, parameters.totalX2s);
     		}
             System.out.println();
     		end = System.currentTimeMillis();		

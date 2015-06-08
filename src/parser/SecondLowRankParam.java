@@ -21,7 +21,8 @@ public class SecondLowRankParam {
 		list.add(new MatrixEntry(x, y, z, r, v));
 	}
 	
-	public void decompose(double[][] U, double[][] V, double[][] W, double[][] X)
+	public void decompose(double[][] U, double[][] V, double[][] W, double[][] X,
+			double[][] totalU, double[][] totalV, double[][] totalW, double[][] totalX)
 	{
 		int maxRank = U.length;
 		
@@ -115,38 +116,44 @@ public class SecondLowRankParam {
 		}
 		System.out.println();
 		
-		
-		// check
-		double normT = 0, normL = 0, dp = 0;
-		
-		for (MatrixEntry e : list) {
-			normL += e.value * e.value;
-			
-			double s = 0;
-			for (int i = 0; i < maxRank; ++i)
-				s += U[i][e.x] * V[i][e.y] * W[i][e.z] * X[i][e.r];
-			dp += e.value * s;
+		for (int i = 0; i < maxRank; ++i) {
+			totalU[i] = U[i].clone();
+			totalV[i] = V[i].clone();
+			totalW[i] = W[i].clone();
+			totalX[i] = X[i].clone();
 		}
 		
-		for (int i = 0; i < maxRank; ++i)
-			for (int j = 0; j < maxRank; ++j) {
-				double su = 0;
-				for (int k = 0; k < N; ++k)
-					su += U[i][k] * U[j][k];
-				double sv = 0;
-				for (int k = 0; k < N; ++k)
-					sv += V[i][k] * V[j][k];
-				double sw = 0;
-				for (int k = 0; k < D; ++k)
-					sw += W[i][k] * W[j][k];
-				double sx = 0;
-				for (int k = 0; k < N; ++k)
-					sx += X[i][k] * X[j][k];
-				normT += su * sv * sw * sx;
-			}
-		double diff = normL - 2*dp + normT;
-		
-		System.out.println(normL + "\t" + diff + "\t" + diff/normL);
+		// check
+//		double normT = 0, normL = 0, dp = 0;
+//		
+//		for (MatrixEntry e : list) {
+//			normL += e.value * e.value;
+//			
+//			double s = 0;
+//			for (int i = 0; i < maxRank; ++i)
+//				s += U[i][e.x] * V[i][e.y] * W[i][e.z] * X[i][e.r];
+//			dp += e.value * s;
+//		}
+//		
+//		for (int i = 0; i < maxRank; ++i)
+//			for (int j = 0; j < maxRank; ++j) {
+//				double su = 0;
+//				for (int k = 0; k < N; ++k)
+//					su += U[i][k] * U[j][k];
+//				double sv = 0;
+//				for (int k = 0; k < N; ++k)
+//					sv += V[i][k] * V[j][k];
+//				double sw = 0;
+//				for (int k = 0; k < D; ++k)
+//					sw += W[i][k] * W[j][k];
+//				double sx = 0;
+//				for (int k = 0; k < N; ++k)
+//					sx += X[i][k] * X[j][k];
+//				normT += su * sv * sw * sx;
+//			}
+//		double diff = normL - 2*dp + normT;
+//		
+//		System.out.println(normL + "\t" + diff + "\t" + diff/normL);
 	}
 }
 

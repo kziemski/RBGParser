@@ -3530,7 +3530,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	featureHashSet = null;
     }
     
-    public void fillParameters(LowRankParam tensor, SecondLowRankParam tensor2, Parameters params) {
+    public void fillParameters(LowRankParam tensor, SecondLowRankParam tensor2g, SecondLowRankParam tensor2s, Parameters params) {
         //System.out.println(arcAlphabet.size());	
     	long[] codes = //arcAlphabet.toArray();
     					featureHashSet.toArray();
@@ -3549,7 +3549,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		int label = (int) extractLabelCode(code);
     		if (label != 0) continue;
     		
-    		long head = -1, mod = -1, gp = -1;
+    		long head = -1, mod = -1, gp = -1, sib = -1;
 
         	//code = createArcCodePPPP(CORE_POS_PT0, pHeadLeft, pHead, pMod, pModRight);
     		if (temp == HPp_HP_MP_MPn.ordinal()) {
@@ -3758,7 +3758,7 @@ public class SyntacticFeatureFactory implements Serializable {
     			head = createWordCodeP(WORDFV_BIAS, 0);
     		}
     		
-    		// second order
+    		// second order: gp-h-m
     		else if (temp == GP_HP_MP.ordinal()) {
     			extractArcCodePPP(code, x);
     			gp = createWordCodeP(WORDFV_P0, x[0]);
@@ -4158,6 +4158,51 @@ public class SyntacticFeatureFactory implements Serializable {
     			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
     		}
     		
+    		// second order: h-m-s
+//    	    HP_SP_MP,
+//    		HC_SC_MC,
+//
+//    		pHC_HC_SC_MC,
+//    		HC_nHC_SC_MC,
+//    		HC_pSC_SC_MC,
+//    		HC_SC_nSC_MC,
+//    		HC_SC_pMC_MC,
+//    		HC_SC_MC_nMC,
+//
+//    		pHC_HL_SC_MC,
+//    		HL_nHC_SC_MC,
+//    		HL_pSC_SC_MC,
+//    		HL_SC_nSC_MC,
+//    		HL_SC_pMC_MC,
+//    		HL_SC_MC_nMC,
+//
+//    		pHC_HC_SL_MC,
+//    		HC_nHC_SL_MC,
+//    		HC_pSC_SL_MC,
+//    		HC_SL_nSC_MC,
+//    		HC_SL_pMC_MC,
+//    		HC_SL_MC_nMC,
+//
+//    		pHC_HC_SC_ML,
+//    		HC_nHC_SC_ML,
+//    		HC_pSC_SC_ML,
+//    		HC_SC_nSC_ML,
+//    		HC_SC_pMC_ML,
+//    		HC_SC_ML_nMC,
+//
+//    		HC_MC_SC_pHC_pMC,
+//    		HC_MC_SC_pHC_pSC,
+//    		HC_MC_SC_pMC_pSC,
+//    		HC_MC_SC_nHC_nMC,
+//    		HC_MC_SC_nHC_nSC,
+//    		HC_MC_SC_nMC_nSC,
+//    		HC_MC_SC_pHC_nMC,
+//    		HC_MC_SC_pHC_nSC,
+//    		HC_MC_SC_pMC_nSC,
+//    		HC_MC_SC_nHC_pMC,
+//    		HC_MC_SC_nHC_pSC,
+//    		HC_MC_SC_nMC_pSC,
+    		
     		else {
     			//System.out.println(temp);
     			continue;
@@ -4166,21 +4211,33 @@ public class SyntacticFeatureFactory implements Serializable {
     		int headId = wordAlphabet.lookupIndex(head);
     		int modId = wordAlphabet.lookupIndex(mod);
     		if (headId >= 0 && modId >= 0) {
-    			if (gp == -1) {
-    				double value = params.params[id];
-    				tensor.putEntry(headId, modId, dist, value);
-    			}
-    			else {
+    			if (gp != -1) {
     				int dirFlag = extractDirFlag(dist);
     				int gpId = wordAlphabet.lookupIndex(gp);
     				if (dirFlag >= 0 && gpId >= 0) {
     					double value = params.params[id];
-    					tensor2.add(headId, modId, dirFlag, gpId, value);
+    					tensor2g.add(headId, modId, dirFlag, gpId, value);
     				}
     				else {
     					missCount++;
     	    			continue;
     				}
+    			}
+    			else if (sib != -1) {
+    				int dirFlag = extractDirFlag(dist);
+    				int sibId = wordAlphabet.lookupIndex(sib);
+    				if (dirFlag >= 0 && sibId >= 0) {
+    					double value = params.params[id];
+    					tensor2s.add(headId, modId, dirFlag, sibId, value);
+    				}
+    				else {
+    					missCount++;
+    	    			continue;
+    				}
+    			}
+    			else {
+    				double value = params.params[id];
+    				tensor.putEntry(headId, modId, dist, value);
     			}
             }
     		else {
