@@ -194,10 +194,9 @@ public class DependencyParser implements Serializable {
         if (options.R > 0 && options.gamma < 1 && options.initTensorWithPretrain) {
 
         	Options optionsBak = (Options) options.clone();
-        	if (options.useGP)
+        	if (options.useGP || options.useCS)
         		options.learningMode = LearningMode.Second;
         	else options.learningMode = LearningMode.Basic;
-        	options.useCS = false;
         	options.useHB = false;
         	options.useGS = false;
         	options.useTS = false;
@@ -223,11 +222,15 @@ public class DependencyParser implements Serializable {
     		
     		System.out.println("Init tensor ... ");
     		LowRankParam tensor = new LowRankParam(parameters);
-    		SecondLowRankParam tensor2 = new SecondLowRankParam(parameters);
-    		pipe.synFactory.fillParameters(tensor, tensor2, parameters);
+    		SecondLowRankParam tensor2g = new SecondLowRankParam(parameters);
+    		SecondLowRankParam tensor2s = new SecondLowRankParam(parameters);
+    		pipe.synFactory.fillParameters(tensor, tensor2g, tensor2s, parameters);
     		tensor.decompose(1, parameters);
     		if (options.useGP) {
-    			tensor2.decompose(parameters);
+    			tensor2g.decompose(parameters.U2g,parameters.V2g,parameters.W2g,parameters.X2g);
+    		}
+    		if (options.useCS) {
+    			tensor2s.decompose(parameters.U2s,parameters.V2s,parameters.W2s,parameters.X2s);
     		}
             System.out.println();
     		end = System.currentTimeMillis();		
@@ -253,10 +256,10 @@ public class DependencyParser implements Serializable {
             parameters.printVStat();
             parameters.printWStat();
             if (options.useGP) {
-            	parameters.printU2Stat();
-                parameters.printV2Stat();
-                parameters.printW2Stat();
-                parameters.printX2Stat();
+            	parameters.printU2gStat();
+                parameters.printV2gStat();
+                parameters.printW2gStat();
+                parameters.printX2gStat();
             }
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
@@ -269,10 +272,10 @@ public class DependencyParser implements Serializable {
             parameters.printVStat();
             parameters.printWStat();
             if (options.useGP) {
-            	parameters.printU2Stat();
-                parameters.printV2Stat();
-                parameters.printW2Stat();
-                parameters.printX2Stat();
+            	parameters.printU2gStat();
+                parameters.printV2gStat();
+                parameters.printW2gStat();
+                parameters.printX2gStat();
             }
         }
         
@@ -360,10 +363,10 @@ public class DependencyParser implements Serializable {
     		parameters.printVStat();
     		parameters.printWStat();
     		if (options.useGP) {
-	    		parameters.printU2Stat();
-	    		parameters.printV2Stat();
-	    		parameters.printW2Stat();
-	    		parameters.printX2Stat();
+	    		parameters.printU2gStat();
+	    		parameters.printV2gStat();
+	    		parameters.printW2gStat();
+	    		parameters.printX2gStat();
     		}
     		
     		if (options.learningMode != LearningMode.Basic && options.pruning && pruner != null)

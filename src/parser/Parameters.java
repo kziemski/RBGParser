@@ -24,13 +24,16 @@ public class Parameters implements Serializable {
 	
 	public float[] params, paramsL;
 	public double[][] U, V, W;
-	public double[][] U2, V2, W2, X2;
+	public double[][] U2g, V2g, W2g, X2g;
+	public double[][] U2s, V2s, W2s, X2s;
 	public transient float[] total, totalL;
 	public transient double[][] totalU, totalV, totalW;
-	public transient double[][] totalU2, totalV2, totalW2, totalX2;
+	public transient double[][] totalU2g, totalV2g, totalW2g, totalX2g;
+	public transient double[][] totalU2s, totalV2s, totalW2s, totalX2s;
 	
 	public transient FeatureVector[] dU, dV, dW;
-	public transient FeatureVector[] dU2, dV2, dW2, dX2;
+	public transient FeatureVector[] dU2g, dV2g, dW2g, dX2g;
+	public transient FeatureVector[] dU2s, dV2s, dW2s, dX2s;
 	
 	public Parameters(DependencyPipe pipe, Options options) 
 	{
@@ -67,18 +70,33 @@ public class Parameters implements Serializable {
 		dW = new FeatureVector[rank];
 		
 		if (options.useGP) {
-			U2 = new double[rank][N];
-			V2 = new double[rank][N];
-			W2 = new double[rank][D2];
-			X2 = new double[rank][N];
-			totalU2 = new double[rank][N];
-			totalV2 = new double[rank][N];
-			totalW2 = new double[rank][D2];
-			totalX2 = new double[rank][N];
-			dU2 = new FeatureVector[rank];
-			dV2 = new FeatureVector[rank];
-			dW2 = new FeatureVector[rank];
-			dX2 = new FeatureVector[rank];
+			U2g = new double[rank][N];
+			V2g = new double[rank][N];
+			W2g = new double[rank][D2];
+			X2g = new double[rank][N];
+			totalU2g = new double[rank][N];
+			totalV2g = new double[rank][N];
+			totalW2g = new double[rank][D2];
+			totalX2g = new double[rank][N];
+			dU2g = new FeatureVector[rank];
+			dV2g = new FeatureVector[rank];
+			dW2g = new FeatureVector[rank];
+			dX2g = new FeatureVector[rank];
+		}
+		
+		if (options.useCS) {
+			U2s = new double[rank][N];
+			V2s = new double[rank][N];
+			W2s = new double[rank][D2];
+			X2s = new double[rank][N];
+			totalU2s = new double[rank][N];
+			totalV2s = new double[rank][N];
+			totalW2s = new double[rank][D2];
+			totalX2s = new double[rank][N];
+			dU2s = new FeatureVector[rank];
+			dV2s = new FeatureVector[rank];
+			dW2s = new FeatureVector[rank];
+			dX2s = new FeatureVector[rank];
 		}
 	}
 	
@@ -96,18 +114,33 @@ public class Parameters implements Serializable {
 			totalW[i] = W[i].clone();
 			
 			if (options.useGP) {
-				U2[i] = Utils.getRandomNormVector(N, 1);
-				V2[i] = Utils.getRandomNormVector(N, 1);
-				W2[i] = Utils.getRandomNormVector(D2, 1); 
-				X2[i] = Utils.getRandomNormVector(N, 1);
-				//U2[i] = Utils.getRandomRangeVector(N,0.01);
-				//V2[i] = Utils.getRandomRangeVector(N,0.01);
-				//W2[i] = Utils.getRandomRangeVector(D2,0.01);
-				//X2[i] = Utils.getRandomRangeVector(N,0.01);
-				totalU2[i] = U2[i].clone();
-				totalV2[i] = V2[i].clone();
-				totalW2[i] = W2[i].clone();
-				totalX2[i] = X2[i].clone();
+				U2g[i] = Utils.getRandomNormVector(N, 1);
+				V2g[i] = Utils.getRandomNormVector(N, 1);
+				W2g[i] = Utils.getRandomNormVector(D2, 1); 
+				X2g[i] = Utils.getRandomNormVector(N, 1);
+				//U2g[i] = Utils.getRandomRangeVector(N,0.01);
+				//V2g[i] = Utils.getRandomRangeVector(N,0.01);
+				//W2g[i] = Utils.getRandomRangeVector(D2,0.01);
+				//X2g[i] = Utils.getRandomRangeVector(N,0.01);
+				totalU2g[i] = U2g[i].clone();
+				totalV2g[i] = V2g[i].clone();
+				totalW2g[i] = W2g[i].clone();
+				totalX2g[i] = X2g[i].clone();
+			}
+			
+			if (options.useCS) {
+				U2s[i] = Utils.getRandomNormVector(N, 1);
+				V2s[i] = Utils.getRandomNormVector(N, 1);
+				W2s[i] = Utils.getRandomNormVector(D2, 1); 
+				X2s[i] = Utils.getRandomNormVector(N, 1);
+				//U2s[i] = Utils.getRandomRangeVector(N,0.01);
+				//V2s[i] = Utils.getRandomRangeVector(N,0.01);
+				//W2s[i] = Utils.getRandomRangeVector(D2,0.01);
+				//X2s[i] = Utils.getRandomRangeVector(N,0.01);
+				totalU2s[i] = U2s[i].clone();
+				totalV2s[i] = V2s[i].clone();
+				totalW2s[i] = W2s[i].clone();
+				totalX2s[i] = X2s[i].clone();
 			}
 		}
 	}
@@ -141,29 +174,50 @@ public class Parameters implements Serializable {
 		if (options.useGP) {
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < N; ++j) {
-					U2[i][j] += totalU2[i][j]/T;
+					U2g[i][j] += totalU2g[i][j]/T;
 				}
 	
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < N; ++j) {
-					V2[i][j] += totalV2[i][j]/T;
+					V2g[i][j] += totalV2g[i][j]/T;
 				}
 	
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < D2; ++j) {
-					W2[i][j] += totalW2[i][j]/T;
+					W2g[i][j] += totalW2g[i][j]/T;
 				}
 			
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < N; ++j) {
-					X2[i][j] += totalX2[i][j]/T;
+					X2g[i][j] += totalX2g[i][j]/T;
+				}
+		}
+		
+		if (options.useCS) {
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					U2s[i][j] += totalU2s[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					V2s[i][j] += totalV2s[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < D2; ++j) {
+					W2s[i][j] += totalW2s[i][j]/T;
+				}
+			
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					X2s[i][j] += totalX2s[i][j]/T;
 				}
 		}
 	}
 	
 	public void unaverageParameters(int T) 
 	{
-		
 		for (int i = 0; i < size; ++i) {
 			params[i] -= total[i]/T;
 		}	
@@ -190,27 +244,49 @@ public class Parameters implements Serializable {
 		if (options.useGP) {
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < N; ++j) {
-					U2[i][j] -= totalU2[i][j]/T;
+					U2g[i][j] -= totalU2g[i][j]/T;
 				}
 	
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < N; ++j) {
-					V2[i][j] -= totalV2[i][j]/T;
+					V2g[i][j] -= totalV2g[i][j]/T;
 				}
 	
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < D2; ++j) {
-					W2[i][j] -= totalW2[i][j]/T;
+					W2g[i][j] -= totalW2g[i][j]/T;
 				}
 			
 			for (int i = 0; i < rank; ++i)
 				for (int j = 0; j < N; ++j) {
-					X2[i][j] -= totalX2[i][j]/T;
+					X2g[i][j] -= totalX2g[i][j]/T;
+				}
+		}
+		
+		if (options.useCS) {
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					U2s[i][j] -= totalU2s[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					V2s[i][j] -= totalV2s[i][j]/T;
+				}
+	
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < D2; ++j) {
+					W2s[i][j] -= totalW2s[i][j]/T;
+				}
+			
+			for (int i = 0; i < rank; ++i)
+				for (int j = 0; j < N; ++j) {
+					X2s[i][j] -= totalX2s[i][j]/T;
 				}
 		}
 	}
 	
-	public void clearTensor() 
+	public void clearTensor()
 	{
 		for (int i = 0; i < rank; ++i) {
 			Arrays.fill(U[i], 0);
@@ -221,19 +297,30 @@ public class Parameters implements Serializable {
 			Arrays.fill(totalW[i], 0);
 			
 			if (options.useGP) {
-				Arrays.fill(U2[i], 0);
-				Arrays.fill(V2[i], 0);
-				Arrays.fill(W2[i], 0);
-				Arrays.fill(X2[i], 0);
-				Arrays.fill(totalU2[i], 0);
-				Arrays.fill(totalV2[i], 0);
-				Arrays.fill(totalW2[i], 0);
-				Arrays.fill(totalX2[i], 0);
+				Arrays.fill(U2g[i], 0);
+				Arrays.fill(V2g[i], 0);
+				Arrays.fill(W2g[i], 0);
+				Arrays.fill(X2g[i], 0);
+				Arrays.fill(totalU2g[i], 0);
+				Arrays.fill(totalV2g[i], 0);
+				Arrays.fill(totalW2g[i], 0);
+				Arrays.fill(totalX2g[i], 0);
+			}
+			
+			if (options.useCS) {
+				Arrays.fill(U2s[i], 0);
+				Arrays.fill(V2s[i], 0);
+				Arrays.fill(W2s[i], 0);
+				Arrays.fill(X2s[i], 0);
+				Arrays.fill(totalU2s[i], 0);
+				Arrays.fill(totalV2s[i], 0);
+				Arrays.fill(totalW2s[i], 0);
+				Arrays.fill(totalX2s[i], 0);
 			}
 		}
 	}
 	
-	public void clearTheta() 
+	public void clearTheta()
 	{
 		Arrays.fill(params, 0);
 		Arrays.fill(total, 0);
@@ -279,52 +366,100 @@ public class Parameters implements Serializable {
 		System.out.printf(" |W|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
-	public void printU2Stat() 
+	public void printU2gStat() 
 	{
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(U2[i]);
-			min = Math.min(min, Utils.min(U2[i]));
-			max = Math.max(max, Utils.max(U2[i]));
+			sum += Utils.squaredSum(U2g[i]);
+			min = Math.min(min, Utils.min(U2g[i]));
+			max = Math.max(max, Utils.max(U2g[i]));
 		}
-		System.out.printf(" |U2|^2: %f min: %f\tmax: %f%n", sum, min, max);
+		System.out.printf(" |U2g|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
-	public void printV2Stat() 
+	public void printV2gStat() 
 	{
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(V2[i]);
-			min = Math.min(min, Utils.min(V2[i]));
-			max = Math.max(max, Utils.max(V2[i]));
+			sum += Utils.squaredSum(V2g[i]);
+			min = Math.min(min, Utils.min(V2g[i]));
+			max = Math.max(max, Utils.max(V2g[i]));
 		}
-		System.out.printf(" |V2|^2: %f min: %f\tmax: %f%n", sum, min, max);
+		System.out.printf(" |V2g|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
-	public void printW2Stat() 
+	public void printW2gStat() 
 	{
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(W2[i]);
-			min = Math.min(min, Utils.min(W2[i]));
-			max = Math.max(max, Utils.max(W2[i]));
+			sum += Utils.squaredSum(W2g[i]);
+			min = Math.min(min, Utils.min(W2g[i]));
+			max = Math.max(max, Utils.max(W2g[i]));
 		}
-		System.out.printf(" |W2|^2: %f min: %f\tmax: %f%n", sum, min, max);
+		System.out.printf(" |W2g|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
-	public void printX2Stat() 
+	public void printX2gStat() 
 	{
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(X2[i]);
-			min = Math.min(min, Utils.min(X2[i]));
-			max = Math.max(max, Utils.max(X2[i]));
+			sum += Utils.squaredSum(X2g[i]);
+			min = Math.min(min, Utils.min(X2g[i]));
+			max = Math.max(max, Utils.max(X2g[i]));
 		}
-		System.out.printf(" |X2|^2: %f min: %f\tmax: %f%n", sum, min, max);
+		System.out.printf(" |X2g|^2: %f min: %f\tmax: %f%n", sum, min, max);
+	}
+	
+	public void printU2sStat()
+	{
+		double sum = 0;
+		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(U2s[i]);
+			min = Math.min(min, Utils.min(U2s[i]));
+			max = Math.max(max, Utils.max(U2s[i]));
+		}
+		System.out.printf(" |U2s|^2: %f min: %f\tmax: %f%n", sum, min, max);
+	}
+	
+	public void printV2sStat() 
+	{
+		double sum = 0;
+		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(V2s[i]);
+			min = Math.min(min, Utils.min(V2s[i]));
+			max = Math.max(max, Utils.max(V2s[i]));
+		}
+		System.out.printf(" |V2s|^2: %f min: %f\tmax: %f%n", sum, min, max);
+	}
+	
+	public void printW2sStat() 
+	{
+		double sum = 0;
+		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(W2s[i]);
+			min = Math.min(min, Utils.min(W2s[i]));
+			max = Math.max(max, Utils.max(W2s[i]));
+		}
+		System.out.printf(" |W2s|^2: %f min: %f\tmax: %f%n", sum, min, max);
+	}
+	
+	public void printX2sStat() 
+	{
+		double sum = 0;
+		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < rank; ++i) {
+			sum += Utils.squaredSum(X2s[i]);
+			min = Math.min(min, Utils.min(X2s[i]));
+			max = Math.max(max, Utils.max(X2s[i]));
+		}
+		System.out.printf(" |X2s|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
 	public void printThetaStat() 
@@ -347,22 +482,40 @@ public class Parameters implements Serializable {
 			proj[r] = fv.dotProduct(V[r]);
 	}
 	
-	public void projectU2(FeatureVector fv, double[] proj) 
+	public void projectU2g(FeatureVector fv, double[] proj) 
 	{
 		for (int r = 0; r < rank; ++r) 
-			proj[r] = fv.dotProduct(U2[r]);
+			proj[r] = fv.dotProduct(U2g[r]);
 	}
 	
-	public void projectV2(FeatureVector fv, double[] proj) 
+	public void projectV2g(FeatureVector fv, double[] proj) 
 	{
 		for (int r = 0; r < rank; ++r) 
-			proj[r] = fv.dotProduct(V2[r]);
+			proj[r] = fv.dotProduct(V2g[r]);
 	}
 	
-	public void projectX2(FeatureVector fv, double[] proj) 
+	public void projectX2g(FeatureVector fv, double[] proj) 
 	{
 		for (int r = 0; r < rank; ++r) 
-			proj[r] = fv.dotProduct(X2[r]);
+			proj[r] = fv.dotProduct(X2g[r]);
+	}
+	
+	public void projectU2s(FeatureVector fv, double[] proj) 
+	{
+		for (int r = 0; r < rank; ++r) 
+			proj[r] = fv.dotProduct(U2s[r]);
+	}
+	
+	public void projectV2s(FeatureVector fv, double[] proj) 
+	{
+		for (int r = 0; r < rank; ++r) 
+			proj[r] = fv.dotProduct(V2s[r]);
+	}
+	
+	public void projectX2s(FeatureVector fv, double[] proj) 
+	{
+		for (int r = 0; r < rank; ++r) 
+			proj[r] = fv.dotProduct(X2s[r]);
 	}
 	
 	public double dotProduct(FeatureVector fv)
@@ -384,11 +537,19 @@ public class Parameters implements Serializable {
 		return sum;
 	}
 	
-	public double dotProduct2(double[] proju2, double[] projv2, int dirFlag, double[] projx2)
+	public double dotProduct2g(double[] projU2g, double[] projV2g, int dirFlag, double[] projX2g)
 	{
 		double sum = 0;
 		for (int r = 0; r < rank; ++r)
-			sum += proju2[r] * projv2[r] * (W2[r][dirFlag] + W2[r][0]) * projx2[r];
+			sum += projU2g[r] * projV2g[r] * (W2g[r][dirFlag] + W2g[r][0]) * projX2g[r];
+		return sum;
+	}
+	
+	public double dotProduct2s(double[] projU2s, double[] projV2s, int dirFlag, double[] projX2s)
+	{
+		double sum = 0;
+		for (int r = 0; r < rank; ++r)
+			sum += projU2s[r] * projV2s[r] * (W2s[r][dirFlag] + W2s[r][0]) * projX2s[r];
 		return sum;
 	}
 	
@@ -466,33 +627,64 @@ public class Parameters implements Serializable {
     	}   
     	
     	if (options.useGP) {
-	    	// update U2
+	    	// update U2g
 	    	for (int k = 0; k < rank; ++k) {
-	    		FeatureVector dU2k = getdU2(k, lfd, actDeps, predDeps);
-	        	l2norm += dU2k.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);            	
-	        	loss -= dU2k.dotProduct(U2[k]) * (1-gamma);
-	        	dU2[k] = dU2k;
+	    		FeatureVector dU2gk = getdU2g(k, lfd, actDeps, predDeps);
+	        	l2norm += dU2gk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);            	
+	        	loss -= dU2gk.dotProduct(U2g[k]) * (1-gamma);
+	        	dU2g[k] = dU2gk;
 	    	}
 	    	
-	    	// update V2
+	    	// update V2g
 	    	for (int k = 0; k < rank; ++k) {
-	    		FeatureVector dV2k = getdV2(k, lfd, actDeps, predDeps);
-	        	l2norm += dV2k.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
-	        	dV2[k] = dV2k;
+	    		FeatureVector dV2gk = getdV2g(k, lfd, actDeps, predDeps);
+	        	l2norm += dV2gk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+	        	dV2g[k] = dV2gk;
 	    	}        	
 	
-	    	// update W2
+	    	// update W2g
 	    	for (int k = 0; k < rank; ++k) {
-	    		FeatureVector dW2k = getdW2(k, lfd, actDeps, predDeps);
-	        	l2norm += dW2k.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
-	        	dW2[k] = dW2k;
+	    		FeatureVector dW2gk = getdW2g(k, lfd, actDeps, predDeps);
+	        	l2norm += dW2gk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+	        	dW2g[k] = dW2gk;
 	    	}
 	    	
-	    	// update X2
+	    	// update X2g
 	    	for (int k = 0; k < rank; ++k) {
-	    		FeatureVector dX2k = getdX2(k, lfd, actDeps, predDeps);
-	        	l2norm += dX2k.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
-	        	dX2[k] = dX2k;
+	    		FeatureVector dX2gk = getdX2g(k, lfd, actDeps, predDeps);
+	        	l2norm += dX2gk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+	        	dX2g[k] = dX2gk;
+	    	}
+    	}
+    	
+    	if (options.useCS) {
+	    	// update U2s
+	    	for (int k = 0; k < rank; ++k) {
+	    		FeatureVector dU2sk = getdU2s(k, lfd, actDeps, predDeps);
+	        	l2norm += dU2sk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);            	
+	        	loss -= dU2sk.dotProduct(U2s[k]) * (1-gamma);
+	        	dU2s[k] = dU2sk;
+	    	}
+	    	
+	    	// update V2s
+	    	for (int k = 0; k < rank; ++k) {
+	    		FeatureVector dV2sk = getdV2s(k, lfd, actDeps, predDeps);
+	        	l2norm += dV2sk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+	        	dV2s[k] = dV2sk;
+	    	}        	
+	
+	    	// update W2s
+	    	for (int k = 0; k < rank; ++k) {
+	    		FeatureVector dW2sk = getdW2s(k, lfd, actDeps, predDeps);
+	        	l2norm += dW2sk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+	        	dW2s[k] = dW2sk;
+	    	}
+	    	
+	    	// update X2s
+	    	for (int k = 0; k < rank; ++k) {
+	    		FeatureVector dX2sk = getdX2s(k, lfd, actDeps, predDeps);
+	        	l2norm += dX2sk.Squaredl2NormUnsafe() * (1-gamma) * (1-gamma);
+	        	dX2s[k] = dX2sk;
 	    	}
     	}
     	
@@ -556,47 +748,93 @@ public class Parameters implements Serializable {
         	}
         	
         	if (options.useGP) {
-	        	// update U2
+	        	// update U2g
 	        	for (int k = 0; k < rank; ++k) {
-	        		FeatureVector dU2k = dU2[k];
-	        		for (int i = 0, K = dU2k.size(); i < K; ++i) {
-	        			int x = dU2k.x(i);
-	        			double z = dU2k.value(i);
-	        			U2[k][x] += coeff * z;
-	        			totalU2[k][x] += coeff2 * z;
+	        		FeatureVector dU2gk = dU2g[k];
+	        		for (int i = 0, K = dU2gk.size(); i < K; ++i) {
+	        			int x = dU2gk.x(i);
+	        			double z = dU2gk.value(i);
+	        			U2g[k][x] += coeff * z;
+	        			totalU2g[k][x] += coeff2 * z;
 	        		}
 	        	}
 	        	
-	        	// update V2
+	        	// update V2g
 	        	for (int k = 0; k < rank; ++k) {
-	        		FeatureVector dV2k = dV2[k];
-	        		for (int i = 0, K = dV2k.size(); i < K; ++i) {
-	        			int x = dV2k.x(i);
-	        			double z = dV2k.value(i);
-	        			V2[k][x] += coeff * z;
-	        			totalV2[k][x] += coeff2 * z;
+	        		FeatureVector dV2gk = dV2g[k];
+	        		for (int i = 0, K = dV2gk.size(); i < K; ++i) {
+	        			int x = dV2gk.x(i);
+	        			double z = dV2gk.value(i);
+	        			V2g[k][x] += coeff * z;
+	        			totalV2g[k][x] += coeff2 * z;
 	        		}
 	        	} 
 	        	
-	        	// update W2
+	        	// update W2g
 	        	for (int k = 0; k < rank; ++k) {
-	        		FeatureVector dW2k = dW2[k];
-	        		for (int i = 0, K = dW2k.size(); i < K; ++i) {
-	        			int x = dW2k.x(i);
-	        			double z = dW2k.value(i);
-	        			W2[k][x] += coeff * z;
-	        			totalW2[k][x] += coeff2 * z;
+	        		FeatureVector dW2gk = dW2g[k];
+	        		for (int i = 0, K = dW2gk.size(); i < K; ++i) {
+	        			int x = dW2gk.x(i);
+	        			double z = dW2gk.value(i);
+	        			W2g[k][x] += coeff * z;
+	        			totalW2g[k][x] += coeff2 * z;
 	        		}
 	        	}
 	        	
-	        	// update X2
+	        	// update X2g
 	        	for (int k = 0; k < rank; ++k) {
-	        		FeatureVector dX2k = dX2[k];
-	        		for (int i = 0, K = dX2k.size(); i < K; ++i) {
-	        			int x = dX2k.x(i);
-	        			double z = dX2k.value(i);
-	        			X2[k][x] += coeff * z;
-	        			totalX2[k][x] += coeff2 * z;
+	        		FeatureVector dX2gk = dX2g[k];
+	        		for (int i = 0, K = dX2gk.size(); i < K; ++i) {
+	        			int x = dX2gk.x(i);
+	        			double z = dX2gk.value(i);
+	        			X2g[k][x] += coeff * z;
+	        			totalX2g[k][x] += coeff2 * z;
+	        		}
+	        	}
+        	}
+        	
+        	if (options.useCS) {
+	        	// update U2s
+	        	for (int k = 0; k < rank; ++k) {
+	        		FeatureVector dU2sk = dU2s[k];
+	        		for (int i = 0, K = dU2sk.size(); i < K; ++i) {
+	        			int x = dU2sk.x(i);
+	        			double z = dU2sk.value(i);
+	        			U2s[k][x] += coeff * z;
+	        			totalU2s[k][x] += coeff2 * z;
+	        		}
+	        	}
+	        	
+	        	// update V2s
+	        	for (int k = 0; k < rank; ++k) {
+	        		FeatureVector dV2sk = dV2s[k];
+	        		for (int i = 0, K = dV2sk.size(); i < K; ++i) {
+	        			int x = dV2sk.x(i);
+	        			double z = dV2sk.value(i);
+	        			V2s[k][x] += coeff * z;
+	        			totalV2s[k][x] += coeff2 * z;
+	        		}
+	        	} 
+	        	
+	        	// update W2s
+	        	for (int k = 0; k < rank; ++k) {
+	        		FeatureVector dW2sk = dW2s[k];
+	        		for (int i = 0, K = dW2sk.size(); i < K; ++i) {
+	        			int x = dW2sk.x(i);
+	        			double z = dW2sk.value(i);
+	        			W2s[k][x] += coeff * z;
+	        			totalW2s[k][x] += coeff2 * z;
+	        		}
+	        	}
+	        	
+	        	// update X2s
+	        	for (int k = 0; k < rank; ++k) {
+	        		FeatureVector dX2sk = dX2s[k];
+	        		for (int i = 0, K = dX2sk.size(); i < K; ++i) {
+	        			int x = dX2sk.x(i);
+	        			double z = dX2sk.value(i);
+	        			X2s[k][x] += coeff * z;
+	        			totalX2s[k][x] += coeff2 * z;
 	        		}
 	        	}
         	}
@@ -659,9 +897,9 @@ public class Parameters implements Serializable {
     		int d = getBinnedDistance(head-mod);
     		int d2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
+    		double dotU2g = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		dV.addEntries(wordFvs[mod], dotu  * (W[k][0] + W[k][d])
-    									- dotu2 * (W[k][0] + W[k][d2]));    		
+    									- dotU2g * (W[k][0] + W[k][d2]));    		
     	}
     	return dV;
     }
@@ -678,25 +916,25 @@ public class Parameters implements Serializable {
     		int d = getBinnedDistance(head-mod);
     		int d2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
+    		double dotU2g = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
-    		dW[0] += (dotu - dotu2) * dotv;
+    		dW[0] += (dotu - dotU2g) * dotv;
     		dW[d] += dotu * dotv;
-    		dW[d2] -= dotu2 * dotv;
+    		dW[d2] -= dotU2g * dotv;
     	}
     	
-    	FeatureVector dW2 = new FeatureVector(D);
+    	FeatureVector dW2g = new FeatureVector(D);
     	for (int i = 0; i < D; ++i)
-    		dW2.addEntry(i, dW[i]);
-    	return dW2;
+    		dW2g.addEntry(i, dW[i]);
+    	return dW2g;
     }
     
-    private FeatureVector getdU2(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
+    private FeatureVector getdU2g(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
     {
-    	double[][] wpV2 = lfd.wpV2, wpX2 = lfd.wpX2;
+    	double[][] wpV2g = lfd.wpV2g, wpX2g = lfd.wpX2g;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	FeatureVector dU2 = new FeatureVector(N);
+    	FeatureVector dU2g = new FeatureVector(N);
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
@@ -706,19 +944,19 @@ public class Parameters implements Serializable {
     		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
     		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1)
-    			dU2.addEntries(wordFvs[head], wpV2[mod][k] * (W2[k][0] + W2[k][d]) * wpX2[gp][k]);
+    			dU2g.addEntries(wordFvs[head], wpV2g[mod][k] * (W2g[k][0] + W2g[k][d]) * wpX2g[gp][k]);
     		if (gp2 != -1)
-    			dU2.addEntries(wordFvs[head2], - wpV2[mod][k] * (W2[k][0] + W2[k][d2]) * wpX2[gp2][k]);
+    			dU2g.addEntries(wordFvs[head2], - wpV2g[mod][k] * (W2g[k][0] + W2g[k][d2]) * wpX2g[gp2][k]);
     	}
-    	return dU2;
+    	return dU2g;
     }
     
-    private FeatureVector getdV2(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
+    private FeatureVector getdV2g(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
     {
-    	double[][] wpU2 = lfd.wpU2, wpX2 = lfd.wpX2;
+    	double[][] wpU2g = lfd.wpU2g, wpX2g = lfd.wpX2g;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	FeatureVector dV2 = new FeatureVector(N);
+    	FeatureVector dV2g = new FeatureVector(N);
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
@@ -728,18 +966,18 @@ public class Parameters implements Serializable {
     		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
     		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1)
-    			dV2.addEntries(wordFvs[mod], wpU2[head][k] * (W2[k][0] + W2[k][d]) * wpX2[gp][k]);
+    			dV2g.addEntries(wordFvs[mod], wpU2g[head][k] * (W2g[k][0] + W2g[k][d]) * wpX2g[gp][k]);
     		if (gp2 != -1)
-    			dV2.addEntries(wordFvs[mod], - wpU2[head2][k] * (W2[k][0] + W2[k][d2]) * wpX2[gp2][k]);
+    			dV2g.addEntries(wordFvs[mod], - wpU2g[head2][k] * (W2g[k][0] + W2g[k][d2]) * wpX2g[gp2][k]);
     	}
-    	return dV2;
+    	return dV2g;
     }
     
-    private FeatureVector getdW2(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) {
-    	double[][] wpU2 = lfd.wpU2, wpV2 = lfd.wpV2, wpX2 = lfd.wpX2;
+    private FeatureVector getdW2g(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) {
+    	double[][] wpU2g = lfd.wpU2g, wpV2g = lfd.wpV2g, wpX2g = lfd.wpX2g;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	double[] dW2 = new double[D];
+    	double[] dW2g = new double[D2];
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
@@ -749,27 +987,27 @@ public class Parameters implements Serializable {
     		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
     		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1) {
-    			dW2[0] += wpU2[head][k] * wpV2[mod][k] * wpX2[gp][k];
-    			dW2[d] += wpU2[head][k] * wpV2[mod][k] * wpX2[gp][k];
+    			dW2g[0] += wpU2g[head][k] * wpV2g[mod][k] * wpX2g[gp][k];
+    			dW2g[d] += wpU2g[head][k] * wpV2g[mod][k] * wpX2g[gp][k];
     		}
     		if (gp2 != -1) {
-    			dW2[0] -= wpU2[head2][k] * wpV2[mod][k] * wpX2[gp2][k];
-    			dW2[d2] -= wpU2[head2][k] * wpV2[mod][k] * wpX2[gp2][k];
+    			dW2g[0] -= wpU2g[head2][k] * wpV2g[mod][k] * wpX2g[gp2][k];
+    			dW2g[d2] -= wpU2g[head2][k] * wpV2g[mod][k] * wpX2g[gp2][k];
     		}
     	}
     	
-    	FeatureVector fdW2 = new FeatureVector(D);
-    	for (int i = 0; i < D; ++i)
-    		fdW2.addEntry(i, dW2[i]);
-    	return fdW2;
+    	FeatureVector fdW2g = new FeatureVector(D2);
+    	for (int i = 0; i < D2; ++i)
+    		fdW2g.addEntry(i, dW2g[i]);
+    	return fdW2g;
     }
     
-    private FeatureVector getdX2(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
+    private FeatureVector getdX2g(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
     {
-    	double[][] wpU2 = lfd.wpU2, wpV2 = lfd.wpV2;
+    	double[][] wpU2g = lfd.wpU2g, wpV2g = lfd.wpV2g;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	FeatureVector dX2 = new FeatureVector(N);
+    	FeatureVector dX2g = new FeatureVector(N);
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
@@ -779,11 +1017,144 @@ public class Parameters implements Serializable {
     		int d = (((gp < head ? 0 : 1) << 1) | (head < mod ? 0 : 1)) + 1;
     		int d2 = (((gp2 < head2 ? 0 : 1) << 1) | (head2 < mod ? 0 : 1)) + 1;
     		if (gp != -1)
-    			dX2.addEntries(wordFvs[gp], wpU2[head][k] * wpV2[mod][k] * (W2[k][0] + W2[k][d]));
+    			dX2g.addEntries(wordFvs[gp], wpU2g[head][k] * wpV2g[mod][k] * (W2g[k][0] + W2g[k][d]));
     		if (gp2 != -1)
-    			dX2.addEntries(wordFvs[gp2], - wpU2[head2][k] * wpV2[mod][k] * (W2[k][0] + W2[k][d2]));
+    			dX2g.addEntries(wordFvs[gp2], - wpU2g[head2][k] * wpV2g[mod][k] * (W2g[k][0] + W2g[k][d2]));
     	}
-    	return dX2;
+    	return dX2g;
+    }
+    
+    private FeatureVector getdU2s(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
+    {
+    	DependencyArcList actArcLis = new DependencyArcList(actDeps, false);
+    	DependencyArcList predArcLis = new DependencyArcList(predDeps, false);
+    	double[][] wpV2s = lfd.wpV2s, wpX2s = lfd.wpX2s;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dU2s = new FeatureVector(N);
+    	for (int h = 0; h < L; ++h) {
+    		int st, ed;
+    		
+    		st = actArcLis.startIndex(h);
+			ed = actArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = actArcLis.get(p);
+				int s = actArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+    			dU2s.addEntries(wordFvs[h], wpV2s[m][k] * (W2s[k][0] + W2s[k][d]) * wpX2s[s][k]);
+			}
+			
+			st = predArcLis.startIndex(h);
+			ed = predArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = predArcLis.get(p);
+				int s = predArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+    			dU2s.addEntries(wordFvs[h], - wpV2s[m][k] * (W2s[k][0] + W2s[k][d]) * wpX2s[s][k]);
+			}
+    	}
+    	return dU2s;
+    }
+    
+    private FeatureVector getdV2s(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
+    {
+    	DependencyArcList actArcLis = new DependencyArcList(actDeps, false);
+    	DependencyArcList predArcLis = new DependencyArcList(predDeps, false);
+    	double[][] wpU2s = lfd.wpU2s, wpX2s = lfd.wpX2s;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dV2s = new FeatureVector(N);
+    	for (int h = 0; h < L; ++h) {
+    		int st, ed;
+    		
+    		st = actArcLis.startIndex(h);
+			ed = actArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = actArcLis.get(p);
+				int s = actArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+    			dV2s.addEntries(wordFvs[m], wpU2s[h][k] * (W2s[k][0] + W2s[k][d]) * wpX2s[s][k]);
+			}
+			
+			st = predArcLis.startIndex(h);
+			ed = predArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = predArcLis.get(p);
+				int s = predArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+    			dV2s.addEntries(wordFvs[m], - wpU2s[h][k] * (W2s[k][0] + W2s[k][d]) * wpX2s[s][k]);
+			}
+    	}
+    	return dV2s;
+    }
+    
+    private FeatureVector getdW2s(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) {
+    	DependencyArcList actArcLis = new DependencyArcList(actDeps, false);
+    	DependencyArcList predArcLis = new DependencyArcList(predDeps, false);
+    	double[][] wpU2s = lfd.wpU2s, wpV2s = lfd.wpV2s, wpX2s = lfd.wpX2s;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	double[] dW2s = new double[D2];
+    	for (int h = 0; h < L; ++h) {
+    		int st, ed;
+    		
+    		st = actArcLis.startIndex(h);
+			ed = actArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = actArcLis.get(p);
+				int s = actArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+				dW2s[0] += wpU2s[h][k] * wpV2s[m][k] * wpX2s[s][k];
+				dW2s[d] += wpU2s[h][k] * wpV2s[m][k] * wpX2s[s][k];
+			}
+			
+			st = predArcLis.startIndex(h);
+			ed = predArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = predArcLis.get(p);
+				int s = predArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+				dW2s[0] -= wpU2s[h][k] * wpV2s[m][k] * wpX2s[s][k];
+				dW2s[d] -= wpU2s[h][k] * wpV2s[m][k] * wpX2s[s][k];
+			}
+    	}
+    	
+    	FeatureVector fdW2s = new FeatureVector(D2);
+    	for (int i = 0; i < D2; ++i)
+    		fdW2s.addEntry(i, dW2s[i]);
+    	return fdW2s;
+    }
+    
+    private FeatureVector getdX2s(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
+    {
+    	DependencyArcList actArcLis = new DependencyArcList(actDeps, false);
+    	DependencyArcList predArcLis = new DependencyArcList(predDeps, false);
+    	double[][] wpU2s = lfd.wpU2s, wpV2s = lfd.wpV2s;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dX2s = new FeatureVector(N);
+    	for (int h = 0; h < L; ++h) {
+    		int st, ed;
+    		
+    		st = actArcLis.startIndex(h);
+			ed = actArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = actArcLis.get(p);
+				int s = actArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+    			dX2s.addEntries(wordFvs[s], wpU2s[h][k] * wpV2s[m][k] * (W2s[k][0] + W2s[k][d]));
+			}
+			
+			st = predArcLis.startIndex(h);
+			ed = predArcLis.endIndex(h);
+			for (int p = st; p+1 < ed; ++p) {
+				int m = predArcLis.get(p);
+				int s = predArcLis.get(p+1);
+				int d = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+    			dX2s.addEntries(wordFvs[s], - wpU2s[h][k] * wpV2s[m][k] * (W2s[k][0] + W2s[k][d]));
+			}
+    	}
+    	return dX2s;
     }
     
 	public double getHammingDis(int[] actDeps, int[] actLabs,

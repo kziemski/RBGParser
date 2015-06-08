@@ -37,7 +37,8 @@ public class LocalFeatureData {
 	
 	FeatureVector[] wordFvs;		// word feature vectors
 	double[][] wpU, wpV;			// word projections U\phi and V\phi
-	double[][] wpU2, wpV2, wpX2;	// word projections U2\phi V2\phi and X2\phi
+	double[][] wpU2g, wpV2g, wpX2g;	// word projections U2g\phi V2g\phi and X2g\phi
+	double[][] wpU2s, wpV2s, wpX2s;	// word projections U2s\phi V2s\phi and X2s\phi
 	
 	FeatureVector[] arcFvs;			// 1st order arc feature vectors
 	double[] arcScores;				// 1st order arc scores (including tensor)
@@ -77,9 +78,12 @@ public class LocalFeatureData {
 		wordFvs = new FeatureVector[len];
 		wpU = new double[len][rank];
 		wpV = new double[len][rank];
-		wpU2 = new double[len][rank];
-		wpV2 = new double[len][rank];
-		wpX2 = new double[len][rank];
+		wpU2g = new double[len][rank];
+		wpV2g = new double[len][rank];
+		wpX2g = new double[len][rank];
+		wpU2s = new double[len][rank];
+		wpV2s = new double[len][rank];
+		wpX2s = new double[len][rank];
 		
 		if (isTrain) arcFvs = new FeatureVector[len*len];
 		arcScores = new double[len*len];
@@ -157,6 +161,14 @@ public class LocalFeatureData {
 			//sib = new FeatureDataItem[len*len];
 			sib = new double[len*len];
 			Arrays.fill(sib, NULL);
+			
+			for (int i = 0; i < len; ++i) {
+				if (wordFvs[i] == null)
+					wordFvs[i] = synFactory.createWordFeatures(inst, i);
+				parameters.projectU2s(wordFvs[i], wpU2s[i]);
+				parameters.projectV2s(wordFvs[i], wpV2s[i]);
+				parameters.projectX2s(wordFvs[i], wpX2s[i]);
+			}
 		}
 		
 		if (options.useGP) {
@@ -166,10 +178,11 @@ public class LocalFeatureData {
 			Arrays.fill(gpc, NULL);
 			
 			for (int i = 0; i < len; ++i) {
-				wordFvs[i] = synFactory.createWordFeatures(inst, i);
-				parameters.projectU2(wordFvs[i], wpU2[i]);
-				parameters.projectV2(wordFvs[i], wpV2[i]);
-				parameters.projectX2(wordFvs[i], wpX2[i]);
+				if (wordFvs[i] == null)
+					wordFvs[i] = synFactory.createWordFeatures(inst, i);
+				parameters.projectU2g(wordFvs[i], wpU2g[i]);
+				parameters.projectV2g(wordFvs[i], wpV2g[i]);
+				parameters.projectX2g(wordFvs[i], wpX2g[i]);
 			}
 		}
 		
@@ -326,7 +339,8 @@ public class LocalFeatureData {
 		if (trips[pos] == NULL) {
 			ScoreCollector col = new ScoreCollector(parameters);
 			synFactory.createTripsFeatureVector(col, inst, h, m, s);
-			trips[pos] = col.score * gamma;
+			int dirFlag = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+			trips[pos] = col.score * gamma + parameters.dotProduct2s(wpU2s[h], wpV2s[m], dirFlag, wpX2s[s]) * (1-gamma);
 			//getTripsFeatureVector(h, m, s);
 		}
 		
@@ -357,7 +371,7 @@ public class LocalFeatureData {
 			ScoreCollector col = new ScoreCollector(parameters);
 			synFactory.createGPCFeatureVector(col, inst, gp, h, m);
 			int dirFlag = (((gp < h ? 0 : 1) << 1) | (h < m ? 0 : 1)) + 1;
-			gpc[pos] = col.score * gamma + parameters.dotProduct2(wpU2[h], wpV2[m], dirFlag, wpX2[gp]) * (1-gamma);
+			gpc[pos] = col.score * gamma + parameters.dotProduct2g(wpU2g[h], wpV2g[m], dirFlag, wpX2g[gp]) * (1-gamma);
 		}
 		
 		return gpc[pos];
@@ -914,7 +928,7 @@ public class LocalFeatureData {
 			int gp = inst.heads[h];
 			if (gp != -1) {
 				int dirFlag = (((gp < h ? 0 : 1) << 1) | (h < m ? 0 : 1)) + 1;
-				score += parameters.dotProduct2(wpU2[h], wpV2[m], dirFlag, wpX2[gp]);
+				score += parameters.dotProduct2g(wpU2g[h], wpV2g[m], dirFlag, wpX2g[gp]);
 			}
 		}
 		

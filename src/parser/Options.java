@@ -217,7 +217,6 @@ public class Options implements Cloneable, Serializable {
     			useHO = false;
     			break;
     		case Second:
-    			useCS = false;
     			useHB = false;
     			useGS = false;
     			useTS = false;

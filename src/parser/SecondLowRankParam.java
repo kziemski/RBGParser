@@ -21,9 +21,9 @@ public class SecondLowRankParam {
 		list.add(new MatrixEntry(x, y, z, r, v));
 	}
 	
-	public void decompose(Parameters params)
+	public void decompose(double[][] U, double[][] V, double[][] W, double[][] X)
 	{
-		int maxRank = params.U2.length;
+		int maxRank = U.length;
 		
 		int MAXITER=1000;
 		double eps = 1e-6;
@@ -44,11 +44,11 @@ public class SecondLowRankParam {
 					u[e.x] += e.value * v[e.y] * w[e.z] * r[e.r];
 				}
 				for (int j = 0; j < i; ++j) {
-					double dot = Utils.dot(v, params.V2[j]) 
-							   * Utils.dot(w, params.W2[j])
-							   * Utils.dot(r, params.X2[j]);
+					double dot = Utils.dot(v, V[j])
+							   * Utils.dot(w, W[j])
+							   * Utils.dot(r, X[j]);
 					for (int k = 0; k < N; ++k)
-						u[k] -= dot*params.U2[j][k];
+						u[k] -= dot*U[j][k];
 				}
 				Utils.normalize(u);
 				
@@ -59,11 +59,11 @@ public class SecondLowRankParam {
 					v[e.y] += e.value * u[e.x] * w[e.z] * r[e.r];
 				}
 				for (int j = 0; j < i; ++j) {
-					double dot = Utils.dot(u, params.U2[j]) 
-							   * Utils.dot(w, params.W2[j])
-							   * Utils.dot(r, params.X2[j]);
+					double dot = Utils.dot(u, U[j]) 
+							   * Utils.dot(w, W[j])
+							   * Utils.dot(r, X[j]);
 					for (int k = 0; k < N; ++k)
-						v[k] -= dot*params.V2[j][k];
+						v[k] -= dot*V[j][k];
 				}
 				Utils.normalize(v);
 				
@@ -74,11 +74,11 @@ public class SecondLowRankParam {
 					w[e.z] += e.value * u[e.x] * v[e.y] * r[e.r];
 				}
 				for (int j = 0; j < i; ++j) {
-					double dot = Utils.dot(u, params.U2[j]) 
-							   * Utils.dot(v, params.V2[j])
-							   * Utils.dot(r, params.X2[j]);
+					double dot = Utils.dot(u, U[j]) 
+							   * Utils.dot(v, V[j])
+							   * Utils.dot(r, X[j]);
 					for (int k = 0; k < D; ++k)
-						w[k] -= dot*params.W2[j][k];
+						w[k] -= dot*W[j][k];
 				}
 				Utils.normalize(w);
 				
@@ -89,11 +89,11 @@ public class SecondLowRankParam {
 					r[e.r] += e.value * u[e.x] * v[e.y] * w[e.z];
 				}
 				for (int j = 0; j < i; ++j) {
-					double dot = Utils.dot(u, params.U2[j]) 
-							   * Utils.dot(v, params.V2[j])
-							   * Utils.dot(w, params.W2[j]);
+					double dot = Utils.dot(u, U[j]) 
+							   * Utils.dot(v, V[j])
+							   * Utils.dot(w, W[j]);
 					for (int k = 0; k < N; ++k)
-						r[k] -= dot*params.X2[j][k];
+						r[k] -= dot*X[j][k];
 				}			
 				norm = Math.sqrt(Utils.squaredSum(r));
 				if (lastnorm != Double.POSITIVE_INFINITY && Math.abs(norm-lastnorm) < eps)
@@ -108,52 +108,45 @@ public class SecondLowRankParam {
 				System.out.printf("\tWARNING: Power method has nearly-zero sigma. R=%d%n",i);
 			}
 			System.out.printf("\t%.2f", norm);
-			params.U2[i] = u;
-			params.V2[i] = v;
-			params.W2[i] = w;
-			params.X2[i] = r;
+			U[i] = u;
+			V[i] = v;
+			W[i] = w;
+			X[i] = r;
 		}
 		System.out.println();
 		
-		for (int i = 0; i < maxRank; ++i) {
-			params.totalU2[i] = params.U2[i].clone();
-			params.totalV2[i] = params.V2[i].clone();
-			params.totalW2[i] = params.W2[i].clone();
-			params.totalX2[i] = params.X2[i].clone();
-		}
-		
 		
 		// check
-//		double normT = 0, normL = 0, dp = 0;
-//		
-//		for (MatrixEntry e : list) {
-//			normL += e.value * e.value;
-//			
-//			double s = 0;
-//			for (int i = 0; i < maxRank; ++i)
-//				s += params.U2[i][e.x] * params.V2[i][e.y] * params.W2[i][e.z] * params.X2[i][e.r];
-//			dp += e.value * s;
-//		}
-//		
-//		for (int i = 0; i < maxRank; ++i)
-//			for (int j = 0; j < maxRank; ++j) {
-//				double su = 0;
-//				for (int k = 0; k < N; ++k)
-//					su += params.U2[i][k] * params.U2[j][k];
-//				double sv = 0;
-//				for (int k = 0; k < N; ++k)
-//					sv += params.V2[i][k] * params.V2[j][k];
-//				double sw = 0;
-//				for (int k = 0; k < D; ++k)
-//					sw += params.W2[i][k] * params.W2[j][k];
-//				double sx = 0;
-//				for (int k = 0; k < N; ++k)
-//					sx += params.X2[i][k] * params.X2[j][k];
-//				normT += su * sv * sw * sx;
-//			}
-//		double diff = normL - 2*dp + normT;
-//		
-//		System.out.println(normL + "\t" + diff + "\t" + diff/normL);
+		double normT = 0, normL = 0, dp = 0;
+		
+		for (MatrixEntry e : list) {
+			normL += e.value * e.value;
+			
+			double s = 0;
+			for (int i = 0; i < maxRank; ++i)
+				s += U[i][e.x] * V[i][e.y] * W[i][e.z] * X[i][e.r];
+			dp += e.value * s;
+		}
+		
+		for (int i = 0; i < maxRank; ++i)
+			for (int j = 0; j < maxRank; ++j) {
+				double su = 0;
+				for (int k = 0; k < N; ++k)
+					su += U[i][k] * U[j][k];
+				double sv = 0;
+				for (int k = 0; k < N; ++k)
+					sv += V[i][k] * V[j][k];
+				double sw = 0;
+				for (int k = 0; k < D; ++k)
+					sw += W[i][k] * W[j][k];
+				double sx = 0;
+				for (int k = 0; k < N; ++k)
+					sx += X[i][k] * X[j][k];
+				normT += su * sv * sw * sx;
+			}
+		double diff = normL - 2*dp + normT;
+		
+		System.out.println(normL + "\t" + diff + "\t" + diff/normL);
 	}
 }
 
