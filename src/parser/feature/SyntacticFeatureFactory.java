@@ -4159,49 +4159,271 @@ public class SyntacticFeatureFactory implements Serializable {
     		}
     		
     		// second order: h-m-s
-//    	    HP_SP_MP,
-//    		HC_SC_MC,
-//
-//    		pHC_HC_SC_MC,
-//    		HC_nHC_SC_MC,
-//    		HC_pSC_SC_MC,
-//    		HC_SC_nSC_MC,
-//    		HC_SC_pMC_MC,
-//    		HC_SC_MC_nMC,
-//
-//    		pHC_HL_SC_MC,
-//    		HL_nHC_SC_MC,
-//    		HL_pSC_SC_MC,
-//    		HL_SC_nSC_MC,
-//    		HL_SC_pMC_MC,
-//    		HL_SC_MC_nMC,
-//
-//    		pHC_HC_SL_MC,
-//    		HC_nHC_SL_MC,
-//    		HC_pSC_SL_MC,
-//    		HC_SL_nSC_MC,
-//    		HC_SL_pMC_MC,
-//    		HC_SL_MC_nMC,
-//
-//    		pHC_HC_SC_ML,
-//    		HC_nHC_SC_ML,
-//    		HC_pSC_SC_ML,
-//    		HC_SC_nSC_ML,
-//    		HC_SC_pMC_ML,
-//    		HC_SC_ML_nMC,
-//
-//    		HC_MC_SC_pHC_pMC,
-//    		HC_MC_SC_pHC_pSC,
-//    		HC_MC_SC_pMC_pSC,
-//    		HC_MC_SC_nHC_nMC,
-//    		HC_MC_SC_nHC_nSC,
-//    		HC_MC_SC_nMC_nSC,
-//    		HC_MC_SC_pHC_nMC,
-//    		HC_MC_SC_pHC_nSC,
-//    		HC_MC_SC_pMC_nSC,
-//    		HC_MC_SC_nHC_pMC,
-//    		HC_MC_SC_nHC_pSC,
-//    		HC_MC_SC_nMC_pSC,
+    		else if (temp == HP_SP_MP.ordinal()) {
+    			extractArcCodePPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    			sib = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == HC_SC_MC.ordinal()) {
+    			extractArcCodePPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    			sib = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+
+    		else if (temp == pHC_HC_SC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			head = createWordCodePP(WORDFV_PpP0, x[0], x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_nHC_SC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			head = createWordCodePP(WORDFV_P0Pn, x[0], x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_pSC_SC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_SC_nSC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_SC_pMC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    		}
+    		
+    		else if (temp == HC_SC_MC_nMC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    		}
+
+    		else if (temp == pHC_HL_SC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, pHC, SC, MC
+    			head = createWordCodeWP(WORDFV_W0Pp, x[0], x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HL_nHC_SC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			head = createWordCodeWP(WORDFV_W0Pn, x[0], x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HL_pSC_SC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HL_SC_nSC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HL_SC_pMC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    		}
+    		
+    		else if (temp == HL_SC_MC_nMC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    		}
+
+    		else if (temp == pHC_HC_SL_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// SL, pHC, HC, MC
+    			head = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_nHC_SL_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// SL, HC, nHC, MC
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_pSC_SL_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// SL, HC, pSc, MC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeWP(WORDFV_W0Pp, x[0], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_SL_nSC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// SL, HC, nSc, MC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeWP(WORDFV_W0Pn, x[0], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == HC_SL_pMC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// SL, HC, pMC, MC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    		}
+    		
+    		else if (temp == HC_SL_MC_nMC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// SL, HC, MC, nMC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    		}
+
+    		else if (temp == pHC_HC_SC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, pHC, HC, SC
+    			head = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    			sib = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == HC_nHC_SC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, HC, nHC, SC
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    			sib = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == HC_pSC_SC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, HC, pSC, SC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    			sib = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == HC_SC_nSC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, HC, SC, nSC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    			sib = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == HC_SC_pMC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, HC, SC, pMC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodeWP(WORDFV_W0Pp, x[0], x[3]);
+    		}
+    		
+    		else if (temp == HC_SC_ML_nMC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, HC, SC, nMC
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodeWP(WORDFV_W0Pn, x[0], x[3]);
+    		}
+
+    		else if (temp == HC_MC_SC_pHC_pMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[4], x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_pHC_pSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_pMC_pSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[3], x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_nHC_nMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[1], x[4]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_nHC_nSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    			sib = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_nMC_nSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[1], x[3]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_pHC_nMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[1], x[4]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_pHC_nSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    			sib = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_pMC_nSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[3], x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_nHC_pMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    			sib = createWordCodePP(WORDFV_PpP0, x[4], x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_nHC_pSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    			sib = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == HC_MC_SC_nMC_pSC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    			sib = createWordCodePP(WORDFV_P0Pn, x[1], x[3]);
+    		}
     		
     		else {
     			//System.out.println(temp);

@@ -244,11 +244,22 @@ public class DependencyParser implements Serializable {
     		
     		// check
 //    		if (options.useGP) {
+//    			System.out.println("Compare gpc:");
 //	    		for (int i = 0; i < lstTrain.length; ++i) {
 //	    			DependencyInstance inst = lstTrain[i];
 //	    			LocalFeatureData lfd = new LocalFeatureData(inst, this, true, true);
 //	    			double thetaScore = lfd.getScoreGPCtheta();
 //	    			double tensorScore = lfd.getScoreGPChtensor();
+//	    			System.out.println(thetaScore + "\t" + tensorScore + "\t" + Math.abs(thetaScore - tensorScore) / Math.abs(thetaScore));
+//	    		}
+//    		}
+//    		if (options.useCS) {
+//    			System.out.println("Compare cs:");
+//	    		for (int i = 0; i < lstTrain.length; ++i) {
+//	    			DependencyInstance inst = lstTrain[i];
+//	    			LocalFeatureData lfd = new LocalFeatureData(inst, this, true, true);
+//	    			double thetaScore = lfd.getScoreCStheta();
+//	    			double tensorScore = lfd.getScoreCShtensor();
 //	    			System.out.println(thetaScore + "\t" + tensorScore + "\t" + Math.abs(thetaScore - tensorScore) / Math.abs(thetaScore));
 //	    		}
 //    		}
@@ -263,6 +274,12 @@ public class DependencyParser implements Serializable {
                 parameters.printW2gStat();
                 parameters.printX2gStat();
             }
+            if (options.useCS) {
+	    		parameters.printU2sStat();
+	    		parameters.printV2sStat();
+	    		parameters.printW2sStat();
+	    		parameters.printX2sStat();
+    		}
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
     		System.out.println("=============================================");
@@ -270,15 +287,6 @@ public class DependencyParser implements Serializable {
 
         } else {
         	parameters.randomlyInitTensor();
-        	parameters.printUStat();
-            parameters.printVStat();
-            parameters.printWStat();
-            if (options.useGP) {
-            	parameters.printU2gStat();
-                parameters.printV2gStat();
-                parameters.printW2gStat();
-                parameters.printX2gStat();
-            }
         }
         
 		System.out.println("=============================================");
@@ -369,6 +377,12 @@ public class DependencyParser implements Serializable {
 	    		parameters.printV2gStat();
 	    		parameters.printW2gStat();
 	    		parameters.printX2gStat();
+    		}
+    		if (options.useCS) {
+	    		parameters.printU2sStat();
+	    		parameters.printV2sStat();
+	    		parameters.printW2sStat();
+	    		parameters.printX2sStat();
     		}
     		
     		if (options.learningMode != LearningMode.Basic && options.pruning && pruner != null)

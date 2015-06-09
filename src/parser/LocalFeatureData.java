@@ -935,6 +935,49 @@ public class LocalFeatureData {
 		return score;
 	}
 	
+	public double getScoreCStheta()
+	{
+		double score = 0;		
+		
+		DependencyArcList arcLis = new DependencyArcList(inst.heads, false);
+		for (int h = 0; h < len; ++h) {
+			
+			int st = arcLis.startIndex(h);
+			int ed = arcLis.endIndex(h);
+			
+			for (int p = st; p+1 < ed; ++p) {
+				int m = arcLis.get(p);
+				int s = arcLis.get(p+1);
+				ScoreCollector col = new ScoreCollector(parameters);
+				synFactory.createTripsFeatureVector(col, inst, h, m, s);
+				score += col.score;
+			}
+		}
+		
+		return score;
+	}
+	
+	public double getScoreCShtensor()
+	{
+		double score = 0;
+		
+		DependencyArcList arcLis = new DependencyArcList(inst.heads, false);
+		for (int h = 0; h < len; ++h) {
+			
+			int st = arcLis.startIndex(h);
+			int ed = arcLis.endIndex(h);
+			
+			for (int p = st; p+1 < ed; ++p) {
+				int m = arcLis.get(p);
+				int s = arcLis.get(p+1);
+				int dirFlag = (((h < m ? 0 : 1) << 1) | (h < s ? 0 : 1)) + 1;
+				score += parameters.dotProduct2s(wpU2s[h], wpV2s[m], dirFlag, wpX2s[s]);
+			}
+		}
+		
+		return score;
+	}
+	
 	public FeatureVector getArcFeatureVector(int h, int m)
 	{
 		return arcFvs[h*len+m];
