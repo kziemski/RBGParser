@@ -16,16 +16,21 @@ public class LowRankParam implements Comparator<Integer> {
 	
 	public static boolean averageNorm = false;
 	
-	public int N, M, D;
+	public int N, M, D, maxRank;
 	public TIntArrayList xlis, ylis, zlis;
 	public TDoubleArrayList values;
-	
-	public Random rnd = new Random(System.currentTimeMillis());
+	private double[][] U, V, W;
 	
 	public LowRankParam(Parameters parameters) {
 		N = parameters.N;
 		M = parameters.M;
-		D = parameters.D;
+		if (parameters.options.learnLabel)
+			D = parameters.D + parameters.DL;
+		else D = parameters.D;
+		maxRank = parameters.U.length;
+		U = new double[maxRank][N];		
+		V = new double[maxRank][M];
+		W = new double[maxRank][D];
 		xlis = new TIntArrayList();
 		ylis = new TIntArrayList();
 		zlis = new TIntArrayList();
@@ -35,6 +40,7 @@ public class LowRankParam implements Comparator<Integer> {
 	public void putEntry(int x, int y , int z, double value) {
 		Utils.Assert(x >= 0 && x < N);
 		Utils.Assert(y >= 0 && y < M);
+		Utils.Assert(z >= 0 && z < D);
 		xlis.add(x);
 		ylis.add(y);
 		zlis.add(z);
@@ -44,7 +50,6 @@ public class LowRankParam implements Comparator<Integer> {
 	public void decompose(int mode, Parameters params) {
 		
 		int nRows = 0, nCols = 0;
-		int maxRank = params.U.length;
 		nRows = N;
 		nCols = M * D;
 		
@@ -74,17 +79,8 @@ public class LowRankParam implements Comparator<Integer> {
 				rank, maxRank, S[0], S[rank-1]);
 		
 		for (int i = 0; i < rank; ++i) {
-			params.U[i] = new double[N];
-			
-//			double invSqrtU = 1.0/Math.sqrt(N) * 0.01;
-//			double invSqrtV = 1.0/Math.sqrt(M) * 0.01;
-//			double invSqrtW = 1.0/Math.sqrt(D) * 0.01;
-			double invSqrtU = 0;
-			double invSqrtV = 0;
-			double invSqrtW = 0;
-			
 			for (int j = 0; j < N; ++j)
-				params.U[i][j] = (Ut[i*N+j] + rnd.nextGaussian() * invSqrtU);
+				U[i][j] = Ut[i*N+j];
 
 			
 			double[] A2 = new double[nCols];
@@ -100,31 +96,43 @@ public class LowRankParam implements Comparator<Integer> {
 			//Utils.Assert(rank2 == 1);
 
 			for (int j = 0; j < M; ++j)
-				params.V[i][j] = (Ut2[j] + invSqrtV * rnd.nextGaussian());
+				V[i][j] = Ut2[j];
 			
 			for (int j = 0; j < D; ++j)
-				params.W[i][j] = (Vt2[j] + invSqrtW * rnd.nextGaussian());		    
+				W[i][j] = Vt2[j];		    
 			
 			if (!averageNorm) {				
 				// in order to reproduce results on 1st order parsing shown in the paper
 				for (int j = 0; j < D; ++j)
-					params.W[i][j] *= S[i] * S2[0];				
+					W[i][j] *= S[i] * S2[0];				
 			} else {
 		        double coeff = Math.pow(S[i]*S2[0], 1.0/3);
 		        for (int j = 0; j < N; ++j)
-		            params.U[i][j] *= coeff;
+		            U[i][j] *= coeff;
 		        for (int j = 0; j < M; ++j)
-		            params.V[i][j] *= coeff;
+		            V[i][j] *= coeff;
 				for (int j = 0; j < D; ++j)
-					params.W[i][j] *= coeff;//S[i] * S2[0];
+					W[i][j] *= coeff;//S[i] * S2[0];
 			}
 		}
 		
-//		for (int i = 0; i < maxRank; ++i) {
-//			params.totalU[i] = params.U[i].clone();
-//			params.totalV[i] = params.V[i].clone();
-//			params.totalW[i] = params.W[i].clone();
-//		}
+		for (int i = 0; i < maxRank; ++i) {
+			params.U[i] = U[i].clone();
+			params.V[i] = V[i].clone();
+			if (params.options.learnLabel) {
+				for (int j = 0; j < params.D; ++j)
+					params.W[i][j] = W[i][j];
+				for (int j = params.D; j < params.D+params.DL; ++j)
+					params.WL[i][j-params.D] = W[i][j];
+			}
+			else params.W[i] = W[i].clone();
+			
+			params.totalU[i] = params.U[i].clone();
+			params.totalV[i] = params.V[i].clone();
+			params.totalW[i] = params.W[i].clone();
+			if (params.options.learnLabel)
+				params.totalWL[i] = params.WL[i].clone();
+		}
 	}
 
 	@Override

@@ -45,7 +45,7 @@ public class SyntacticFeatureFactory implements Serializable {
 	public double[] unknownWv = null;
 	
 	public int tagNumBits, wordNumBits, depNumBits, disNumBits = 4;
-	public int labelNumBits, flagBits;
+	public int flagBits;
 	
 	public int ccDepType;
 	
@@ -3087,15 +3087,15 @@ public class SyntacticFeatureFactory implements Serializable {
     public final void addLabeledArcFeature(long code, Collector mat) {
     	int id = hashcode2int(code) & numLabeledArcFeats;	
     	mat.addEntry(id);
-    	//if (!stoppedGrowth)
-    	//	featureHashSet.add(code);
+    	if (!stoppedGrowth)
+    		featureHashSet.add(code);
     }
     
     public final void addLabeledArcFeature(long code, double value, Collector mat) {
     	int id = hashcode2int(code) & numLabeledArcFeats; 	
     	mat.addEntry(id, value);
-    	//if (!stoppedGrowth)
-    	//	featureHashSet.add(code);
+    	if (!stoppedGrowth)
+    		featureHashSet.add(code);
     }
     
     public final void addWordFeature(long code, FeatureVector mat) {
@@ -3160,7 +3160,7 @@ public class SyntacticFeatureFactory implements Serializable {
     }
     
     private final long extractLabelCode(long code) {
-    	return (code >> 4) & ((1 << labelNumBits)-1);
+    	return (code >> 4) & ((1 << depNumBits)-1);
     }
     
     private final void extractArcCodeP(long code, int[] x) {
@@ -3327,15 +3327,10 @@ public class SyntacticFeatureFactory implements Serializable {
     	
     	for (long code : codes) {
     		
-    		//int id = arcAlphabet.lookupIndex(code);
-    		int id = hashcode2int(code) & numArcFeats;
-    		if (id < 0) continue;
-    		
     		int dist = (int) extractDistanceCode(code);
     		int temp = (int) extractArcTemplateCode(code);
     		
     		int label = (int) extractLabelCode(code);
-    		if (label != 0) continue;
     		
     		long head = 0, mod = 0;
 
@@ -3554,8 +3549,22 @@ public class SyntacticFeatureFactory implements Serializable {
     		int headId = wordAlphabet.lookupIndex(head);
     		int modId = wordAlphabet.lookupIndex(mod);
     		if (headId >= 0 && modId >= 0) {
-    			double value = params.params[id];
-    			tensor.putEntry(headId, modId, dist, value);
+    			if (label == 0) {
+    				int id = hashcode2int(code) & numArcFeats;
+    	    		if (id < 0) continue;
+    	    		double value = params.params[id];
+    	    		tensor.putEntry(headId, modId, dist, value);
+    			}
+    			else {
+    				// label starts from 1 in hashcode
+    		    	label = label-1;
+    				int id = hashcode2int(code) & numLabeledArcFeats;
+    				if (id < 0) continue;
+    				double value = params.paramsL[id];
+    				if (dist == 0)
+    					tensor.putEntry(headId, modId, params.D+label, value);
+    				else tensor.putEntry(headId, modId, params.D+params.T+label*2*params.d+dist-1, value);
+    			}
             }
     	}
     	

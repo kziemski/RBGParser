@@ -233,6 +233,7 @@ public class DependencyParser implements Serializable {
             parameters.printUStat();
             parameters.printVStat();
             parameters.printWStat();
+            parameters.printWLStat();
             
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
