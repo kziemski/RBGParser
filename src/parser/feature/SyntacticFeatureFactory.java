@@ -58,6 +58,8 @@ public class SyntacticFeatureFactory implements Serializable {
 	private Alphabet wordAlphabet;		// the alphabet of word features (e.g. \phi_h, \phi_m)
 	//private Alphabet arcAlphabet;		// the alphabet of 1st order arc features (e.g. \phi_{h->m})
 	
+	public boolean preTrain;
+	
 	public SyntacticFeatureFactory(Options options)
 	{
 		this.options = options;
@@ -3085,6 +3087,8 @@ public class SyntacticFeatureFactory implements Serializable {
     }
     
     public final void addLabeledArcFeature(long code, Collector mat) {
+    	if (extractDistanceCode(code) != 0 && preTrain)
+    		return;
     	int id = hashcode2int(code) & numLabeledArcFeats;	
     	mat.addEntry(id);
     	if (!stoppedGrowth)
@@ -3092,6 +3096,8 @@ public class SyntacticFeatureFactory implements Serializable {
     }
     
     public final void addLabeledArcFeature(long code, double value, Collector mat) {
+    	if (extractDistanceCode(code) != 0 && preTrain)
+    		return;
     	int id = hashcode2int(code) & numLabeledArcFeats; 	
     	mat.addEntry(id, value);
     	if (!stoppedGrowth)
@@ -3555,15 +3561,11 @@ public class SyntacticFeatureFactory implements Serializable {
     	    		double value = params.params[id];
     	    		tensor.putEntry(headId, modId, dist, value);
     			}
-    			else {
-    				// label starts from 1 in hashcode
-    		    	label = label-1;
+    			else if (dist == 0) {
     				int id = hashcode2int(code) & numLabeledArcFeats;
     				if (id < 0) continue;
     				double value = params.paramsL[id];
-    				if (dist == 0)
-    					tensor.putEntry(headId, modId, params.D+label, value);
-    				else tensor.putEntry(headId, modId, params.D+params.T+label*2*params.d+dist-1, value);
+    				tensor.putEntry(headId, modId, params.D+label-1, value);
     			}
             }
     	}

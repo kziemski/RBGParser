@@ -25,7 +25,7 @@ public class LowRankParam implements Comparator<Integer> {
 		N = parameters.N;
 		M = parameters.M;
 		if (parameters.options.learnLabel)
-			D = parameters.D + parameters.DL;
+			D = parameters.D + parameters.T;
 		else D = parameters.D;
 		maxRank = parameters.U.length;
 		U = new double[maxRank][N];		
@@ -122,7 +122,7 @@ public class LowRankParam implements Comparator<Integer> {
 			if (params.options.learnLabel) {
 				for (int j = 0; j < params.D; ++j)
 					params.W[i][j] = W[i][j];
-				for (int j = params.D; j < params.D+params.DL; ++j)
+				for (int j = params.D; j < params.D+params.T; ++j)
 					params.WL[i][j-params.D] = W[i][j];
 			}
 			else params.W[i] = W[i].clone();

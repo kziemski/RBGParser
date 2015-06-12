@@ -203,6 +203,7 @@ public class DependencyParser implements Serializable {
         	parameters.gamma = 1.0;
         	parameters.gammaL = 1.0;
         	parameters.rank = 0;
+        	pipe.synFactory.preTrain = true;
     		System.out.println("=============================================");
     		System.out.printf(" Pre-training:%n");
     		System.out.println("=============================================");
@@ -229,6 +230,7 @@ public class DependencyParser implements Serializable {
     		parameters.rank = optionsBak.R;
     		parameters.gamma = optionsBak.gamma;
     		parameters.gammaL = optionsBak.gammaLabel;
+    		pipe.synFactory.preTrain = false;
     		parameters.clearTheta();
             parameters.printUStat();
             parameters.printVStat();

@@ -20,7 +20,7 @@ public class Parameters implements Serializable {
 	public double C, gamma, gammaL;
 	public int size, sizeL;
 	public int rank;
-	public int N, M, T, D, DL;
+	public int N, M, T, D;
 	
 	public float[] params, paramsL;
 	public double[][] U, V, W, WL;
@@ -33,7 +33,6 @@ public class Parameters implements Serializable {
 	{
         D = d * 2 + 1;
         T = pipe.types.length;
-        DL = T + T*d*2;
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -56,11 +55,11 @@ public class Parameters implements Serializable {
 		U = new double[rank][N];		
 		V = new double[rank][M];
 		W = new double[rank][D];
-		WL = new double[rank][DL];
+		WL = new double[rank][T];
 		totalU = new double[rank][N];
 		totalV = new double[rank][M];
 		totalW = new double[rank][D];
-		totalWL = new double[rank][DL];
+		totalWL = new double[rank][T];
 		dU = new FeatureVector[rank];
 		dV = new FeatureVector[rank];
 		dW = new FeatureVector[rank];
@@ -73,7 +72,7 @@ public class Parameters implements Serializable {
 			U[i] = Utils.getRandomUnitVector(N);
 			V[i] = Utils.getRandomUnitVector(M);
 			W[i] = Utils.getRandomUnitVector(D);
-			WL[i] = Utils.getRandomUnitVector(DL);
+			WL[i] = Utils.getRandomUnitVector(T);
 			totalU[i] = U[i].clone();
 			totalV[i] = V[i].clone();
 			totalW[i] = W[i].clone();
@@ -81,67 +80,67 @@ public class Parameters implements Serializable {
 		}
 	}
 	
-	public void averageParameters(int T) 
+	public void averageParameters(int L) 
 	{
 		
 		for (int i = 0; i < size; ++i) {
-			params[i] += total[i]/T;
+			params[i] += total[i]/L;
 		}		
 
 		for (int i = 0; i < sizeL; ++i) {
-			paramsL[i] += totalL[i]/T;
+			paramsL[i] += totalL[i]/L;
 		}		
 
 		for (int i = 0; i < rank; ++i)
 			for (int j = 0; j < N; ++j) {
-				U[i][j] += totalU[i][j]/T;
+				U[i][j] += totalU[i][j]/L;
 			}
 
 		for (int i = 0; i < rank; ++i)
 			for (int j = 0; j < M; ++j) {
-				V[i][j] += totalV[i][j]/T;
+				V[i][j] += totalV[i][j]/L;
 			}
 
 		for (int i = 0; i < rank; ++i)
 			for (int j = 0; j < D; ++j) {
-				W[i][j] += totalW[i][j]/T;
+				W[i][j] += totalW[i][j]/L;
 			}
 		
 		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < DL; ++j) {
-				WL[i][j] += totalWL[i][j]/T;
+			for (int j = 0; j < T; ++j) {
+				WL[i][j] += totalWL[i][j]/L;
 			}
 	}
 	
-	public void unaverageParameters(int T) 
+	public void unaverageParameters(int L) 
 	{
 		
 		for (int i = 0; i < size; ++i) {
-			params[i] -= total[i]/T;
+			params[i] -= total[i]/L;
 		}	
 		
 		for (int i = 0; i < sizeL; ++i) {
-			paramsL[i] -= totalL[i]/T;
+			paramsL[i] -= totalL[i]/L;
 		}	
 		
 		for (int i = 0; i < rank; ++i)
 			for (int j = 0; j < N; ++j) {
-				U[i][j] -= totalU[i][j]/T;
+				U[i][j] -= totalU[i][j]/L;
 			}
 		
 		for (int i = 0; i < rank; ++i)
 			for (int j = 0; j < M; ++j) {
-				V[i][j] -= totalV[i][j]/T;
+				V[i][j] -= totalV[i][j]/L;
 			}
 		
 		for (int i = 0; i < rank; ++i)
 			for (int j = 0; j < D; ++j) {				
-				W[i][j] -= totalW[i][j]/T;
+				W[i][j] -= totalW[i][j]/L;
 			}
 		
 		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < DL; ++j) {
-				WL[i][j] -= totalWL[i][j]/T;
+			for (int j = 0; j < T; ++j) {
+				WL[i][j] -= totalWL[i][j]/L;
 			}
 	}
 	
@@ -550,13 +549,11 @@ public class Parameters implements Serializable {
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
-    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									 - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));
+    		dU.addEntries(wordFvs[head], dotv*WL[k][lab] - dotv*WL[k][lab2]);
     	}
     	return dU;
     }
@@ -589,13 +586,11 @@ public class Parameters implements Serializable {
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									- dotu * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));    		
+    		dV.addEntries(wordFvs[mod], dotu*WL[k][lab] - dotu*WL[k][lab2]);    		
     	}
     	return dV;
     }
@@ -622,7 +617,6 @@ public class Parameters implements Serializable {
     	FeatureVector dW2 = new FeatureVector(D);
     	for (int i = 0; i < D; ++i)
     		dW2.addEntry(i, dW[i]);
-    	//System.out.printf("W: %f\n",dW2.Squaredl2NormUnsafe());
     	return dW2;
     }
     
@@ -631,26 +625,22 @@ public class Parameters implements Serializable {
     	double[][] wpU = lfd.wpU, wpV = lfd.wpV;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	double[] dWL = new double[DL];
+    	double[] dWL = new double[T];
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dWL[lab] += dotu * dotv;
-    		dWL[T+lab*2*d+dis-1] += dotu * dotv;
     		dWL[lab2] -= dotu * dotv;
-    		dWL[T+lab2*2*d+dis-1] -= dotu * dotv;
     	}
     	
-    	FeatureVector dWL2 = new FeatureVector(DL);
-    	for (int i = 0; i < DL; ++i)
+    	FeatureVector dWL2 = new FeatureVector(T);
+    	for (int i = 0; i < T; ++i)
     		dWL2.addEntry(i, dWL[i]);
-    	//System.out.printf("WL: %f\n",dWL2.Squaredl2NormUnsafe());
     	return dWL2;
     }
     
