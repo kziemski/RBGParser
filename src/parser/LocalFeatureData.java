@@ -1039,9 +1039,6 @@ public class LocalFeatureData {
 	private double getLabelScoreTensor(DependencyArcList arcLis, int[] heads, int mod, int type)
 	{
 		int head = heads[mod];
-		int d = parameters.d;
-		int dis = parameters.getBinnedDistance(head-mod);
-		int T = ntypes;
 		double s = 0;
 		for (int k = 0; k < rank; ++k) {
 			s += wpU[head][k] * wpV[mod][k] * parameters.WL[k][type];
@@ -1054,6 +1051,17 @@ public class LocalFeatureData {
 	{
 		return gammaL * getLabelScoreTheta(arcLis, heads, mod, type) +
 				(1-gammaL) * getLabelScoreTensor(arcLis, heads, mod, type);
+	}
+	
+	public void checkLabelScoreInit()
+	{
+		DependencyArcList arcLis = new DependencyArcList(inst.heads, false);
+		double scoreTheta = 0, scoreTensor = 0;
+		for (int mod = 1; mod < len; ++mod) {
+			scoreTheta += getLabelScoreTheta(arcLis, inst.heads, mod, inst.deplbids[mod]);
+			scoreTensor += getLabelScoreTensor(arcLis, inst.heads, mod, inst.deplbids[mod]);
+		}
+		System.out.println("Theta Score: " + scoreTheta + "   \tTensor Score: " + scoreTensor + "   \tratio: " + scoreTensor/scoreTheta);
 	}
 	
 	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)

@@ -231,6 +231,14 @@ public class DependencyParser implements Serializable {
     		parameters.gamma = optionsBak.gamma;
     		parameters.gammaL = optionsBak.gammaLabel;
     		pipe.synFactory.preTrain = false;
+    		
+    		// check
+//    		for (int i = 0; i < lstTrain.length; ++i) {
+//    			DependencyInstance inst = lstTrain[i];
+//    			LocalFeatureData lfd = new LocalFeatureData(inst, this, true, true);
+//    			lfd.checkLabelScoreInit();
+//    		}
+    		
     		parameters.clearTheta();
             parameters.printUStat();
             parameters.printVStat();

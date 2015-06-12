@@ -3166,7 +3166,7 @@ public class SyntacticFeatureFactory implements Serializable {
     }
     
     private final long extractLabelCode(long code) {
-    	return (code >> 4) & ((1 << depNumBits)-1);
+    	return options.learnLabel ? (code >> 4) & ((1 << depNumBits)-1) : 0;
     }
     
     private final void extractArcCodeP(long code, int[] x) {
