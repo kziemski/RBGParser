@@ -33,7 +33,7 @@ public class Parameters implements Serializable {
 	{
         D = d * 2 + 1;
         T = pipe.types.length;
-        DL = T + T*d*2;
+        DL = T * 3;
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -550,13 +550,13 @@ public class Parameters implements Serializable {
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
+    		int dir = head > mod ? 1 : 2;
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
-    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									 - dotv * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));
+    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][dir*T+lab])
+    									 - dotv * (WL[k][lab2] + WL[k][dir*T+lab2]));
     	}
     	return dU;
     }
@@ -589,13 +589,13 @@ public class Parameters implements Serializable {
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
+    		int dir = head > mod ? 1 : 2;
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][T+lab*2*d+dis-1])
-    									- dotu * (WL[k][lab2] + WL[k][T+lab2*2*d+dis-1]));    		
+    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][dir*T+lab])
+    									- dotu * (WL[k][lab2] + WL[k][dir*T+lab2]));    		
     	}
     	return dV;
     }
@@ -635,16 +635,16 @@ public class Parameters implements Serializable {
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head = actDeps[mod];
-    		int dis = getBinnedDistance(head-mod);
+    		int dir = head > mod ? 1 : 2;
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dWL[lab] += dotu * dotv;
-    		dWL[T+lab*2*d+dis-1] += dotu * dotv;
+    		dWL[dir*T+lab] += dotu * dotv;
     		dWL[lab2] -= dotu * dotv;
-    		dWL[T+lab2*2*d+dis-1] -= dotu * dotv;
+    		dWL[dir*T+lab2] -= dotu * dotv;
     	}
     	
     	FeatureVector dWL2 = new FeatureVector(DL);

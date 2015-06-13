@@ -922,7 +922,8 @@ public class SyntacticFeatureFactory implements Serializable {
     public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type) 
     {
     	
-    	int attDist = getBinnedDistance(h-c);
+    	//int attDist = getBinnedDistance(h-c);
+    	int attDist = h > c ? 1 : 2;
     	    	
     	addBasic1OFeatures(fv, inst, h, c, attDist, type);
     	
@@ -3556,14 +3557,10 @@ public class SyntacticFeatureFactory implements Serializable {
     	    		tensor.putEntry(headId, modId, dist, value);
     			}
     			else {
-    				// label starts from 1 in hashcode
-    		    	label = label-1;
     				int id = hashcode2int(code) & numLabeledArcFeats;
     				if (id < 0) continue;
     				double value = params.paramsL[id];
-    				if (dist == 0)
-    					tensor.putEntry(headId, modId, params.D+label, value);
-    				else tensor.putEntry(headId, modId, params.D+params.T+label*2*params.d+dist-1, value);
+    				tensor.putEntry(headId, modId, params.D+dist*params.T+label-1, value);
     			}
             }
     	}
