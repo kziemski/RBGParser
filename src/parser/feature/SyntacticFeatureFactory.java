@@ -778,15 +778,122 @@ public class SyntacticFeatureFactory implements Serializable {
      *  
      ************************************************************************/
     
+//    public FeatureVector createWordFeatures(DependencyInstance inst, int i) 
+//    {
+//    	
+//    	int[] pos = inst.postagids;
+//        int[] toks = inst.formids;
+//        int[][] feats = inst.featids;
+//        
+//        int w0 = toks[i];
+//        int l0 = inst.lemmaids == null ? 0 : inst.lemmaids[i];
+//        
+//        FeatureVector fv = new FeatureVector(wordAlphabet.size());
+//    	
+//    	long code = 0;
+//        
+//    	code = createWordCodeP(WORDFV_BIAS, 0);
+//    	addWordFeature(code, fv);
+//
+//    	code = createWordCodeW(WORDFV_W0, w0);
+//    	addWordFeature(code, fv);
+//    	
+//    	int Wp = i == 0 ? TOKEN_START : toks[i-1];
+//    	int Wn = i == inst.length - 1 ? TOKEN_END : toks[i+1];
+//    		    	
+//    	code = createWordCodeW(WORDFV_Wp, Wp);
+//    	addWordFeature(code, fv);
+//    	
+//    	code = createWordCodeW(WORDFV_Wn, Wn);
+//    	addWordFeature(code, fv);
+//
+//    	
+//		if (l0 != 0) {
+//    		code = createWordCodeW(WORDFV_W0, l0);
+//    		addWordFeature(code, fv);
+//    		
+//	    	int Lp = i == 0 ? TOKEN_START : inst.lemmaids[i-1];
+//	    	int Ln = i == inst.length - 1 ? TOKEN_END : inst.lemmaids[i+1];
+//	    		    	
+//	    	code = createWordCodeW(WORDFV_Wp, Lp);
+//	    	addWordFeature(code, fv);
+//	    	
+//	    	code = createWordCodeW(WORDFV_Wn, Ln);
+//	    	addWordFeature(code, fv);
+//		}
+//		
+//		if (feats[i] != null) {
+//    		for (int u = 0; u < feats[i].length; ++u) {
+//    			int f = feats[i][u];
+//    			
+//    			code = createWordCodeP(WORDFV_P0, f);
+//    			addWordFeature(code, fv);
+//    			
+//                if (l0 != 0) {
+//                	code = createWordCodeWP(WORDFV_W0P0, l0, f);
+//                	addWordFeature(code, fv);
+//                }
+//                
+//            }
+//		}
+//			
+//        int p0 = pos[i];
+//    	int pLeft = i > 0 ? pos[i-1] : TOKEN_START;
+//    	int pRight = i < pos.length-1 ? pos[i+1] : TOKEN_END;
+//    	
+//    	code = createWordCodeP(WORDFV_P0, p0);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodeP(WORDFV_Pp, pLeft);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodeP(WORDFV_Pn, pRight);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodePP(WORDFV_PpP0, pLeft, p0);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodePP(WORDFV_P0Pn, p0, pRight);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodePPP(WORDFV_PpP0Pn, pLeft, p0, pRight);
+//    	addWordFeature(code, fv);
+//    		    	
+//		if (l0 != 0) {
+//    		code = createWordCodeWP(WORDFV_W0P0, l0, p0);
+//    		addWordFeature(code, fv);
+//		}
+//    	    	
+//    	if (wordVectors != null) {
+//    		addWordVectorFeatures(inst, i, 0, fv);
+//    		addWordVectorFeatures(inst, i, -1, fv);
+//    		addWordVectorFeatures(inst, i, 1, fv);	
+//    	}
+//    	
+//    	return fv;
+//    }
+    
     public FeatureVector createWordFeatures(DependencyInstance inst, int i) 
     {
     	
     	int[] pos = inst.postagids;
+        int[] posA = inst.cpostagids;
         int[] toks = inst.formids;
-        int[][] feats = inst.featids;
+    	int[] lemma = inst.lemmaids;
         
+    	int p0 = pos[i];
+    	int pp = i > 0 ? pos[i-1] : TOKEN_START;
+    	int pn = i < pos.length-1 ? pos[i+1] : TOKEN_END;
+    	
+    	int c0 = posA[i];
+    	int cp = i > 0 ? posA[i-1] : TOKEN_START;
+    	int cn = i < posA.length-1 ? posA[i+1] : TOKEN_END;
+    	
         int w0 = toks[i];
-        int l0 = inst.lemmaids == null ? 0 : inst.lemmaids[i];
+        int wp = i == 0 ? TOKEN_START : toks[i-1];
+    	int wn = i == inst.length - 1 ? TOKEN_END : toks[i+1];
+    	
+        int l0 = 0, lp = 0, ln = 0;
+        if (lemma != null) {
+        	l0 =  lemma[i];
+        	lp = i == 0 ? TOKEN_START : lemma[i-1];
+	    	ln = i == inst.length - 1 ? TOKEN_END : lemma[i+1];
+        }
         
         FeatureVector fv = new FeatureVector(wordAlphabet.size());
     	
@@ -797,31 +904,64 @@ public class SyntacticFeatureFactory implements Serializable {
 
     	code = createWordCodeW(WORDFV_W0, w0);
     	addWordFeature(code, fv);
-    	
-    	int Wp = i == 0 ? TOKEN_START : toks[i-1];
-    	int Wn = i == inst.length - 1 ? TOKEN_END : toks[i+1];
-    		    	
-    	code = createWordCodeW(WORDFV_Wp, Wp);
+    	code = createWordCodeW(WORDFV_Wp, wp);
     	addWordFeature(code, fv);
-    	
-    	code = createWordCodeW(WORDFV_Wn, Wn);
+    	code = createWordCodeW(WORDFV_Wn, wn);
     	addWordFeature(code, fv);
 
     	
 		if (l0 != 0) {
     		code = createWordCodeW(WORDFV_W0, l0);
     		addWordFeature(code, fv);
-    		
-	    	int Lp = i == 0 ? TOKEN_START : inst.lemmaids[i-1];
-	    	int Ln = i == inst.length - 1 ? TOKEN_END : inst.lemmaids[i+1];
-	    		    	
-	    	code = createWordCodeW(WORDFV_Wp, Lp);
+	    	code = createWordCodeW(WORDFV_Wp, lp);
 	    	addWordFeature(code, fv);
-	    	
-	    	code = createWordCodeW(WORDFV_Wn, Ln);
+	    	code = createWordCodeW(WORDFV_Wn, ln);
 	    	addWordFeature(code, fv);
 		}
 		
+		code = createWordCodeP(WORDFV_P0, p0);
+    	addWordFeature(code, fv);
+    	code = createWordCodeP(WORDFV_Pp, pp);
+    	addWordFeature(code, fv);
+    	code = createWordCodeP(WORDFV_Pn, pn);
+    	addWordFeature(code, fv);
+    	
+    	code = createWordCodeP(WORDFV_P0, c0);
+		addWordFeature(code, fv);
+		code = createWordCodeP(WORDFV_Pp, cp);
+		addWordFeature(code, fv);
+		code = createWordCodeP(WORDFV_Pn, cn);
+		addWordFeature(code, fv);
+		
+		code = createWordCodePP(WORDFV_PpP0, pp, p0);
+    	addWordFeature(code, fv);
+    	code = createWordCodePP(WORDFV_P0Pn, p0, pn);
+    	addWordFeature(code, fv);
+    	code = createWordCodePPP(WORDFV_PpP0Pn, pp, p0, pn);
+    	addWordFeature(code, fv);
+    	
+		code = createWordCodePP(WORDFV_PpP0, cp, c0);
+    	addWordFeature(code, fv);
+    	code = createWordCodePP(WORDFV_P0Pn, c0, cn);
+    	addWordFeature(code, fv);
+    	code = createWordCodePPP(WORDFV_PpP0Pn, cp, c0, cn);
+    	addWordFeature(code, fv);
+		
+//    	code = createWordCodeWP(WORDFV_W0P0, w0, p0);
+//		addWordFeature(code, fv);
+		
+		code = createWordCodeWP(WORDFV_W0P0, w0, c0);
+		addWordFeature(code, fv);
+		
+		if (l0 != 0) {
+			code = createWordCodeWP(WORDFV_W0P0, l0, p0);
+			addWordFeature(code, fv);
+			
+			code = createWordCodeWP(WORDFV_W0P0, l0, c0);
+			addWordFeature(code, fv);
+		}
+    	
+		int[][] feats = inst.featids;
 		if (feats[i] != null) {
     		for (int u = 0; u < feats[i].length; ++u) {
     			int f = feats[i][u];
@@ -836,29 +976,7 @@ public class SyntacticFeatureFactory implements Serializable {
                 
             }
 		}
-			
-        int p0 = pos[i];
-    	int pLeft = i > 0 ? pos[i-1] : TOKEN_START;
-    	int pRight = i < pos.length-1 ? pos[i+1] : TOKEN_END;
-    	
-    	code = createWordCodeP(WORDFV_P0, p0);
-    	addWordFeature(code, fv);
-    	code = createWordCodeP(WORDFV_Pp, pLeft);
-    	addWordFeature(code, fv);
-    	code = createWordCodeP(WORDFV_Pn, pRight);
-    	addWordFeature(code, fv);
-    	code = createWordCodePP(WORDFV_PpP0, pLeft, p0);
-    	addWordFeature(code, fv);
-    	code = createWordCodePP(WORDFV_P0Pn, p0, pRight);
-    	addWordFeature(code, fv);
-    	code = createWordCodePPP(WORDFV_PpP0Pn, pLeft, p0, pRight);
-    	addWordFeature(code, fv);
-    		    	
-		if (l0 != 0) {
-    		code = createWordCodeWP(WORDFV_W0P0, l0, p0);
-    		addWordFeature(code, fv);
-		}
-    	    	
+    		    
     	if (wordVectors != null) {
     		addWordVectorFeatures(inst, i, 0, fv);
     		addWordVectorFeatures(inst, i, -1, fv);
@@ -924,9 +1042,9 @@ public class SyntacticFeatureFactory implements Serializable {
     public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type) 
     {
     	int attDist;
-    	if (preTrain)
+    	//if (preTrain)
     		attDist = h > c ? 1 : 2;
-    	else attDist = getBinnedDistance(h-c);   
+    	//else attDist = getBinnedDistance(h-c);   
     		
     	addBasic1OFeatures(fv, inst, h, c, attDist, type);
     	
