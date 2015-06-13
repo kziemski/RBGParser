@@ -58,6 +58,8 @@ public class SyntacticFeatureFactory implements Serializable {
 	private Alphabet wordAlphabet;		// the alphabet of word features (e.g. \phi_h, \phi_m)
 	//private Alphabet arcAlphabet;		// the alphabet of 1st order arc features (e.g. \phi_{h->m})
 	
+	public boolean preTrain = false;
+	
 	public SyntacticFeatureFactory(Options options)
 	{
 		this.options = options;
@@ -921,10 +923,11 @@ public class SyntacticFeatureFactory implements Serializable {
     
     public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type) 
     {
-    	
-    	//int attDist = getBinnedDistance(h-c);
-    	int attDist = h > c ? 1 : 2;
-    	    	
+    	int attDist;
+    	if (preTrain)
+    		attDist = h > c ? 1 : 2;
+    	else attDist = getBinnedDistance(h-c);   
+    		
     	addBasic1OFeatures(fv, inst, h, c, attDist, type);
     	
     	addCore1OPosFeatures(fv, inst, h, c, attDist, type);
@@ -3556,7 +3559,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	    		double value = params.params[id];
     	    		tensor.putEntry(headId, modId, dist, value);
     			}
-    			else {
+    			else if (dist < 3) {
     				int id = hashcode2int(code) & numLabeledArcFeats;
     				if (id < 0) continue;
     				double value = params.paramsL[id];
