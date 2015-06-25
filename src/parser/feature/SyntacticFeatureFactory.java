@@ -778,96 +778,6 @@ public class SyntacticFeatureFactory implements Serializable {
      *  
      ************************************************************************/
     
-//    public FeatureVector createWordFeatures(DependencyInstance inst, int i) 
-//    {
-//    	
-//    	int[] pos = inst.postagids;
-//        int[] toks = inst.formids;
-//        int[][] feats = inst.featids;
-//        
-//        int w0 = toks[i];
-//        int l0 = inst.lemmaids == null ? 0 : inst.lemmaids[i];
-//        
-//        FeatureVector fv = new FeatureVector(wordAlphabet.size());
-//    	
-//    	long code = 0;
-//        
-//    	code = createWordCodeP(WORDFV_BIAS, 0);
-//    	addWordFeature(code, fv);
-//
-//    	code = createWordCodeW(WORDFV_W0, w0);
-//    	addWordFeature(code, fv);
-//    	
-//    	int Wp = i == 0 ? TOKEN_START : toks[i-1];
-//    	int Wn = i == inst.length - 1 ? TOKEN_END : toks[i+1];
-//    		    	
-//    	code = createWordCodeW(WORDFV_Wp, Wp);
-//    	addWordFeature(code, fv);
-//    	
-//    	code = createWordCodeW(WORDFV_Wn, Wn);
-//    	addWordFeature(code, fv);
-//
-//    	
-//		if (l0 != 0) {
-//    		code = createWordCodeW(WORDFV_W0, l0);
-//    		addWordFeature(code, fv);
-//    		
-//	    	int Lp = i == 0 ? TOKEN_START : inst.lemmaids[i-1];
-//	    	int Ln = i == inst.length - 1 ? TOKEN_END : inst.lemmaids[i+1];
-//	    		    	
-//	    	code = createWordCodeW(WORDFV_Wp, Lp);
-//	    	addWordFeature(code, fv);
-//	    	
-//	    	code = createWordCodeW(WORDFV_Wn, Ln);
-//	    	addWordFeature(code, fv);
-//		}
-//		
-//		if (feats[i] != null) {
-//    		for (int u = 0; u < feats[i].length; ++u) {
-//    			int f = feats[i][u];
-//    			
-//    			code = createWordCodeP(WORDFV_P0, f);
-//    			addWordFeature(code, fv);
-//    			
-//                if (l0 != 0) {
-//                	code = createWordCodeWP(WORDFV_W0P0, l0, f);
-//                	addWordFeature(code, fv);
-//                }
-//                
-//            }
-//		}
-//			
-//        int p0 = pos[i];
-//    	int pLeft = i > 0 ? pos[i-1] : TOKEN_START;
-//    	int pRight = i < pos.length-1 ? pos[i+1] : TOKEN_END;
-//    	
-//    	code = createWordCodeP(WORDFV_P0, p0);
-//    	addWordFeature(code, fv);
-//    	code = createWordCodeP(WORDFV_Pp, pLeft);
-//    	addWordFeature(code, fv);
-//    	code = createWordCodeP(WORDFV_Pn, pRight);
-//    	addWordFeature(code, fv);
-//    	code = createWordCodePP(WORDFV_PpP0, pLeft, p0);
-//    	addWordFeature(code, fv);
-//    	code = createWordCodePP(WORDFV_P0Pn, p0, pRight);
-//    	addWordFeature(code, fv);
-//    	code = createWordCodePPP(WORDFV_PpP0Pn, pLeft, p0, pRight);
-//    	addWordFeature(code, fv);
-//    		    	
-//		if (l0 != 0) {
-//    		code = createWordCodeWP(WORDFV_W0P0, l0, p0);
-//    		addWordFeature(code, fv);
-//		}
-//    	    	
-//    	if (wordVectors != null) {
-//    		addWordVectorFeatures(inst, i, 0, fv);
-//    		addWordVectorFeatures(inst, i, -1, fv);
-//    		addWordVectorFeatures(inst, i, 1, fv);	
-//    	}
-//    	
-//    	return fv;
-//    }
-    
     public FeatureVector createWordFeatures(DependencyInstance inst, int i) 
     {
     	
@@ -947,8 +857,8 @@ public class SyntacticFeatureFactory implements Serializable {
     	code = createWordCodePPP(WORDFV_PpP0Pn, cp, c0, cn);
     	addWordFeature(code, fv);
 		
-//    	code = createWordCodeWP(WORDFV_W0P0, w0, p0);
-//		addWordFeature(code, fv);
+    	code = createWordCodeWP(WORDFV_W0P0, w0, p0);
+		addWordFeature(code, fv);
 		
 		code = createWordCodeWP(WORDFV_W0P0, w0, c0);
 		addWordFeature(code, fv);
@@ -3282,7 +3192,9 @@ public class SyntacticFeatureFactory implements Serializable {
     }
     
     private final long extractLabelCode(long code) {
-    	return (code >> 4) & ((1 << depNumBits)-1);
+    	if (options.learnLabel)
+    		return (code >> 4) & ((1 << depNumBits)-1);
+    	return 0;
     }
     
     private final void extractArcCodeP(long code, int[] x) {

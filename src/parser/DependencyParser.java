@@ -17,6 +17,7 @@ import parser.io.DependencyReader;
 import parser.io.DependencyWriter;
 import parser.pruning.BasicArcPruner;
 import parser.sampling.RandomWalkSampler;
+import utils.Utils;
 
 public class DependencyParser implements Serializable {
 	
@@ -66,8 +67,9 @@ public class DependencyParser implements Serializable {
 			DependencyPipe pipe = new DependencyPipe(prunerOptions);
 			pruner.pipe = pipe;
 			
-			pipe.createAlphabets(prunerOptions.trainFile);
+			pipe.createAlphabets(prunerOptions.trainFile, false);
 			pipe.synFactory.clearFeatureHashSet();
+			
 			DependencyInstance[] lstTrain = pipe.createInstances(prunerOptions.trainFile);
 			
 			Parameters parameters = new Parameters(pipe, prunerOptions);
@@ -86,7 +88,16 @@ public class DependencyParser implements Serializable {
 			
 			if (options.pruning) parser.pruner = pruner;
 			
-			pipe.createAlphabets(options.trainFile);
+			pipe.createAlphabets(options.trainFile, false);
+			
+			if ((long)(15+pipe.types.length*3)*options.R*pipe.synFactory.numWordFeats > Integer.MAX_VALUE) {
+				System.out.println("=============================================");
+	    		System.out.println("Prune Word");
+	    		System.out.println("=============================================");
+	    		pipe = new DependencyPipe(options);
+	    		pipe.createAlphabets(options.trainFile, true);
+			}
+			
 			DependencyInstance[] lstTrain = pipe.createInstances(options.trainFile);
 			
 			Parameters parameters = new Parameters(pipe, options);

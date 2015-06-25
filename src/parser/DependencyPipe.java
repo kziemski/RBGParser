@@ -21,6 +21,7 @@ import java.util.LinkedList;
 
 //import javax.swing.text.html.HTMLDocument.HTMLReader.TagAction;
 
+
 import parser.DependencyInstance.SpecialPos;
 import parser.Options.LearningMode;
 import parser.Options.PossibleLang;
@@ -131,12 +132,12 @@ public class DependencyPipe implements Serializable {
 			conjWord.add(">n");
 			break;
 		case Bulgarian:
-			conjWord.add("и");
-			conjWord.add("или");
+			conjWord.add("懈");
+			conjWord.add("懈谢懈");
 			break;
 		case Chinese:
-			conjWord.add("和");
-			conjWord.add("或");
+			conjWord.add("鍜�");
+			conjWord.add("鎴�");
 			break;
 		case Czech:
 			conjWord.add("a");
@@ -193,7 +194,7 @@ public class DependencyPipe implements Serializable {
 	 * @param file file path of the training data
 	 * @throws IOException
 	 */
-	public void createDictionaries(String file) throws IOException 
+	public void createDictionaries(String file, boolean pruneWord) throws IOException 
 	{
 		
 		long start = System.currentTimeMillis();
@@ -221,7 +222,8 @@ public class DependencyPipe implements Serializable {
 		//dumpPathStats(pathCounts, pathlengthCounts);
 		
 		dictionaries.filterDictionary(DEPLABEL);
-		//dictionaries.filterDictionary(WORD);
+		if (pruneWord)
+			dictionaries.filterDictionary(WORD);
 		dictionaries.closeCounters();
 		
 		synFactory.TOKEN_START = dictionaries.lookupIndex(POS, "#TOKEN_START#");
@@ -277,10 +279,10 @@ public class DependencyPipe implements Serializable {
 	 * @param file  file path of the training data
 	 * @throws IOException
 	 */
-	public void createAlphabets(String file) throws IOException 
+	public void createAlphabets(String file, boolean pruneWord) throws IOException 
 	{
 	
-		createDictionaries(file);
+		createDictionaries(file, pruneWord);
 		
 		if (options.wordVectorFile != null)
 			loadWordVectors(options.wordVectorFile);
@@ -325,7 +327,7 @@ public class DependencyPipe implements Serializable {
 		System.out.printf("Num of labels: %d%n", types.length);
 		System.out.printf("Num of Syntactic Features: %d %d%n", 
 				synFactory.numWordFeats, synFactory.numArcFeats);
-	    
+		
 //	    if (wordVectors != null)
 //	    	System.out.printf("WV unseen rate: %f%n", 
 //	    			(wvMiss + 1e-8)/(wvMiss + wvHit + 1e-8));
