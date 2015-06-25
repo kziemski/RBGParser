@@ -95,6 +95,7 @@ public class DependencyParser implements Serializable {
 	    		System.out.println("Prune Word");
 	    		System.out.println("=============================================");
 	    		pipe = new DependencyPipe(options);
+	    		parser.pipe = pipe;
 	    		pipe.createAlphabets(options.trainFile, true);
 			}
 			
