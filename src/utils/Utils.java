@@ -104,6 +104,12 @@ public final class Utils {
 		return min;
 	}
 
-
+	public static double dot(double[] u, double[] v)
+	{
+		double dot = 0.0;
+		for (int i = 0, N = u.length; i < N; ++i)
+			dot += u[i]*v[i];
+		return dot;
+	}
 	
 }
