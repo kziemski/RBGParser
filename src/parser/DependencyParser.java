@@ -90,14 +90,14 @@ public class DependencyParser implements Serializable {
 			
 			pipe.createAlphabets(options.trainFile, false);
 			
-			if ((long)(15+pipe.types.length*3)*options.R*pipe.synFactory.numWordFeats > Integer.MAX_VALUE) {
-				System.out.println("=============================================");
-	    		System.out.println("Prune Word");
-	    		System.out.println("=============================================");
-	    		pipe = new DependencyPipe(options);
-	    		parser.pipe = pipe;
-	    		pipe.createAlphabets(options.trainFile, true);
-			}
+//			if ((long)(15+pipe.types.length*3)*options.R*pipe.synFactory.numWordFeats > Integer.MAX_VALUE) {
+//				System.out.println("=============================================");
+//	    		System.out.println("Prune Word");
+//	    		System.out.println("=============================================");
+//	    		pipe = new DependencyPipe(options);
+//	    		parser.pipe = pipe;
+//	    		pipe.createAlphabets(options.trainFile, true);
+//			}
 			
 			DependencyInstance[] lstTrain = pipe.createInstances(options.trainFile);
 			
