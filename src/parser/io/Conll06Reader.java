@@ -19,7 +19,7 @@ public class Conll06Reader extends DependencyReader {
 	    ArrayList<String[]> lstLines = new ArrayList<String[]>();
 
 	    String line = reader.readLine();
-	    while (line != null && !line.equals("") && !line.startsWith("*")) {
+	    while (line != null && !line.equals("") && !line.equals("\t") && !line.startsWith("*")) {
 	    	lstLines.add(line.split("\t"));
 	    	line = reader.readLine();
 	    }
