@@ -15,26 +15,26 @@ public class Conll06Writer extends DependencyWriter {
 	}
 	
 	@Override
-	public void writeInstance(DependencyInstance inst) throws IOException {
+	public void writeInstance(DependencyInstance gold, DependencyInstance pred) throws IOException {
 		
 		//if (first) 
 		//	first = false;
 		//else
 		//	writer.write("\n");
 		
-		String[] forms = inst.forms;
-		String[] lemmas = inst.lemmas;
-		String[] cpos = inst.cpostags;
-		String[] pos = inst.postags;
-		int[] heads = inst.heads;
-		int[] labelids = inst.deplbids;
+		String[] forms = gold.forms;
+		String[] lemmas = gold.lemmas;
+		String[] cpos = gold.cpostags;
+		String[] pos = gold.postags;
+		int[] heads = pred.heads;
+		int[] labelids = pred.deplbids;
 		
 	    // 3 eles ele pron pron-pers M|3P|NOM 4 SUBJ _ _
 	    // ID FORM LEMMA COURSE-POS FINE-POS FEATURES HEAD DEPREL PHEAD PDEPREL
-		for (int i = 1, N = inst.length; i < N; ++i) {
+		for (int i = 1, N = gold.length; i < N; ++i) {
 			writer.write(i + "\t");
 			writer.write(forms[i] + "\t");
-			writer.write((lemmas != null && lemmas[i] != "" ? inst.lemmas[i] : "_") + "\t");
+			writer.write((lemmas != null && lemmas[i] != "" ? lemmas[i] : "_") + "\t");
 			writer.write(cpos[i] + "\t");
 			writer.write(pos[i] + "\t");
 			writer.write("_\t");

@@ -460,9 +460,9 @@ public class DependencyParser implements Serializable {
             eval.add(inst, predInst, evalWithPunc);
     		
     		if (writer != null) {
-    			inst.heads = predInst.heads;
-    			inst.deplbids = predInst.deplbids;
-    			writer.writeInstance(inst);
+    			//inst.heads = predInst.heads;
+    			//inst.deplbids = predInst.deplbids;
+    			writer.writeInstance(inst, predInst);
     		}
     		
     		inst = pipe.createInstance(reader);

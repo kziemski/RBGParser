@@ -1,6 +1,7 @@
 package parser.io;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import parser.DependencyInstance;
 import parser.DependencyPipe;
@@ -8,6 +9,7 @@ import parser.Options;
 
 public class Conll09Writer extends DependencyWriter {
 	
+	public static Pattern puncRegex = Pattern.compile("[\\p{Punct}]+", Pattern.UNICODE_CHARACTER_CLASS);
 	
 	public Conll09Writer(Options options, DependencyPipe pipe) {
 		this.options = options;
@@ -15,19 +17,19 @@ public class Conll09Writer extends DependencyWriter {
 	}
 	
 	@Override
-	public void writeInstance(DependencyInstance inst) throws IOException {
+	public void writeInstance(DependencyInstance gold, DependencyInstance pred) throws IOException {
 		
 		if (first) 
 			first = false;
 		else
 			writer.write("\n");
 		
-		String[] forms = inst.forms;
-		String[] lemmas = inst.lemmas;
-		String[] cpos = inst.cpostags;
-		String[] pos = inst.postags;
-		int[] heads = inst.heads;
-		int[] labelids = inst.deplbids;
+		String[] forms = gold.forms;
+		String[] lemmas = gold.lemmas;
+		String[] cpos = gold.cpostags;
+		String[] pos = gold.postags;
+		int[] heads = pred.heads;
+		int[] labelids = pred.deplbids;
 		
 	    /*
 	     * CoNLL 2009 format:
@@ -49,13 +51,17 @@ public class Conll09Writer extends DependencyWriter {
 	   	*/
 	    
 	    // 11  points  point   point   NNS NNS _   _   8   8   PMOD    PMOD    Y   point.02    _   _   _   _	    
-	    // 1   这  这  这  DT  DT  _   _   6   4   DMOD    ADV _   _   _   _   _   _
+	    // 1   杩�  杩�  杩�  DT  DT  _   _   6   4   DMOD    ADV _   _   _   _   _   _
 		
-		for (int i = 1, N = inst.length; i < N; ++i) {
+		for (int i = 1, N = gold.length; i < N; ++i) {
+			if (!puncRegex.matcher(forms[i]).matches() || 
+				(gold.heads[i] == pred.heads[i] && gold.deprels[i].equals(labels[pred.deplbids[i]])))
+				continue;
+			
 			writer.write(i + "\t");
 			writer.write(forms[i] + "\t");
-			writer.write((lemmas != null && lemmas[i] != "" ? inst.lemmas[i] : "_") + "\t");
-			writer.write((lemmas != null && lemmas[i] != "" ? inst.lemmas[i] : "_") + "\t");
+			writer.write((lemmas != null && lemmas[i] != "" ? lemmas[i] : "_") + "\t");
+			writer.write((lemmas != null && lemmas[i] != "" ? lemmas[i] : "_") + "\t");
 			writer.write(pos[i] + "\t");
             writer.write(pos[i] + "\t");
 			writer.write("_\t");
@@ -63,6 +69,10 @@ public class Conll09Writer extends DependencyWriter {
 			writer.write(heads[i] + "\t");
 			writer.write("_\t");
 			writer.write((isLabeled ? labels[labelids[i]] : "_"));
+			
+			writer.write(gold.heads[i] + "\t");
+			writer.write("_\t");
+			writer.write((isLabeled ? gold.deprels[i] : "_"));
 			
 			writer.write("\n");
 		}

@@ -58,7 +58,7 @@ public class Evaluator
     	for (int i = 1, N = gold.length; i < N; ++i) {
 
             //if (!evalWithPunc)
-            	//if (puncRegex.matcher(gold.forms[i]).matches()) continue;
+            	if (puncRegex.matcher(gold.forms[i]).matches()) continue;
             	//if (gold.forms[i].matches("[-!\"%&'()*,./:;?@\\[\\]_{}、]+")) continue;
 
             ++tt;

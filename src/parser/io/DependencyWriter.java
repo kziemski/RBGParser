@@ -28,7 +28,7 @@ public abstract class DependencyWriter {
 		}
 	}
 	
-	public abstract void writeInstance(DependencyInstance inst) throws IOException;
+	public abstract void writeInstance(DependencyInstance gold, DependencyInstance pred) throws IOException;
 	
 	public void startWriting(String file) throws IOException {
 		writer = new BufferedWriter(new FileWriter(file));
