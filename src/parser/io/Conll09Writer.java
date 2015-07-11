@@ -70,9 +70,7 @@ public class Conll09Writer extends DependencyWriter {
 			writer.write("_\t");
 			writer.write((isLabeled ? labels[labelids[i]] : "_"));
 			
-			writer.write("_\t");
-			writer.write(gold.heads[i] + "\t");
-			writer.write("_\t");
+			writer.write("\t" + gold.heads[i] + "\t");
 			writer.write((isLabeled ? gold.deprels[i] : "_"));
 			
 			writer.write("\n");

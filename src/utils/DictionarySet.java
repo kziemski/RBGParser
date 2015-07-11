@@ -114,7 +114,8 @@ public class DictionarySet implements Serializable {
 	
 	public void filterDictionary(DictionaryTypes tag)
 	{
-		filterDictionary(tag, 0.999f);
+		if (dicts[tag.ordinal()].size() > 20)
+			filterDictionary(tag, 0.999f);
 	}
 	
 	public void filterDictionary(DictionaryTypes tag, float percent)
@@ -146,10 +147,10 @@ public class DictionarySet implements Serializable {
 			int id = dicts[t].lookupIndex(obj);
 			int value = counters[t].get(id);
 			if (value > cut) {
-				System.out.println(((String)obj) + " " + value);
+				//System.out.println(((String)obj) + " " + value);
 				filtered.lookupIndex((String)obj);
 			}
-			else System.out.println(((String)obj) + " " + "filtered");
+			//else System.out.println(((String)obj) + " " + "filtered");
 		}
 		System.out.println("Filtered " + tag + " (" + dicts[t].size() + "-->"
 				+ filtered.size() + ")");
