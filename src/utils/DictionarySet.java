@@ -146,9 +146,10 @@ public class DictionarySet implements Serializable {
 			int id = dicts[t].lookupIndex(obj);
 			int value = counters[t].get(id);
 			if (value > cut) {
-				//System.out.println(((String)obj) + " " + value);
+				System.out.println(((String)obj) + " " + value);
 				filtered.lookupIndex((String)obj);
 			}
+			else System.out.println(((String)obj) + " " + "filtered");
 		}
 		System.out.println("Filtered " + tag + " (" + dicts[t].size() + "-->"
 				+ filtered.size() + ")");
