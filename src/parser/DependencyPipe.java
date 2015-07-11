@@ -221,7 +221,7 @@ public class DependencyPipe implements Serializable {
 		
 		//dumpPathStats(pathCounts, pathlengthCounts);
 		
-		dictionaries.filterDictionary(DEPLABEL);
+		//dictionaries.filterDictionary(DEPLABEL);
 		if (pruneWord)
 			dictionaries.filterDictionary(WORD);
 		dictionaries.closeCounters();
