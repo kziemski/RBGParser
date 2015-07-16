@@ -354,6 +354,15 @@ public class FeatureTemplate {
 	    HEAD_EMB,
 	    MOD_EMB,
 	    
+	    /*************************************************
+		 * structure
+		 * ***********************************************/
+	    
+	    NumC,
+	    LMost,
+	    RMost,
+	    LClose,
+	    RClose,
 	    
 	    FEATURE_TEMPLATE_END;
 		

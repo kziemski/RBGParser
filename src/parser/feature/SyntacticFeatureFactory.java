@@ -941,7 +941,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	//int[] heads = inst.heads;
     	int head = heads[mod];
     	    	
-    	createLabeledArcFeatures(fv, inst, head, mod, type);
+    	createLabeledArcFeatures(fv, inst, head, mod, type, arcLis);
     	
     	//int ghead = heads[head];
     	//if (ghead != -1) {
@@ -949,7 +949,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	//}
     }
     
-    public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type) 
+    public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type, DependencyArcList arcLis) 
     {
     	int attDist;
     	//if (preTrain)
@@ -962,6 +962,8 @@ public class SyntacticFeatureFactory implements Serializable {
     		    		
     	addCore1OBigramFeatures(fv, inst.formids[h], inst.postagids[h], 
     			inst.formids[c], inst.postagids[c], attDist, type);
+    	
+    	addStructuralFeatures(fv, inst, h, c, type, arcLis);
     	    		
 		if (inst.lemmaids != null)
 			addCore1OBigramFeatures(fv, inst.lemmaids[h], inst.postagids[h], 
@@ -987,6 +989,39 @@ public class SyntacticFeatureFactory implements Serializable {
     			}
     	}
 
+    }
+    
+    public void addStructuralFeatures(Collector fv, DependencyInstance inst, int h, int c, int type, DependencyArcList arcLis) {
+    	long code = 0; 			// feature code
+    	int tid = type << 4;
+    	
+    	int st = arcLis.startIndex(h);
+		int ed = arcLis.endIndex(h);
+		int num = getBinnedDistance(ed-st);
+		
+		code = createArcCodeW(NumC, num) | tid;
+		addLabeledArcFeature(code, fv);
+		
+		int leftMost = (arcLis.get(st) == c ? 1 : 0);
+		int rightMost = (arcLis.get(ed-1) == c ? 1 : 0);
+		
+		code = createArcCodeW(LMost, leftMost) | tid;
+		addLabeledArcFeature(code, fv);
+		
+		code = createArcCodeW(RMost, rightMost) | tid;
+		addLabeledArcFeature(code, fv);
+		
+		int p, q;
+		for (p = st; p < ed && arcLis.get(p) < h ; ++p);
+		for (q = ed-1; q >= st && arcLis.get(q) > h; --q);
+		int leftClosest = (p-1 >= st && arcLis.get(p-1) == c ? 1 : 0);
+		int rightClosest = (q+1 < ed && arcLis.get(q+1) == c ? 1 : 0);
+		
+		code = createArcCodeW(LClose, leftClosest) | tid;
+		addLabeledArcFeature(code, fv);
+		
+		code = createArcCodeW(RClose, rightClosest) | tid;
+		addLabeledArcFeature(code, fv);
     }
     
     public void addBasic1OFeatures(Collector fv, DependencyInstance inst, 
