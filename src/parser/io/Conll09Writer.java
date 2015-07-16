@@ -54,8 +54,7 @@ public class Conll09Writer extends DependencyWriter {
 	    // 1   杩�  杩�  杩�  DT  DT  _   _   6   4   DMOD    ADV _   _   _   _   _   _
 		
 		for (int i = 1, N = gold.length; i < N; ++i) {
-			if (!puncRegex.matcher(forms[i]).matches() || 
-				(gold.heads[i] == pred.heads[i] && gold.deprels[i].equals(labels[pred.deplbids[i]])))
+			if (gold.heads[i] == pred.heads[i] && gold.deprels[i].equals(labels[pred.deplbids[i]]))
 				continue;
 			
 			writer.write(i + "\t");

@@ -67,7 +67,7 @@ public class DependencyParser implements Serializable {
 			DependencyPipe pipe = new DependencyPipe(prunerOptions);
 			pruner.pipe = pipe;
 			
-			pipe.createAlphabets(prunerOptions.trainFile, false);
+			pipe.createAlphabets(prunerOptions.trainFile);
 			pipe.synFactory.clearFeatureHashSet();
 			
 			DependencyInstance[] lstTrain = pipe.createInstances(prunerOptions.trainFile);
@@ -88,16 +88,7 @@ public class DependencyParser implements Serializable {
 			
 			if (options.pruning) parser.pruner = pruner;
 			
-			pipe.createAlphabets(options.trainFile, false);
-			
-//			if ((long)(15+pipe.types.length*3)*options.R*pipe.synFactory.numWordFeats > Integer.MAX_VALUE) {
-//				System.out.println("=============================================");
-//	    		System.out.println("Prune Word");
-//	    		System.out.println("=============================================");
-//	    		pipe = new DependencyPipe(options);
-//	    		parser.pipe = pipe;
-//	    		pipe.createAlphabets(options.trainFile, true);
-//			}
+			pipe.createAlphabets(options.trainFile);
 			
 			DependencyInstance[] lstTrain = pipe.createInstances(options.trainFile);
 			

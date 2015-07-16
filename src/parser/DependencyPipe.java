@@ -194,7 +194,7 @@ public class DependencyPipe implements Serializable {
 	 * @param file file path of the training data
 	 * @throws IOException
 	 */
-	public void createDictionaries(String file, boolean pruneWord) throws IOException 
+	public void createDictionaries(String file) throws IOException 
 	{
 		
 		long start = System.currentTimeMillis();
@@ -222,8 +222,7 @@ public class DependencyPipe implements Serializable {
 		//dumpPathStats(pathCounts, pathlengthCounts);
 		
 		//dictionaries.filterDictionary(DEPLABEL);
-		if (pruneWord)
-			dictionaries.filterDictionary(WORD);
+		//dictionaries.filterDictionary(WORD);
 		dictionaries.closeCounters();
 		
 		synFactory.TOKEN_START = dictionaries.lookupIndex(POS, "#TOKEN_START#");
@@ -279,10 +278,10 @@ public class DependencyPipe implements Serializable {
 	 * @param file  file path of the training data
 	 * @throws IOException
 	 */
-	public void createAlphabets(String file, boolean pruneWord) throws IOException 
+	public void createAlphabets(String file) throws IOException 
 	{
 	
-		createDictionaries(file, pruneWord);
+		createDictionaries(file);
 		
 		if (options.wordVectorFile != null)
 			loadWordVectors(options.wordVectorFile);
