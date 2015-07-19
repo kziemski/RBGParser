@@ -1085,7 +1085,8 @@ public class LocalFeatureData {
 						type = t;
 					}
 				}
-				inst.deplbids[mod] = type;
+				if (!addLoss)
+					inst.deplbids[mod] = type;
 				deplbids[mod] = type;
 			}
 		}
