@@ -1,6 +1,8 @@
 package parser;
 
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import parser.Options.LearningMode;
 import parser.decoding.DependencyDecoder;
@@ -1060,21 +1062,35 @@ public class LocalFeatureData {
 		assert(heads.length == len);
 		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
 		int T = ntypes;
-		for (int mod = 1; mod < len; ++mod) {
-			int head = heads[mod];
-			int type = addLoss ? 0 : 1;
-			double best = getLabelScore(arcLis, heads, mod, type) +
-				(addLoss && inst.deplbids[mod] != 0 ? 1.0 : 0.0);
-			for (int t = type+1; t < T; ++t) {
-				double va = getLabelScore(arcLis, heads, mod, t) +
-					(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
-				if (va > best) {
-					best = va;
-					type = t;
+		int[] goldDeplbids = inst.deplbids.clone();
+		
+		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(len);
+		queue.add(0);
+		while (!queue.isEmpty()) {
+			int head = queue.remove();
+			int st = arcLis.startIndex(head);
+			int ed = arcLis.endIndex(head);
+			for (int p = st; p < ed ; ++p) {
+				int mod = arcLis.get(p);
+				queue.add(mod);
+				
+				int type = 1;
+				double best = getLabelScore(arcLis, heads, mod, type) +
+					(addLoss && goldDeplbids[mod] != type ? 1.0 : 0.0);
+				for (int t = type+1; t < T; ++t) {
+					double va = getLabelScore(arcLis, heads, mod, t) +
+						(addLoss && goldDeplbids[mod] != t ? 1.0 : 0.0);
+					if (va > best) {
+						best = va;
+						type = t;
+					}
 				}
+				inst.deplbids[mod] = type;
+				deplbids[mod] = type;
 			}
-			deplbids[mod] = type;
 		}
+		
+		inst.deplbids = goldDeplbids;
 	}
 	
 	public FeatureVector getLabeledFeatureDifference(DependencyInstance gold, 

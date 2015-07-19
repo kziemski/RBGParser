@@ -55,10 +55,8 @@ public class DependencyInstance implements Serializable {
 	public int[] lemmaids;
 	public int[] postagids;
 	public int[] cpostagids;
-	public int[] deprelids;
 	public int[][] featids;
 	public int[] wordVecIds;
-
 	public int[] deplbids;
 
     public DependencyInstance() {}
@@ -101,7 +99,6 @@ public class DependencyInstance implements Serializable {
     	lemmaids = a.lemmaids;
     	postagids = a.postagids;
     	cpostagids = a.cpostagids;
-    	deprelids = a.deprelids;
     	deplbids = a.deplbids;
     	featids = a.featids;
     	wordVecIds = a.wordVecIds;

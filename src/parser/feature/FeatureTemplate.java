@@ -363,6 +363,7 @@ public class FeatureTemplate {
 	    RMost,
 	    LClose,
 	    RClose,
+	    PLab,
 	    
 	    FEATURE_TEMPLATE_END;
 		

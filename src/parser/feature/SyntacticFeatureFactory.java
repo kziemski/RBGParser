@@ -995,13 +995,13 @@ public class SyntacticFeatureFactory implements Serializable {
     	long code = 0; 			// feature code
     	int tid = type << 4;
     	
-		int num = getBinnedDistance(arcLis.endIndex(c) - arcLis.startIndex(c));
+    	int st = arcLis.startIndex(h);
+		int ed = arcLis.endIndex(h);
+		int num = getBinnedDistance(ed-st);
 		
 		code = createArcCodeW(NumC, num) | tid;
 		addLabeledArcFeature(code, fv);
 		
-		int st = arcLis.startIndex(h);
-		int ed = arcLis.endIndex(h);
 		int leftMost = (arcLis.get(st) == c ? 1 : 0);
 		int rightMost = (arcLis.get(ed-1) == c ? 1 : 0);
 		
@@ -1021,6 +1021,9 @@ public class SyntacticFeatureFactory implements Serializable {
 		addLabeledArcFeature(code, fv);
 		
 		code = createArcCodeW(RClose, rightClosest) | tid;
+		addLabeledArcFeature(code, fv);
+		
+		code = createArcCodeW(PLab, inst.deplbids[h]) | tid;
 		addLabeledArcFeature(code, fv);
     }
     
