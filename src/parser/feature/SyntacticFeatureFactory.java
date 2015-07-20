@@ -1023,7 +1023,7 @@ public class SyntacticFeatureFactory implements Serializable {
 		code = createArcCodeW(RClose, rightClosest) | tid;
 		addLabeledArcFeature(code, fv);
 		
-		code = createArcCodeW(PLab, inst.deplbids[h]) | tid;
+		code = createArcCodeW(PLab, inst.deplbids[h]+1) | tid;
 		addLabeledArcFeature(code, fv);
     }
     
