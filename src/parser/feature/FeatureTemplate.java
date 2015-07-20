@@ -359,10 +359,8 @@ public class FeatureTemplate {
 		 * ***********************************************/
 	    
 	    NumC,
-	    LMost,
-	    RMost,
-	    LClose,
-	    RClose,
+	    Depth,
+	    MPos,
 	    PLab,
 	    
 	    FEATURE_TEMPLATE_END;

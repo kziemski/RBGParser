@@ -997,33 +997,28 @@ public class SyntacticFeatureFactory implements Serializable {
     	
     	int st = arcLis.startIndex(h);
 		int ed = arcLis.endIndex(h);
-		int num = getBinnedDistance(ed-st);
 		
-		code = createArcCodeW(NumC, num) | tid;
+		code = createArcCodeW(NumC, ed-st) | tid;
 		addLabeledArcFeature(code, fv);
 		
 		int leftMost = (arcLis.get(st) == c ? 1 : 0);
 		int rightMost = (arcLis.get(ed-1) == c ? 1 : 0);
-		
-		code = createArcCodeW(LMost, leftMost) | tid;
-		addLabeledArcFeature(code, fv);
-		
-		code = createArcCodeW(RMost, rightMost) | tid;
-		addLabeledArcFeature(code, fv);
-		
 		int p, q;
 		for (p = st; p < ed && arcLis.get(p) < h ; ++p);
 		for (q = ed-1; q >= st && arcLis.get(q) > h; --q);
 		int leftClosest = (p-1 >= st && arcLis.get(p-1) == c ? 1 : 0);
 		int rightClosest = (q+1 < ed && arcLis.get(q+1) == c ? 1 : 0);
 		
-		code = createArcCodeW(LClose, leftClosest) | tid;
-		addLabeledArcFeature(code, fv);
-		
-		code = createArcCodeW(RClose, rightClosest) | tid;
+		code = createArcCodeW(MPos, (leftMost<<3)+(rightMost<<2)+(leftClosest<<1)+rightClosest) | tid;
 		addLabeledArcFeature(code, fv);
 		
 		code = createArcCodeW(PLab, inst.deplbids[h]+1) | tid;
+		addLabeledArcFeature(code, fv);
+		
+		int depth = 0;
+		for (int i = h; i != 0; i = inst.heads[i])
+			depth++;
+		code = createArcCodeW(Depth, depth) | tid;
 		addLabeledArcFeature(code, fv);
     }
     
