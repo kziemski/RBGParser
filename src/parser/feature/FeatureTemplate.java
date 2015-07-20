@@ -358,7 +358,6 @@ public class FeatureTemplate {
 		 * structure
 		 * ***********************************************/
 	    
-	    NumC,
 	    Depth,
 	    MPos,
 	    PLab,

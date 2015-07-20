@@ -997,10 +997,6 @@ public class SyntacticFeatureFactory implements Serializable {
     	
     	int st = arcLis.startIndex(h);
 		int ed = arcLis.endIndex(h);
-		
-		code = createArcCodeW(NumC, ed-st) | tid;
-		addLabeledArcFeature(code, fv);
-		
 		int leftMost = (arcLis.get(st) == c ? 1 : 0);
 		int rightMost = (arcLis.get(ed-1) == c ? 1 : 0);
 		int p, q;
@@ -1009,7 +1005,7 @@ public class SyntacticFeatureFactory implements Serializable {
 		int leftClosest = (p-1 >= st && arcLis.get(p-1) == c ? 1 : 0);
 		int rightClosest = (q+1 < ed && arcLis.get(q+1) == c ? 1 : 0);
 		
-		code = createArcCodeW(MPos, (leftMost<<3)+(rightMost<<2)+(leftClosest<<1)+rightClosest) | tid;
+		code = createArcCodeW(MPos, (ed-st<<4)+(leftMost<<3)+(rightMost<<2)+(leftClosest<<1)+rightClosest) | tid;
 		addLabeledArcFeature(code, fv);
 		
 		code = createArcCodeW(PLab, inst.deplbids[h]+1) | tid;
