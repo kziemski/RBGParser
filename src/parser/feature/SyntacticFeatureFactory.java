@@ -1004,16 +1004,18 @@ public class SyntacticFeatureFactory implements Serializable {
 		for (q = ed-1; q >= st && arcLis.get(q) > h; --q);
 		int leftClosest = (p-1 >= st && arcLis.get(p-1) == c ? 1 : 0);
 		int rightClosest = (q+1 < ed && arcLis.get(q+1) == c ? 1 : 0);
+		int mpos = (leftMost<<3)+(rightMost<<2)+(leftClosest<<1)+rightClosest;
 		
-		code = createArcCodeW(MPos, (ed-st<<4)+(leftMost<<3)+(rightMost<<2)+(leftClosest<<1)+rightClosest) | tid;
+		code = createArcCodeW(MPos, mpos) | tid;
 		addLabeledArcFeature(code, fv);
 		
-		code = createArcCodeW(PLab, inst.deplbids[h]+1) | tid;
+		code = createArcCodeW(PLab, inst.deplbids[h]) | tid;
 		addLabeledArcFeature(code, fv);
 		
 		int depth = 0;
 		for (int i = h; i != 0; i = inst.heads[i])
 			depth++;
+		depth = getBinnedDistance(depth);
 		code = createArcCodeW(Depth, depth) | tid;
 		addLabeledArcFeature(code, fv);
     }
@@ -3394,6 +3396,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		int temp = (int) extractArcTemplateCode(code);
     		
     		int label = (int) extractLabelCode(code);
+    		int offset = 0, num = 0;
     		
     		long head = 0, mod = 0;
 
@@ -3604,6 +3607,30 @@ public class SyntacticFeatureFactory implements Serializable {
     			head = createWordCodeP(WORDFV_BIAS, 0);
     		}
     		
+    		else if (temp == MPos.ordinal()) {
+    			extractArcCodeW(code, x);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			num = x[0];
+    			offset = 3;
+    		}
+    		
+    		else if (temp == Depth.ordinal()) {
+    			extractArcCodeW(code, x);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			num = x[0];
+    			offset = 19;
+    		}
+    		
+    		else if (temp == PLab.ordinal()) {
+    			extractArcCodeW(code, x);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			num = x[0];
+    			offset = 27;
+    		}
+    		
     		else {
     			//System.out.println(temp);
     			continue;
@@ -3622,7 +3649,7 @@ public class SyntacticFeatureFactory implements Serializable {
     				int id = hashcode2int(code) & numLabeledArcFeats;
     				if (id < 0) continue;
     				double value = params.paramsL[id];
-    				tensor.putEntry(headId, modId, params.D+dist*params.T+label-1, value);
+    				tensor.putEntry(headId, modId, params.D+(offset+dist+num)*params.T+label-1, value);
     			}
             }
     	}

@@ -1038,23 +1038,18 @@ public class LocalFeatureData {
 		return col.score;
 	}
 	
-	private double getLabelScoreTensor(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private double getLabelScoreTensor(DependencyArcList arcLis, int[] heads, int mod, int type, int mpos, int depth, int plab)
 	{
 		int head = heads[mod];
 		int dir = head > mod ? 1 : 2;
-		int T = ntypes;
-		double s = 0;
-		for (int k = 0; k < rank; ++k) {
-			s += wpU[head][k] * wpV[mod][k] * (parameters.WL[k][type] + parameters.WL[k][dir*T+type]);
-		}
-		return s;
+		return parameters.dotProductL(wpU[head], wpV[mod], type, dir, mpos, depth, plab);
 	}
 	
 	
-	private double getLabelScore(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private double getLabelScore(DependencyArcList arcLis, int[] heads, int mod, int type, int mpos, int depth, int plab)
 	{
 		return gammaL * getLabelScoreTheta(arcLis, heads, mod, type) +
-				(1-gammaL) * getLabelScoreTensor(arcLis, heads, mod, type);
+				(1-gammaL) * getLabelScoreTensor(arcLis, heads, mod, type, mpos, depth, plab);
 	}
 	
 	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)
@@ -1063,6 +1058,37 @@ public class LocalFeatureData {
 		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
 		int T = ntypes;
 		int[] goldDeplbids = inst.deplbids.clone();
+		
+		int[] leftMost = new int[len];
+    	int[] rightMost = new int[len];
+    	int[] leftClosest = new int[len];
+    	int[] rightClosest = new int[len];
+    	
+    	for (int h = 0; h < len; ++h) {
+    		int st = arcLis.startIndex(h);
+    		int ed = arcLis.endIndex(h);
+    		if (st < ed) {
+    			leftMost[arcLis.get(st)] = 1;
+    			rightMost[arcLis.get(ed-1)] = 1;
+    			int p, q;
+    			for (p = st; p < ed && arcLis.get(p) < h ; ++p);
+    			for (q = ed-1; q >= st && arcLis.get(q) > h; --q);
+    			if (p-1 >= st)
+    				leftClosest[arcLis.get(p-1)] = 1;
+    			if (q+1 < ed)
+    				rightClosest[arcLis.get(q+1)] = 1;
+    		}
+    	}
+    	
+    	int[] mpos = new int[len];
+    	int[] depth = new int[len];
+    	for (int c = 1; c < len; ++c) {
+    		mpos[c] = (leftMost[c]<<3) + (rightMost[c]<<2) + (leftClosest[c]<<1) + rightClosest[c];
+    		depth[c] = 0;
+    		for (int i = heads[c]; i != 0; i = heads[i])
+    			depth[c]++;
+    		depth[c] = parameters.getBinnedDistance(depth[c]);
+    	}
 		
 		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(len);
 		queue.add(0);
@@ -1074,18 +1100,17 @@ public class LocalFeatureData {
 				int mod = arcLis.get(p);
 				queue.add(mod);
 				
-				int type = 1;
-				double best = getLabelScore(arcLis, heads, mod, type) +
-					(addLoss && goldDeplbids[mod] != type ? 1.0 : 0.0);
-				for (int t = type+1; t < T; ++t) {
-					double va = getLabelScore(arcLis, heads, mod, t) +
+				int type = 0;
+				double best = Double.NEGATIVE_INFINITY;
+				for (int t = 1; t < T; ++t) {
+					double va = getLabelScore(arcLis, heads, mod, t, mpos[mod], depth[mod], inst.deplbids[head]) +
 						(addLoss && goldDeplbids[mod] != t ? 1.0 : 0.0);
 					if (va > best) {
 						best = va;
 						type = t;
 					}
 				}
-				if (!addLoss)
+				//if (!addLoss)
 					inst.deplbids[mod] = type;
 				deplbids[mod] = type;
 			}

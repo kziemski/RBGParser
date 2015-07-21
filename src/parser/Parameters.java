@@ -33,7 +33,7 @@ public class Parameters implements Serializable {
 	{
         D = d * 2 + 1;
         T = pipe.types.length;
-        DL = T * 3;
+        DL = T + 2*T + 16*T + 8*T + T*T;		// lab	(dir,lab)	(MPos,lab)	(depth,lab)	(PLab,lab)
 		size = pipe.synFactory.numArcFeats+1;		
 		params = new float[size];
 		total = new float[size];
@@ -296,6 +296,14 @@ public class Parameters implements Serializable {
 		return sum;
 	}
 	
+	public double dotProductL(double[] proju, double[] projv, int lab, int dir, int mpos, int depth, int plab) {
+		double sum = 0;
+		for (int r = 0; r < rank; ++r) {
+			sum += proju[r] * projv[r] * (WL[r][lab] + WL[r][dir*T+lab] + WL[r][3*T+mpos*T+lab] + WL[r][19*T+depth*T+lab] + WL[r][27*T+plab*T+lab]);
+		}
+		return sum;
+	}
+	
 	public double updateLabel(DependencyInstance gold, DependencyInstance pred,
 			LocalFeatureData lfd, GlobalFeatureData gfd,
 			int updCnt)
@@ -312,23 +320,55 @@ public class Parameters implements Serializable {
     	double loss = - dtl.dotProduct(paramsL)*gammaL + Fi;
         double l2norm = dtl.Squaredl2NormUnsafe() * gammaL * gammaL;
     	
+        DependencyArcList arcLis = new DependencyArcList(predDeps, options.useHO);
+        int[] leftMost = new int[N];
+    	int[] rightMost = new int[N];
+    	int[] leftClosest = new int[N];
+    	int[] rightClosest = new int[N];
+    	
+    	for (int h = 0; h < N; ++h) {
+    		int st = arcLis.startIndex(h);
+    		int ed = arcLis.endIndex(h);
+    		if (st < ed) {
+    			leftMost[arcLis.get(st)] = 1;
+    			rightMost[arcLis.get(ed-1)] = 1;
+    			int p, q;
+    			for (p = st; p < ed && arcLis.get(p) < h ; ++p);
+    			for (q = ed-1; q >= st && arcLis.get(q) > h; --q);
+    			if (p-1 >= st)
+    				leftClosest[arcLis.get(p-1)] = 1;
+    			if (q+1 < ed)
+    				rightClosest[arcLis.get(q+1)] = 1;
+    		}
+    	}
+    	
+    	int[] mpos = new int[N];
+    	int[] depth = new int[N];
+    	for (int c = 1; c < N; ++c) {
+    		mpos[c] = (leftMost[c]<<3) + (rightMost[c]<<2) + (leftClosest[c]<<1) + rightClosest[c];
+    		depth[c] = 0;
+    		for (int i = predDeps[c]; i != 0; i = predDeps[i])
+    			depth[c]++;
+    		depth[c] = getBinnedDistance(depth[c]);
+    	}
+        
         // update U
     	for (int k = 0; k < rank; ++k) {        		
-    		FeatureVector dUk = getdUL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+    		FeatureVector dUk = getdUL(k, lfd, actDeps, actLabs, predDeps, predLabs, mpos, depth);
         	l2norm += dUk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);            	
         	loss -= dUk.dotProduct(U[k]) * (1-gammaL);
         	dU[k] = dUk;
     	}
     	// update V
     	for (int k = 0; k < rank; ++k) {
-    		FeatureVector dVk = getdVL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+    		FeatureVector dVk = getdVL(k, lfd, actDeps, actLabs, predDeps, predLabs, mpos, depth);
         	l2norm += dVk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
         	//loss -= dVk.dotProduct(V[k]) * (1-gammaL);
         	dV[k] = dVk;
     	}        	
         // update WL
     	for (int k = 0; k < rank; ++k) {
-    		FeatureVector dWLk = getdWL(k, lfd, actDeps, actLabs, predDeps, predLabs);
+    		FeatureVector dWLk = getdWL(k, lfd, actDeps, actLabs, predDeps, predLabs, mpos, depth);
         	l2norm += dWLk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
         	//loss -= dWLk.dotProduct(WL[k]) * (1-gammaL);
         	dWL[k] = dWLk;
@@ -542,7 +582,7 @@ public class Parameters implements Serializable {
     }
     
     private FeatureVector getdUL(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
-			int[] predDeps, int[] predLabs) {
+			int[] predDeps, int[] predLabs, int[] mpos, int[] depth) {
     	double[][] wpV = lfd.wpV;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
@@ -553,10 +593,12 @@ public class Parameters implements Serializable {
     		int dir = head > mod ? 1 : 2;
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (lab == lab2) continue;
-    		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
-    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][dir*T+lab])
-    									 - dotv * (WL[k][lab2] + WL[k][dir*T+lab2]));
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
+    		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);
+    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][dir*T+lab] + WL[k][3*T+mpos[mod]*T+lab] + WL[k][19*T+depth[mod]*T+lab] + WL[k][27*T+plab*T+lab])
+    									 - dotv * (WL[k][lab2] + WL[k][dir*T+lab2]  + WL[k][3*T+mpos[mod]*T+lab2] + WL[k][19*T+depth[mod]*T+lab2] + WL[k][27*T+plab2*T+lab2]));
     	}
     	return dU;
     }
@@ -574,14 +616,14 @@ public class Parameters implements Serializable {
     		int d2 = getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
-    		dV.addEntries(wordFvs[mod], dotu  * (W[k][0] + W[k][d])
+    		dV.addEntries(wordFvs[mod], dotu * (W[k][0] + W[k][d])
     									- dotu2 * (W[k][0] + W[k][d2]));    		
     	}
     	return dV;
     }
     
     private FeatureVector getdVL(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
-			int[] predDeps, int[] predLabs) {
+			int[] predDeps, int[] predLabs, int[] mpos, int[] depth) {
     	double[][] wpU = lfd.wpU;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
@@ -592,10 +634,12 @@ public class Parameters implements Serializable {
     		int dir = head > mod ? 1 : 2;
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (lab == lab2) continue;
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][dir*T+lab])
-    									- dotu * (WL[k][lab2] + WL[k][dir*T+lab2]));    		
+    		dV.addEntries(wordFvs[mod], dotu * (WL[k][lab] + WL[k][dir*T+lab] + WL[k][3*T+mpos[mod]*T+lab] + WL[k][19*T+depth[mod]*T+lab] + WL[k][27*T+plab*T+lab])
+    									- dotu * (WL[k][lab2] + WL[k][dir*T+lab2]  + WL[k][3*T+mpos[mod]*T+lab2] + WL[k][19*T+depth[mod]*T+lab2] + WL[k][27*T+plab2*T+lab2]));    		
     	}
     	return dV;
     }
@@ -627,7 +671,7 @@ public class Parameters implements Serializable {
     }
     
     private FeatureVector getdWL(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
-			int[] predDeps, int[] predLabs) {
+			int[] predDeps, int[] predLabs, int[] mpos, int[] depth) {
     	double[][] wpU = lfd.wpU, wpV = lfd.wpV;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
@@ -638,13 +682,21 @@ public class Parameters implements Serializable {
     		int dir = head > mod ? 1 : 2;
     		int lab  = actLabs[mod];
     		int lab2 = predLabs[mod];
-    		if (lab == lab2) continue;
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dWL[lab] += dotu * dotv;
     		dWL[dir*T+lab] += dotu * dotv;
+    		dWL[3*T+mpos[mod]*T+lab] += dotu * dotv;
+    		dWL[19*T+depth[mod]*T+lab] += dotu * dotv;
+    		dWL[27*T+plab*T+lab] += dotu * dotv;
     		dWL[lab2] -= dotu * dotv;
     		dWL[dir*T+lab2] -= dotu * dotv;
+    		dWL[3*T+mpos[mod]*T+lab2] -= dotu * dotv;
+    		dWL[19*T+depth[mod]*T+lab2] -= dotu * dotv;
+    		dWL[27*T+plab2*T+lab2] -= dotu * dotv;
     	}
     	
     	FeatureVector dWL2 = new FeatureVector(DL);
