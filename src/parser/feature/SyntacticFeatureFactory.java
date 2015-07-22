@@ -117,26 +117,16 @@ public class SyntacticFeatureFactory implements Serializable {
     	
         int[] heads = inst.heads;
         int[] deplbids = inst.deplbids;
-    	
-        DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
         
         // 1st order arc
-        for (int i = 0; i < n; ++i) {
-    		
-    		if (heads[i] == -1) continue;
-    	     
-    		int parent = heads[i];
-    		createArcFeatures(col, inst, parent, i);	// arc features    		
+        for (int i = 1; i < n; ++i) {
+    		createArcFeatures(col, inst, heads[i], i);	// arc features    		
     		if (options.learnLabel) {
-    			int type = deplbids[i]; 
-    			boolean toRight = parent < i;
-    			//createLabelFeatures(inst, parent, type, toRight, false);
-    			//createLabelFeatures(inst, i, type, toRight, true);
-    			//createLabelFeatures(inst, heads[i], i, type);
-    			createLabelFeatures(col, inst, arcLis, heads, i, type);
+    			createLabeledArcFeatures(col, inst, heads, i, deplbids);
     		}
     	}
     	
+        DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
         if (options.learningMode != LearningMode.Basic) {
         	
         	//DependencyArcList arcLis = new DependencyArcList(heads);
@@ -362,7 +352,7 @@ public class SyntacticFeatureFactory implements Serializable {
     public void createArcFeatures(Collector fv, DependencyInstance inst, int h, int c) 
     {
     	
-    	int attDist = getBinnedDistance(h-c);
+    	int attDist = Utils.getBinnedDistance(h-c);
     	
     	addBasic1OFeatures(fv, inst, h, c, attDist);
     	
@@ -898,7 +888,7 @@ public class SyntacticFeatureFactory implements Serializable {
     
     public void addWordVectorFeatures(DependencyInstance inst, int i, int dis, FeatureVector fv) {
     	
-    	int d = getBinnedDistance(dis);
+    	int d = Utils.getBinnedDistance(dis);
     	double [] v = unknownWv;
     	int pos = i + dis;
     	
@@ -930,31 +920,13 @@ public class SyntacticFeatureFactory implements Serializable {
      *  
      ************************************************************************/
     
-    public void createLabelFeatures(Collector fv, DependencyInstance inst,
-    		DependencyArcList arcLis, int[] heads, int mod, int type)
+    public void createLabeledArcFeatures(Collector fv, DependencyInstance inst,
+    		int[] heads, int c, int[] types) 
     {
-    	if (!options.learnLabel) return;
-    	
+    	int h = heads[c];
+    	int attDist = h > c ? 1 : 2;
     	// label type to start from 1 in hashcode
-    	type = type+1;
-    	
-    	//int[] heads = inst.heads;
-    	int head = heads[mod];
-    	    	
-    	createLabeledArcFeatures(fv, inst, head, mod, type, arcLis);
-    	
-    	//int ghead = heads[head];
-    	//if (ghead != -1) {
-    	//	fv.addEntries(createGPCFeatureVector(inst, ghead, head, mod, type));
-    	//}
-    }
-    
-    public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type, DependencyArcList arcLis) 
-    {
-    	int attDist;
-    	//if (preTrain)
-    		attDist = h > c ? 1 : 2;
-    	//else attDist = getBinnedDistance(h-c);   
+    	int type = types[c] + 1;
     		
     	addBasic1OFeatures(fv, inst, h, c, attDist, type);
     	
@@ -963,7 +935,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	addCore1OBigramFeatures(fv, inst.formids[h], inst.postagids[h], 
     			inst.formids[c], inst.postagids[c], attDist, type);
     	
-    	addStructuralFeatures(fv, inst, h, c, type, arcLis);
+    	addStructuralFeatures(fv, heads, c, types);
     	    		
 		if (inst.lemmaids != null)
 			addCore1OBigramFeatures(fv, inst.lemmaids[h], inst.postagids[h], 
@@ -991,9 +963,13 @@ public class SyntacticFeatureFactory implements Serializable {
 
     }
     
-    public void addStructuralFeatures(Collector fv, DependencyInstance inst, int h, int c, int type, DependencyArcList arcLis) {
-    	long code = 0; 			// feature code
+    public void addStructuralFeatures(Collector fv, int[] heads, int c, int[] types) {
+    	int h = heads[c];
+    	// label type to start from 1 in hashcode
+    	int type = types[c] + 1;
     	int tid = type << 4;
+    	DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
+    	long code = 0; 			// feature code
     	
     	int st = arcLis.startIndex(h);
 		int ed = arcLis.endIndex(h);
@@ -1009,13 +985,13 @@ public class SyntacticFeatureFactory implements Serializable {
 		code = createArcCodeW(MPos, mpos) | tid;
 		addLabeledArcFeature(code, fv);
 		
-		code = createArcCodeW(PLab, inst.deplbids[h]) | tid;
+		code = createArcCodeW(PLab, types[h]) | tid;
 		addLabeledArcFeature(code, fv);
 		
 		int depth = 0;
-		for (int i = h; i != 0; i = inst.heads[i])
+		for (int i = h; i != 0; i = heads[i])
 			depth++;
-		depth = getBinnedDistance(depth);
+		depth = Utils.getBinnedDistance(depth);
 		code = createArcCodeW(Depth, depth) | tid;
 		addLabeledArcFeature(code, fv);
     }
@@ -1866,7 +1842,7 @@ public class SyntacticFeatureFactory implements Serializable {
 
 
     	//Utils.Assert(ch1 < ch2);
-    	int flag = getBinnedDistance(ch1 - ch2);
+    	int flag = Utils.getBinnedDistance(ch1 - ch2);
 
     	long code = 0;
 
@@ -3008,7 +2984,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	int[] posA = inst.cpostagids;
     	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
 
-    	int distFlag = getBinnedDistance(head - mod);
+    	int distFlag = Utils.getBinnedDistance(head - mod);
 
     	// use head->mod, rather than small->large
     	int HC = posA[head];
@@ -3196,23 +3172,6 @@ public class SyntacticFeatureFactory implements Serializable {
      *        TEMP is the integer id of the feature template
      *        DIST is the integer binned length  (4 bits)
      ************************************************************************/
-    
-    public final int getBinnedDistance(int x) {
-    	int flag = 0;
-    	int add = 0;
-    	if (x < 0) {
-    		x = -x;
-    		//flag = 8;
-    		add = 7;
-    	}
-    	if (x > 10)          // x > 10
-    		flag |= 0x7;
-    	else if (x > 5)		 // x = 6 .. 10
-    		flag |= 0x6;
-    	else
-    		flag |= x;   	 // x = 1 .. 5
-    	return flag+add;
-    }
     
     private final long extractArcTemplateCode(long code) {
     	return (code >> flagBits) & ((1 << numArcFeatBits)-1);

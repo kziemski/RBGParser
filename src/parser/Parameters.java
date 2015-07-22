@@ -3,6 +3,7 @@ package parser;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import parser.feature.SyntacticFeatureFactory;
 import utils.FeatureVector;
 import utils.Utils;
 
@@ -290,7 +291,7 @@ public class Parameters implements Serializable {
 	public double dotProduct(double[] proju, double[] projv, int dist)
 	{
 		double sum = 0;
-		int binDist = getBinnedDistance(dist);
+		int binDist = Utils.getBinnedDistance(dist);
 		for (int r = 0; r < rank; ++r)
 			sum += proju[r] * projv[r] * (W[r][binDist] + W[r][0]);
 		return sum;
@@ -346,10 +347,9 @@ public class Parameters implements Serializable {
     	int[] depth = new int[N];
     	for (int c = 1; c < N; ++c) {
     		mpos[c] = (leftMost[c]<<3) + (rightMost[c]<<2) + (leftClosest[c]<<1) + rightClosest[c];
-    		depth[c] = 0;
     		for (int i = predDeps[c]; i != 0; i = predDeps[i])
     			depth[c]++;
-    		depth[c] = getBinnedDistance(depth[c]);
+    		depth[c] = Utils.getBinnedDistance(depth[c]);
     	}
         
         // update U
@@ -572,8 +572,8 @@ public class Parameters implements Serializable {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = Utils.getBinnedDistance(head-mod);
+    		int d2 = Utils.getBinnedDistance(head2-mod);
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
     		dU.addEntries(wordFvs[head], dotv * (W[k][0] + W[k][d]));
     		dU.addEntries(wordFvs[head2], - dotv * (W[k][0] + W[k][d2]));
@@ -612,8 +612,8 @@ public class Parameters implements Serializable {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = Utils.getBinnedDistance(head-mod);
+    		int d2 = Utils.getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		dV.addEntries(wordFvs[mod], dotu * (W[k][0] + W[k][d])
@@ -653,8 +653,8 @@ public class Parameters implements Serializable {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = Utils.getBinnedDistance(head-mod);
+    		int d2 = Utils.getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
@@ -731,16 +731,5 @@ public class Parameters implements Serializable {
 			if (actLabs[i] != predLabs[i]) dis += 1;
 		}
 		return dis;
-    }
-    public int getBinnedDistance(int x) {
-    	int y = x > 0 ? x : -x;
-    	int dis = 0;
-    	if (y > 10)
-    		dis = 7;
-    	else if (y > 5)
-    		dis = 6;
-    	else dis = y;
-    	if (dis > d) dis = d;
-    	return x > 0 ? dis : dis + d;
     }
 }
