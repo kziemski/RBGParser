@@ -3582,13 +3582,13 @@ public class SyntacticFeatureFactory implements Serializable {
     			offset = 19;
     		}
     		
-    		else if (temp == PLab.ordinal()) {
-    			extractArcCodeW(code, x);
-    			mod = createWordCodeP(WORDFV_BIAS, 0);
-    			head = createWordCodeP(WORDFV_BIAS, 0);
-    			num = x[0];
-    			offset = 27;
-    		}
+//    		else if (temp == PLab.ordinal()) {
+//    			extractArcCodeW(code, x);
+//    			mod = createWordCodeP(WORDFV_BIAS, 0);
+//    			head = createWordCodeP(WORDFV_BIAS, 0);
+//    			num = x[0];
+//    			offset = 27;
+//    		}
     		
     		else {
     			//System.out.println(temp);
