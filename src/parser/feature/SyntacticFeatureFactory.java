@@ -985,8 +985,8 @@ public class SyntacticFeatureFactory implements Serializable {
 		code = createArcCodeW(MPos, mpos) | tid;
 		addLabeledArcFeature(code, fv);
 		
-		code = createArcCodeW(PLab, types[h]) | tid;
-		addLabeledArcFeature(code, fv);
+//		code = createArcCodeW(PLab, types[h]) | tid;
+//		addLabeledArcFeature(code, fv);
 		
 		int depth = 0;
 		for (int i = h; i != 0; i = heads[i])

@@ -360,7 +360,7 @@ public class FeatureTemplate {
 	    
 	    Depth,
 	    MPos,
-	    PLab,
+	    //PLab,
 	    
 	    FEATURE_TEMPLATE_END;
 		
