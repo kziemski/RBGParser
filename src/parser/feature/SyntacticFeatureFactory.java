@@ -121,21 +121,10 @@ public class SyntacticFeatureFactory implements Serializable {
         DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
         
         // 1st order arc
-        for (int i = 0; i < n; ++i) {
-    		
-    		if (heads[i] == -1) continue;
-    	     
-    		int parent = heads[i];
-    		createArcFeatures(col, inst, parent, i);	// arc features    		
-    		if (options.learnLabel) {
-    			int type = deplbids[i]; 
-    			boolean toRight = parent < i;
-    			//createLabelFeatures(inst, parent, type, toRight, false);
-    			//createLabelFeatures(inst, i, type, toRight, true);
-    			//createLabelFeatures(inst, heads[i], i, type);
-    			createLabelFeatures(col, inst, arcLis, heads, i, type);
-    		}
-    	}
+        for (int m = 1; m < n; ++m) {
+    		int h = heads[m];
+    		createArcFeatures(col, inst, h, m);	// arc features 
+        }
     	
         if (options.learningMode != LearningMode.Basic) {
         	
@@ -333,7 +322,13 @@ public class SyntacticFeatureFactory implements Serializable {
 					}
 				}
 			}
-        }		
+        }
+        
+    	if (options.learnLabel) {
+    		for (int m = 1; m < n; ++m) {
+    			createLabelFeatures(col, inst, heads, deplbids, m);
+    		}
+		}
     }
     
     
@@ -931,22 +926,17 @@ public class SyntacticFeatureFactory implements Serializable {
      ************************************************************************/
     
     public void createLabelFeatures(Collector fv, DependencyInstance inst,
-    		DependencyArcList arcLis, int[] heads, int mod, int type)
+    		int[] heads, int[] types, int mod)
     {
-    	if (!options.learnLabel) return;
-    	
-    	// label type to start from 1 in hashcode
-    	type = type+1;
-    	
-    	//int[] heads = inst.heads;
     	int head = heads[mod];
-    	    	
+    	int type = types[mod] + 1;	// label type to start from 1 in hashcode
     	createLabeledArcFeatures(fv, inst, head, mod, type);
     	
-    	//int ghead = heads[head];
-    	//if (ghead != -1) {
-    	//	fv.addEntries(createGPCFeatureVector(inst, ghead, head, mod, type));
-    	//}
+    	int gp = heads[head];
+    	int ptype = types[head] + 1;	// label type to start from 1 in hashcode
+    	if (/*options.learningMode != LearningMode.Basic && options.useGP && */gp != -1) {
+    		createLabeledGPCFeatureVector(fv, inst, gp, head, mod, type, ptype);
+    	}
     }
     
     public void createLabeledArcFeatures(Collector fv, DependencyInstance inst, int h, int c, int type) 
@@ -1918,13 +1908,6 @@ public class SyntacticFeatureFactory implements Serializable {
     	addArcFeature(code | dirFlag, fv);
     	
     }
-
-    
-//    public FeatureVector createGPCFeatureVector(DependencyInstance inst, 
-//    		int gp, int par, int c)
-//    {
-//    	return createGPCFeatureVector(inst, gp, par, c, 0);
-//    }
     
     public void createGPCFeatureVector(Collector fv, DependencyInstance inst, 
     		int gp, int par, int c) 
@@ -1968,9 +1951,174 @@ public class SyntacticFeatureFactory implements Serializable {
         code = createArcCodeWPP(GC_HC_ML, ML, GC, HC);
         addArcFeature(code, fv);
         addArcFeature(code | flag, fv);
+        
+        code = createArcCodePP(GC_HC, GC, HC);
+    	addArcFeature(code, fv);
+    	addArcFeature(code | flag, fv);
+
+    	code = createArcCodePP(GC_MC, GC, MC);
+    	addArcFeature(code, fv);
+    	addArcFeature(code | flag, fv);
+
+    	code = createArcCodePP(HC_MC, HC, MC);
+    	addArcFeature(code | flag, fv);
+    	
+    	code = createArcCodeWWP(GL_HL_MC, GL, HL, MC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWWP(GL_HC_ML, GL, ML, HC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWWP(GC_HL_ML, HL, ML, GC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+//        code = createArcCodeWWW(GL_HL_ML, GL, HL, ML);
+//        addArcFeature(code, fv);
+//        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GL_HC, GL, HC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GC_HL, HL, GC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWW(GL_HL, GL, HL);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GL_MC, GL, MC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GC_ML, ML, GC);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWW(GL_ML, GL, ML);
+        addArcFeature(code, fv);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(HL_MC, HL, MC);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(HC_ML, ML, HC);
+        addArcFeature(code | flag, fv);
+
+        code = createArcCodeWW(HL_ML, HL, ML);
+        addArcFeature(code | flag, fv);
 
     	addTurboGPC(inst, gp, par, c, flag, fv);
     	
+    }
+    
+    public void createLabeledGPCFeatureVector(Collector fv, DependencyInstance inst, 
+    		int gp, int h, int m, int type, int ptype) 
+    {
+    	
+    	int[] pos = inst.postagids;
+    	int[] posA = inst.cpostagids;
+    	//int[] lemma = inst.lemmaids;
+    	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
+    	
+    	int flag = (((((gp < h ? 0 : 1) << 1) | (h < m ? 0 : 1)) << 1) | 1);
+    	int tid = ((ptype << depNumBits) | type) << 4;
+    	
+    	int GP = pos[gp];
+    	int HP = pos[h];
+    	int MP = pos[m];
+    	int GC = posA[gp];
+    	int HC = posA[h];
+    	int MC = posA[m];
+    	long code = 0;
+
+    	code = createArcCodePPP(GP_HP_MP, GP, HP, MP) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | flag, fv);
+
+    	code = createArcCodePPP(GC_HC_MC, GC, HC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | flag, fv);
+    
+        int GL = lemma[gp];
+        int HL = lemma[h];
+        int ML = lemma[m];
+
+        code = createArcCodeWPP(GL_HC_MC, GL, HC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWPP(GC_HL_MC, HL, GC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWPP(GC_HC_ML, ML, GC, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+        
+        code = createArcCodePP(GC_HC, GC, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+    	code = createArcCodePP(GC_MC, GC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | flag, fv);
+
+    	code = createArcCodePP(HC_MC, HC, MC) | tid;
+    	addLabeledArcFeature(code | flag, fv);
+    	
+    	code = createArcCodeWWP(GL_HL_MC, GL, HL, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWWP(GL_HC_ML, GL, ML, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWWP(GC_HL_ML, HL, ML, GC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+//        code = createArcCodeWWW(GL_HL_ML, GL, HL, ML) | tid;
+//        addLabeledArcFeature(code, fv);
+//        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GL_HC, GL, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GC_HL, HL, GC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWW(GL_HL, GL, HL) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GL_MC, GL, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(GC_ML, ML, GC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWW(GL_ML, GL, ML) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(HL_MC, HL, MC) | tid;
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWP(HC_ML, ML, HC) | tid;
+        addLabeledArcFeature(code | flag, fv);
+
+        code = createArcCodeWW(HL_ML, HL, ML) | tid;
+        addLabeledArcFeature(code | flag, fv);
     }
 
     void addTurboGPC(DependencyInstance inst, int gp, int par, int c, 
@@ -2065,16 +2213,6 @@ public class SyntacticFeatureFactory implements Serializable {
     	code = createArcCodePPPPP(GC_HC_MC_nHC_pMC, GC, HC, MC, nHC, pMC);
     	addArcFeature(code, fv);
     	addArcFeature(code | dirFlag, fv);
-
-    	code = createArcCodePP(GC_HC, GC, HC);
-    	addArcFeature(code, fv);
-    	addArcFeature(code | dirFlag, fv);
-
-    	code = createArcCodePP(GC_MC, GC, MC);
-    	addArcFeature(code | dirFlag, fv);
-
-    	code = createArcCodePP(HC_MC, HC, MC);
-    	addArcFeature(code | dirFlag, fv);
         
         int GL = lemma[gp];
         int HL = lemma[par];
@@ -2153,51 +2291,6 @@ public class SyntacticFeatureFactory implements Serializable {
 
         code = createArcCodeWPPP(GC_HC_ML_nMC, ML, GC, HC, nMC);
         addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWWP(GL_HL_MC, GL, HL, MC);
-        addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWWP(GL_HC_ML, GL, ML, HC);
-        addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWWP(GC_HL_ML, HL, ML, GC);
-        addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        //code = createArcCodeWWW(GL_HL_ML, GL, HL, ML);
-        //addCode(TemplateType::TThirdOrder, code, fv);
-
-        code = createArcCodeWP(GL_HC, GL, HC);
-        addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWP(GC_HL, HL, GC);
-        addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWW(GL_HL, GL, HL);
-        addArcFeature(code, fv);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWP(GL_MC, GL, MC);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWP(GC_ML, ML, GC);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWW(GL_ML, GL, ML);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWP(HL_MC, HL, MC);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWP(HC_ML, ML, HC);
-        addArcFeature(code | dirFlag, fv);
-
-        code = createArcCodeWW(HL_ML, HL, ML);
         addArcFeature(code | dirFlag, fv);
     }
 
@@ -3297,6 +3390,10 @@ public class SyntacticFeatureFactory implements Serializable {
     
     public final long createArcCodeWW(FeatureTemplate.Arc temp, long x, long y) {
     	return ((((x << wordNumBits) | y) << numArcFeatBits) | temp.ordinal()) << flagBits;
+    }
+    
+    public final long createArcCodeWWW(FeatureTemplate.Arc temp, long x, long y, long z) {
+    	return ((((((x << wordNumBits) | y) << wordNumBits) | z) << numArcFeatBits) | temp.ordinal()) << flagBits;
     }
     
     public final long createArcCodeWP(FeatureTemplate.Arc temp, long x, long y) {

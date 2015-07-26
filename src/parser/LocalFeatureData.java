@@ -1,6 +1,8 @@
 package parser;
 
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import parser.Options.LearningMode;
 import parser.decoding.DependencyDecoder;
@@ -1022,21 +1024,21 @@ public class LocalFeatureData {
     	return dfv;
 	}
 	
-	private FeatureVector getLabelFeature(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private FeatureVector getLabelFeature(int[] heads, int[] types, int mod)
 	{
 		FeatureVector fv = new FeatureVector(sizeL);
-		synFactory.createLabelFeatures(fv, inst, arcLis, heads, mod, type);
+		synFactory.createLabelFeatures(fv, inst, heads, types, mod);
 		return fv;
 	}
 	
-	private double getLabelScoreTheta(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private double getLabelScoreTheta(int[] heads, int[] types, int mod)
 	{
 		ScoreCollector col = new ScoreCollector(parameters, true);
-		synFactory.createLabelFeatures(col, inst, arcLis, heads, mod, type);
+		synFactory.createLabelFeatures(col, inst, heads, types, mod);
 		return col.score;
 	}
 	
-	private double getLabelScoreTensor(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private double getLabelScoreTensor(int[] heads, int mod, int type)
 	{
 		int head = heads[mod];
 		int dir = head > mod ? 1 : 2;
@@ -1049,10 +1051,10 @@ public class LocalFeatureData {
 	}
 	
 	
-	private double getLabelScore(DependencyArcList arcLis, int[] heads, int mod, int type)
+	private double getLabelScore(int[] heads, int[] types, int mod)
 	{
-		return gammaL * getLabelScoreTheta(arcLis, heads, mod, type) +
-				(1-gammaL) * getLabelScoreTensor(arcLis, heads, mod, type);
+		return gammaL * getLabelScoreTheta(heads, types, mod) +
+				(1-gammaL) * getLabelScoreTensor(heads, mod, types[mod]);
 	}
 	
 	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)
@@ -1060,20 +1062,31 @@ public class LocalFeatureData {
 		assert(heads.length == len);
 		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
 		int T = ntypes;
-		for (int mod = 1; mod < len; ++mod) {
-			int head = heads[mod];
-			int type = addLoss ? 0 : 1;
-			double best = getLabelScore(arcLis, heads, mod, type) +
-				(addLoss && inst.deplbids[mod] != 0 ? 1.0 : 0.0);
-			for (int t = type+1; t < T; ++t) {
-				double va = getLabelScore(arcLis, heads, mod, t) +
-					(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
-				if (va > best) {
-					best = va;
-					type = t;
+		
+		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(len);
+		queue.add(0);
+		deplbids[0] = inst.deplbids[0];
+		while (!queue.isEmpty()) {
+			int head = queue.remove();
+			int st = arcLis.startIndex(head);
+			int ed = arcLis.endIndex(head);
+			for (int p = st; p < ed ; ++p) {
+				int mod = arcLis.get(p);
+				queue.add(mod);
+				
+				int type = 0;
+				double best = Double.NEGATIVE_INFINITY;
+				for (int t = 1; t < T; ++t) {
+					deplbids[mod] = t;
+					double va = getLabelScore(heads, deplbids, mod) +
+						(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
+					if (va > best) {
+						best = va;
+						type = t;
+					}
 				}
+				deplbids[mod] = type;
 			}
-			deplbids[mod] = type;
 		}
 	}
 	
@@ -1086,30 +1099,15 @@ public class LocalFeatureData {
 		
 		FeatureVector dlfv = new FeatureVector(sizeL);
 
-		
     	int N = inst.length;
     	int[] actDeps = gold.heads;
     	int[] actLabs = gold.deplbids;
     	int[] predDeps = pred.heads;
     	int[] predLabs = pred.deplbids;
-    	DependencyArcList arcLis = new DependencyArcList(gold.heads, options.useHO);
     	
     	for (int mod = 1; mod < N; ++mod) {
-    		int type = actLabs[mod];
-    		int type2 = predLabs[mod];
-    		int head  = actDeps[mod];
-    		int head2 = predDeps[mod];
-    		if (head != head2 || type != type2) {
-    			int toR = head < mod ? 1 : 0;        		
-    			int toR2 = head2 < mod ? 1 : 0;   
-    			dlfv.addEntries(getLabelFeature(arcLis, actDeps, mod, type));
-    			dlfv.addEntries(getLabelFeature(arcLis, predDeps, mod, type2), -1.0);
-    			
-    			//dlfv.addEntries(lbFvs[head][type][toR][0]);
-    			//dlfv.addEntries(lbFvs[mod][type][toR][1]);
-    			//dlfv.addEntries(lbFvs[head2][type2][toR2][0], -1.0);
-    			//dlfv.addEntries(lbFvs[mod][type2][toR2][1], -1.0);
-    		}
+    		dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod));
+    		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod), -1.0);
     	}
 		
 		return dlfv;
