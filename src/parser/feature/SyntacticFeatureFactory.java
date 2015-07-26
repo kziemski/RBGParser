@@ -2069,6 +2069,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	addLabeledArcFeature(code | flag, fv);
 
     	code = createArcCodePP(HC_MC, HC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
     	addLabeledArcFeature(code | flag, fv);
     	
     	code = createArcCodeWWP(GL_HL_MC, GL, HL, MC) | tid;
@@ -2112,12 +2113,15 @@ public class SyntacticFeatureFactory implements Serializable {
         addLabeledArcFeature(code | flag, fv);
 
         code = createArcCodeWP(HL_MC, HL, MC) | tid;
+        addLabeledArcFeature(code, fv);
         addLabeledArcFeature(code | flag, fv);
 
         code = createArcCodeWP(HC_ML, ML, HC) | tid;
+        addLabeledArcFeature(code, fv);
         addLabeledArcFeature(code | flag, fv);
 
         code = createArcCodeWW(HL_ML, HL, ML) | tid;
+        addLabeledArcFeature(code, fv);
         addLabeledArcFeature(code | flag, fv);
     }
 

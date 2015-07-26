@@ -43,6 +43,8 @@ public class LocalFeatureData {
 	FeatureVector[] arcFvs;			// 1st order arc feature vectors
 	double[] arcScores;				// 1st order arc scores (including tensor)
 	
+	double[][][] labScores;
+	
 	double[] trips;			// [dep id][sib]
 	double[] sib;			// [mod][sib]
 	double[] gpc;			// [dep id][child]
@@ -96,6 +98,20 @@ public class LocalFeatureData {
 		
 		// calculate 1st order feature vectors and scores
 		initFirstOrderTables();
+		
+		if (options.learnLabel) {
+			int[] heads = inst.heads;
+			int[] types = new int[len];
+			labScores = new double[len][ntypes][ntypes];
+			for (int i = 1; i < len; ++i)
+				for (int p = 1; p < ntypes; ++p)
+					for (int q = 1; q < ntypes; ++q) {
+						types[i] = p;
+						types[heads[i]] = q;
+						labScores[i][p][q] = gammaL * getLabelScoreTheta(heads, types, i) +
+								(1-gammaL) * getLabelScoreTensor(heads, types, i);
+					}
+		}
 	}
 	
 	public void updateProjection()
@@ -1038,9 +1054,10 @@ public class LocalFeatureData {
 		return col.score;
 	}
 	
-	private double getLabelScoreTensor(int[] heads, int mod, int type)
+	private double getLabelScoreTensor(int[] heads, int[] types, int mod)
 	{
 		int head = heads[mod];
+		int type = types[mod];
 		int dir = head > mod ? 1 : 2;
 		int T = ntypes;
 		double s = 0;
@@ -1050,44 +1067,89 @@ public class LocalFeatureData {
 		return s;
 	}
 	
+//	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)
+//	{
+//		assert(heads.length == len);
+//		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
+//		int T = ntypes;
+//		
+//		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(len);
+//		queue.add(0);
+//		deplbids[0] = inst.deplbids[0];
+//		while (!queue.isEmpty()) {
+//			int head = queue.remove();
+//			int st = arcLis.startIndex(head);
+//			int ed = arcLis.endIndex(head);
+//			for (int p = st; p < ed ; ++p) {
+//				int mod = arcLis.get(p);
+//				queue.add(mod);
+//				
+//				int type = 0;
+//				double best = Double.NEGATIVE_INFINITY;
+//				for (int t = 1; t < T; ++t) {
+//					deplbids[mod] = t;
+//					double va = getLabelScore(heads, deplbids, mod) +
+//						(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
+//					if (va > best) {
+//						best = va;
+//						type = t;
+//					}
+//				}
+//				deplbids[mod] = type;
+//			}
+//		}
+//	}
 	
-	private double getLabelScore(int[] heads, int[] types, int mod)
+	void treeDP(int i, DependencyArcList arcLis, double[][] f, boolean addLoss)
 	{
-		return gammaL * getLabelScoreTheta(heads, types, mod) +
-				(1-gammaL) * getLabelScoreTensor(heads, mod, types[mod]);
+		int st = arcLis.startIndex(i);
+		int ed = arcLis.endIndex(i);
+		for (int l = st; l < ed ; ++l) {
+			int j = arcLis.get(l);
+			treeDP(j, arcLis, f, addLoss);
+			for (int p = 1; p < ntypes; ++p) {
+				double best = Double.NEGATIVE_INFINITY;
+				for (int q = 1; q < ntypes; ++q) {
+					double s = f[j][q] + labScores[j][q][p] + 
+							(addLoss && inst.deplbids[j] != q ? 1.0 : 0.0);
+					if (s > best)
+						best = s;
+				}
+				f[i][p] += best;
+			}
+		}
+	}
+	
+	void getType(int i, DependencyArcList arcLis, double[][] f, boolean addLoss, int[] types)
+	{
+		int p = types[i];
+		int st = arcLis.startIndex(i);
+		int ed = arcLis.endIndex(i);
+		for (int l = st; l < ed ; ++l) {
+			int j = arcLis.get(l);
+			int bestq = 0;
+			double best = Double.NEGATIVE_INFINITY;
+			for (int q = 1; q < ntypes; ++q) {
+				double s = f[j][q] + labScores[j][q][p] + 
+						(addLoss && inst.deplbids[j] != q ? 1.0 : 0.0);
+				if (s > best) {
+					best = s;
+					bestq = q;
+				}
+			}
+			types[j] = bestq;
+			getType(j, arcLis, f, addLoss, types);
+		}
 	}
 	
 	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)
 	{
-		assert(heads.length == len);
+		assert(heads == inst.heads);
 		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
-		int T = ntypes;
-		
-		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(len);
-		queue.add(0);
+		double[][] f = new double[len][ntypes];
+		treeDP(0, arcLis, f, addLoss);
 		deplbids[0] = inst.deplbids[0];
-		while (!queue.isEmpty()) {
-			int head = queue.remove();
-			int st = arcLis.startIndex(head);
-			int ed = arcLis.endIndex(head);
-			for (int p = st; p < ed ; ++p) {
-				int mod = arcLis.get(p);
-				queue.add(mod);
-				
-				int type = 0;
-				double best = Double.NEGATIVE_INFINITY;
-				for (int t = 1; t < T; ++t) {
-					deplbids[mod] = t;
-					double va = getLabelScore(heads, deplbids, mod) +
-						(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
-					if (va > best) {
-						best = va;
-						type = t;
-					}
-				}
-				deplbids[mod] = type;
-			}
-		}
+		getType(0, arcLis, f, addLoss, deplbids);
 	}
 	
 	public FeatureVector getLabeledFeatureDifference(DependencyInstance gold, 
