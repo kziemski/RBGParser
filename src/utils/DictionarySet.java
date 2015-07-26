@@ -114,7 +114,7 @@ public class DictionarySet implements Serializable {
 	
 	public void filterDictionary(DictionaryTypes tag)
 	{
-		//if (dicts[tag.ordinal()].size() > 20)
+		if (dicts[tag.ordinal()].size() > 20)
 			filterDictionary(tag, 0.999f);
 	}
 	

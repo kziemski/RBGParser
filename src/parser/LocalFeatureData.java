@@ -1086,16 +1086,16 @@ public class LocalFeatureData {
 //		}
 //	}
 	
-	void treeDP(int i, DependencyArcList arcLis, double[][] f)
+	void treeDP(int i, DependencyArcList arcLis, double[][] f, int lab0)
 	{
 		int st = arcLis.startIndex(i);
 		int ed = arcLis.endIndex(i);
 		for (int l = st; l < ed ; ++l) {
 			int j = arcLis.get(l);
-			treeDP(j, arcLis, f);
-			for (int p = 1; p < ntypes; ++p) {
+			treeDP(j, arcLis, f, lab0);
+			for (int p = lab0; p < ntypes; ++p) {
 				double best = Double.NEGATIVE_INFINITY;
-				for (int q = 1; q < ntypes; ++q) {
+				for (int q = lab0; q < ntypes; ++q) {
 					double s = f[j][q] + labScores[j][q][p];
 					if (s > best)
 						best = s;
@@ -1105,7 +1105,7 @@ public class LocalFeatureData {
 		}
 	}
 	
-	void getType(int i, DependencyArcList arcLis, double[][] f, int[] types)
+	void getType(int i, DependencyArcList arcLis, double[][] f, int[] types, int lab0)
 	{
 		int p = types[i];
 		int st = arcLis.startIndex(i);
@@ -1114,7 +1114,7 @@ public class LocalFeatureData {
 			int j = arcLis.get(l);
 			int bestq = 0;
 			double best = Double.NEGATIVE_INFINITY;
-			for (int q = 1; q < ntypes; ++q) {
+			for (int q = lab0; q < ntypes; ++q) {
 				double s = f[j][q] + labScores[j][q][p];
 				if (s > best) {
 					best = s;
@@ -1122,7 +1122,7 @@ public class LocalFeatureData {
 				}
 			}
 			types[j] = bestq;
-			getType(j, arcLis, f, types);
+			getType(j, arcLis, f, types, lab0);
 		}
 	}
 	
@@ -1133,9 +1133,10 @@ public class LocalFeatureData {
 		double[][] f = new double[len][ntypes];
 		
 		labScores = new double[len][ntypes][ntypes];
+		int lab0 = addLoss ? 0 : 1;
 		for (int i = 1; i < len; ++i)
-			for (int p = 1; p < ntypes; ++p)
-				for (int q = 1; q < ntypes; ++q) {
+			for (int p = lab0; p < ntypes; ++p)
+				for (int q = lab0; q < ntypes; ++q) {
 					deplbids[i] = p;
 					deplbids[heads[i]] = q;
 					labScores[i][p][q] = gammaL * getLabelScoreTheta(heads, deplbids, i) +
@@ -1143,9 +1144,9 @@ public class LocalFeatureData {
 							(addLoss && inst.deplbids[i] != p ? 1.0 : 0.0);
 				}
 		
-		treeDP(0, arcLis, f);
+		treeDP(0, arcLis, f, lab0);
 		deplbids[0] = inst.deplbids[0];
-		getType(0, arcLis, f, deplbids);
+		getType(0, arcLis, f, deplbids, lab0);
 		
 		
 //		double s = 0;
