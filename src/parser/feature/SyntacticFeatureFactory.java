@@ -326,7 +326,7 @@ public class SyntacticFeatureFactory implements Serializable {
         
     	if (options.learnLabel) {
     		for (int m = 1; m < n; ++m) {
-    			createLabelFeatures(col, inst, heads, deplbids, m);
+    			createLabelFeatures(col, inst, heads, deplbids, m, 0);
     		}
 		}
     }
@@ -926,15 +926,16 @@ public class SyntacticFeatureFactory implements Serializable {
      ************************************************************************/
     
     public void createLabelFeatures(Collector fv, DependencyInstance inst,
-    		int[] heads, int[] types, int mod)
+    		int[] heads, int[] types, int mod, int order)
     {
     	int head = heads[mod];
     	int type = types[mod] + 1;	// label type to start from 1 in hashcode
-    	createLabeledArcFeatures(fv, inst, head, mod, type);
+    	if (order != 2)
+    		createLabeledArcFeatures(fv, inst, head, mod, type);
     	
     	int gp = heads[head];
     	int ptype = types[head] + 1;	// label type to start from 1 in hashcode
-    	if (/*options.learningMode != LearningMode.Basic && options.useGP && */gp != -1) {
+    	if (order != 1 && /*options.learningMode != LearningMode.Basic && options.useGP && */gp != -1) {
     		createLabeledGPCFeatureVector(fv, inst, gp, head, mod, type, ptype);
     	}
     }
@@ -2017,7 +2018,7 @@ public class SyntacticFeatureFactory implements Serializable {
     }
     
     public void createLabeledGPCFeatureVector(Collector fv, DependencyInstance inst, 
-    		int gp, int h, int m, int type, int ptype) 
+    		int gp, int par, int c, int type, int ptype) 
     {
     	
     	int[] pos = inst.postagids;
@@ -2025,15 +2026,15 @@ public class SyntacticFeatureFactory implements Serializable {
     	//int[] lemma = inst.lemmaids;
     	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
     	
-    	int flag = (((((gp < h ? 0 : 1) << 1) | (h < m ? 0 : 1)) << 1) | 1);
+    	int flag = (((((gp < par ? 0 : 1) << 1) | (par < c ? 0 : 1)) << 1) | 1);
     	int tid = ((ptype << depNumBits) | type) << 4;
     	
     	int GP = pos[gp];
-    	int HP = pos[h];
-    	int MP = pos[m];
+    	int HP = pos[par];
+    	int MP = pos[c];
     	int GC = posA[gp];
-    	int HC = posA[h];
-    	int MC = posA[m];
+    	int HC = posA[par];
+    	int MC = posA[c];
     	long code = 0;
 
     	code = createArcCodePPP(GP_HP_MP, GP, HP, MP) | tid;
@@ -2045,8 +2046,8 @@ public class SyntacticFeatureFactory implements Serializable {
     	addLabeledArcFeature(code | flag, fv);
     
         int GL = lemma[gp];
-        int HL = lemma[h];
-        int ML = lemma[m];
+        int HL = lemma[par];
+        int ML = lemma[c];
 
         code = createArcCodeWPP(GL_HC_MC, GL, HC, MC) | tid;
         addLabeledArcFeature(code, fv);
@@ -2123,6 +2124,8 @@ public class SyntacticFeatureFactory implements Serializable {
         code = createArcCodeWW(HL_ML, HL, ML) | tid;
         addLabeledArcFeature(code, fv);
         addLabeledArcFeature(code | flag, fv);
+        
+        addLabeledTurboGPC(inst, gp, par, c, flag, tid, fv);
     }
 
     void addTurboGPC(DependencyInstance inst, int gp, int par, int c, 
@@ -2296,6 +2299,179 @@ public class SyntacticFeatureFactory implements Serializable {
         code = createArcCodeWPPP(GC_HC_ML_nMC, ML, GC, HC, nMC);
         addArcFeature(code, fv);
         addArcFeature(code | dirFlag, fv);
+    }
+    
+    void addLabeledTurboGPC(DependencyInstance inst, int gp, int par, int c, 
+    		int dirFlag, int tid, Collector fv) {
+    	int[] posA = inst.cpostagids;
+    	//int[] lemma = inst.lemmaids;
+    	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
+    	int len = posA.length;
+
+    	int GC = posA[gp];
+    	int HC = posA[par];
+    	int MC = posA[c];
+
+    	int pGC = gp > 0 ? posA[gp - 1] : TOKEN_START;
+    	int nGC = gp < len - 1 ? posA[gp + 1] : TOKEN_END;
+    	int pHC = par > 0 ? posA[par - 1] : TOKEN_START;
+    	int nHC = par < len - 1 ? posA[par + 1] : TOKEN_END;
+    	int pMC = c > 0 ? posA[c - 1] : TOKEN_START;
+    	int nMC = c < len - 1 ? posA[c + 1] : TOKEN_END;
+
+    	long code = 0;
+
+    	// CCC
+    	code = createArcCodePPPP(pGC_GC_HC_MC, pGC, GC, HC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPP(GC_nGC_HC_MC, GC, nGC, HC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPP(GC_pHC_HC_MC, GC, pHC, HC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPP(GC_HC_nHC_MC, GC, HC, nHC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPP(GC_HC_pMC_MC, GC, HC, pMC, MC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPP(GC_HC_MC_nMC, GC, HC, MC, nMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_pGC_pHC, GC, HC, MC, pGC, pHC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_pGC_pMC, GC, HC, MC , pGC, pMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_pHC_pMC, GC, HC, MC, pHC, pMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_nGC_nHC, GC, HC, MC, nGC, nHC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_nGC_nMC, GC, HC, MC, nGC, nMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_nHC_nMC, GC, HC, MC, nHC, nMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_pGC_nHC, GC, HC, MC, pGC, nHC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_pGC_nMC, GC, HC, MC, pGC, nMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_pHC_nMC, GC, HC, MC, pHC, nMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_nGC_pHC, GC, HC, MC, nGC, pHC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_nGC_pMC, GC, HC, MC, nGC, pMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+
+    	code = createArcCodePPPPP(GC_HC_MC_nHC_pMC, GC, HC, MC, nHC, pMC) | tid;
+    	addLabeledArcFeature(code, fv);
+    	addLabeledArcFeature(code | dirFlag, fv);
+        
+        int GL = lemma[gp];
+        int HL = lemma[par];
+        int ML = lemma[c];
+
+        // LCC
+        code = createArcCodeWPPP(pGC_GL_HC_MC, GL, pGC, HC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GL_nGC_HC_MC, GL, nGC, HC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GL_pHC_HC_MC, GL, pHC, HC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GL_HC_nHC_MC, GL, HC, nHC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GL_HC_pMC_MC, GL, HC, pMC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GL_HC_MC_nMC, GL, HC, MC, nMC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        // CLC
+        code = createArcCodeWPPP(pGC_GC_HL_MC, HL, pGC, GC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_nGC_HL_MC, HL, GC, nGC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_pHC_HL_MC, HL, GC, pHC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_HL_nHC_MC, HL, GC, nHC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_HL_pMC_MC, HL, GC, pMC, MC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_HL_MC_nMC, HL, GC, MC, nMC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        // CCL
+        code = createArcCodeWPPP(pGC_GC_HC_ML, ML, pGC, GC, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_nGC_HC_ML, ML, GC, nGC, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_pHC_HC_ML, ML, GC, pHC, HC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_HC_nHC_ML, ML, GC, HC, nHC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_HC_pMC_ML, ML, GC, HC, pMC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
+
+        code = createArcCodeWPPP(GC_HC_ML_nMC, ML, GC, HC, nMC) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | dirFlag, fv);
     }
 
     /************************************************************************

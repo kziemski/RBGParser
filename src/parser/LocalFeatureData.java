@@ -1026,17 +1026,17 @@ public class LocalFeatureData {
     	return dfv;
 	}
 	
-	private FeatureVector getLabelFeature(int[] heads, int[] types, int mod)
+	private FeatureVector getLabelFeature(int[] heads, int[] types, int mod, int order)
 	{
 		FeatureVector fv = new FeatureVector(sizeL);
-		synFactory.createLabelFeatures(fv, inst, heads, types, mod);
+		synFactory.createLabelFeatures(fv, inst, heads, types, mod, order);
 		return fv;
 	}
 	
-	private double getLabelScoreTheta(int[] heads, int[] types, int mod)
+	private double getLabelScoreTheta(int[] heads, int[] types, int mod, int order)
 	{
 		ScoreCollector col = new ScoreCollector(parameters, true);
-		synFactory.createLabelFeatures(col, inst, heads, types, mod);
+		synFactory.createLabelFeatures(col, inst, heads, types, mod, order);
 		return col.score;
 	}
 	
@@ -1052,6 +1052,12 @@ public class LocalFeatureData {
 		}
 		return s;
 	}
+	
+//	private double getLabelScore(int[] heads, int[] types, int mod)
+//	{
+//		return gammaL * getLabelScoreTheta(heads, types, mod) +
+//				(1-gammaL) * getLabelScoreTensor(heads, types, mod);
+//	}
 	
 //	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)
 //	{
@@ -1135,14 +1141,16 @@ public class LocalFeatureData {
 		labScores = new double[len][ntypes][ntypes];
 		int lab0 = addLoss ? 0 : 1;
 		for (int i = 1; i < len; ++i)
-			for (int p = lab0; p < ntypes; ++p)
+			for (int p = lab0; p < ntypes; ++p) {
+				deplbids[i] = p;
+				double s1 = getLabelScoreTheta(heads, deplbids, i, 1);
 				for (int q = lab0; q < ntypes; ++q) {
-					deplbids[i] = p;
 					deplbids[heads[i]] = q;
-					labScores[i][p][q] = gammaL * getLabelScoreTheta(heads, deplbids, i) +
-							(1-gammaL) * getLabelScoreTensor(heads, deplbids, i) +
-							(addLoss && inst.deplbids[i] != p ? 1.0 : 0.0);
+					double s2 = getLabelScoreTheta(heads, deplbids, i, 2);
+					labScores[i][p][q] = gammaL * (s1+s2) +	(1-gammaL) * getLabelScoreTensor(heads, deplbids, i)
+							+ (addLoss && inst.deplbids[i] != p ? 1.0 : 0.0);
 				}
+			}
 		
 		treeDP(0, arcLis, f, lab0);
 		deplbids[0] = inst.deplbids[0];
@@ -1174,8 +1182,15 @@ public class LocalFeatureData {
     	int[] predLabs = pred.deplbids;
     	
     	for (int mod = 1; mod < N; ++mod) {
-    		dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod));
-    		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod), -1.0);
+    		int head = actDeps[mod];
+    		if (actLabs[mod] != predLabs[mod]) {
+    			dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod, 1));
+        		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 1), -1.0);
+    		}
+    		if (actLabs[mod] != predLabs[mod] || actLabs[head] != predLabs[head]) {
+    			dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod, 2));
+    			dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 2), -1.0);
+    		}
     	}
 		
 		return dlfv;
