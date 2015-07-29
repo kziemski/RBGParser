@@ -28,7 +28,7 @@ public class LocalFeatureData {
 	final int len;					// sentence length
 	final int ntypes;				// number of label types
 	final int size, sizeL;						
-	final int rank;								
+	final int rank, rank2;								
 	final double gamma, gammaL;
 	
 	int numarcs;					// number of un-pruned arcs and gold arcs (if indexGoldArcs == true)
@@ -39,6 +39,7 @@ public class LocalFeatureData {
 	
 	FeatureVector[] wordFvs;		// word feature vectors
 	double[][] wpU, wpV;			// word projections U\phi and V\phi
+	double[][] wpU2, wpV2, wpW2;	// word projections U2\phi, V2\phi and W2\phi
 	
 	FeatureVector[] arcFvs;			// 1st order arc feature vectors
 	double[] arcScores;				// 1st order arc scores (including tensor)
@@ -72,6 +73,7 @@ public class LocalFeatureData {
 		len = inst.length;
 		ntypes = pipe.types.length;
 		rank = options.R;
+		rank2 = options.R2;
 		size = synFactory.numArcFeats+1;
 		sizeL = synFactory.numLabeledArcFeats+1;
 		gamma = options.gamma;
@@ -80,6 +82,11 @@ public class LocalFeatureData {
 		wordFvs = new FeatureVector[len];
 		wpU = new double[len][rank];
 		wpV = new double[len][rank];
+		if (options.learnLabel) {
+			wpU2 = new double[len][rank2];
+			wpV2 = new double[len][rank2];
+			wpW2 = new double[len][rank2];
+		}
 		
 		if (isTrain) arcFvs = new FeatureVector[len*len];
 		arcScores = new double[len*len];
@@ -112,10 +119,13 @@ public class LocalFeatureData {
 	{
 		for (int i = 0; i < len; ++i) {
 			wordFvs[i] = synFactory.createWordFeatures(inst, i);
-			//wpU[i] = parameters.projectU(wordFvs[i]);
-			//wpV[i] = parameters.projectV(wordFvs[i]);
 			parameters.projectU(wordFvs[i], wpU[i]);
 			parameters.projectV(wordFvs[i], wpV[i]);
+			if (options.learnLabel) {
+				parameters.projectU2(wordFvs[i], wpU2[i]);
+				parameters.projectV2(wordFvs[i], wpV2[i]);
+				parameters.projectW2(wordFvs[i], wpW2[i]);
+			}
 		}
 		
 		boolean nopruning = !options.pruning || pruner == null || options.learningMode == LearningMode.Basic;
@@ -1040,58 +1050,6 @@ public class LocalFeatureData {
 		return col.score;
 	}
 	
-	private double getLabelScoreTensor(int[] heads, int[] types, int mod)
-	{
-		int head = heads[mod];
-		int type = types[mod];
-		int dir = head > mod ? 1 : 2;
-		int T = ntypes;
-		double s = 0;
-		for (int k = 0; k < rank; ++k) {
-			s += wpU[head][k] * wpV[mod][k] * (parameters.WL[k][type] + parameters.WL[k][dir*T+type]);
-		}
-		return s;
-	}
-	
-//	private double getLabelScore(int[] heads, int[] types, int mod)
-//	{
-//		return gammaL * getLabelScoreTheta(heads, types, mod) +
-//				(1-gammaL) * getLabelScoreTensor(heads, types, mod);
-//	}
-	
-//	public void predictLabels(int[] heads, int[] deplbids, boolean addLoss)
-//	{
-//		assert(heads.length == len);
-//		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
-//		int T = ntypes;
-//		
-//		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(len);
-//		queue.add(0);
-//		deplbids[0] = inst.deplbids[0];
-//		while (!queue.isEmpty()) {
-//			int head = queue.remove();
-//			int st = arcLis.startIndex(head);
-//			int ed = arcLis.endIndex(head);
-//			for (int p = st; p < ed ; ++p) {
-//				int mod = arcLis.get(p);
-//				queue.add(mod);
-//				
-//				int type = 0;
-//				double best = Double.NEGATIVE_INFINITY;
-//				for (int t = 1; t < T; ++t) {
-//					deplbids[mod] = t;
-//					double va = getLabelScore(heads, deplbids, mod) +
-//						(addLoss && inst.deplbids[mod] != t ? 1.0 : 0.0);
-//					if (va > best) {
-//						best = va;
-//						type = t;
-//					}
-//				}
-//				deplbids[mod] = type;
-//			}
-//		}
-//	}
-	
 	void treeDP(int i, DependencyArcList arcLis, double[][] f, int lab0)
 	{
 		int st = arcLis.startIndex(i);
@@ -1140,15 +1098,23 @@ public class LocalFeatureData {
 		
 		labScores = new double[len][ntypes][ntypes];
 		int lab0 = addLoss ? 0 : 1;
-		for (int i = 1; i < len; ++i)
+		for (int mod = 1; mod < len; ++mod)
 			for (int p = lab0; p < ntypes; ++p) {
-				deplbids[i] = p;
-				double s1 = getLabelScoreTheta(heads, deplbids, i, 1);
+				int head = heads[mod];
+				int dir = head > mod ? 1 : 2;
+				deplbids[mod] = p;
+				double s1 = gammaL * getLabelScoreTheta(heads, deplbids, mod, 1) +
+						(1-gammaL) * parameters.dotProductL1(wpU[head], wpV[mod], p, dir);
 				for (int q = lab0; q < ntypes; ++q) {
-					deplbids[heads[i]] = q;
-					double s2 = getLabelScoreTheta(heads, deplbids, i, 2);
-					labScores[i][p][q] = gammaL * (s1+s2) +	(1-gammaL) * getLabelScoreTensor(heads, deplbids, i)
-							+ (addLoss && inst.deplbids[i] != p ? 1.0 : 0.0);
+					double s2 = 0;
+					int gp = heads[head];
+					if (gp != -1) {
+						int pdir = gp > head ? 1 : 2;
+						deplbids[head] = q;
+						s2 = gammaL * getLabelScoreTheta(heads, deplbids, mod, 2) +
+						 (1-gammaL) * parameters.dotProductL2(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
+					}
+					labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
 				}
 			}
 		

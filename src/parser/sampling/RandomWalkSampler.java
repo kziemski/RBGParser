@@ -9,24 +9,20 @@ public class RandomWalkSampler {
 	
 	Random r;
 	Options options;
-	final int labelLossType;
 	
 	public RandomWalkSampler(int seed, Options options) {
 		r = new Random(seed);
 		this.options = options;
-		labelLossType = options.labelLossType;
 	}
 	
 	public RandomWalkSampler(Options options) {
 		r = new Random(1/*System.currentTimeMillis()*/);
 		this.options = options;
-		labelLossType = options.labelLossType;
 	}
 	
 	public RandomWalkSampler(Random r, Options options) {
 		this.r = r;
 		this.options = options;
-		labelLossType = options.labelLossType;
 	}
 	
     public DependencyInstance uniformRandomWalkSampling(DependencyInstance inst,

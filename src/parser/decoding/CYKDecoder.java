@@ -6,12 +6,9 @@ import parser.LocalFeatureData;
 import parser.Options;
 
 public class CYKDecoder extends DependencyDecoder {
-
-	final int labelLossType;
 	
 	public CYKDecoder(Options options) {
 		this.options = options;
-		this.labelLossType = options.labelLossType;
 	}
 	
 	@Override
@@ -47,22 +44,8 @@ public class CYKDecoder extends DependencyDecoder {
 				//	arcTS += lfd.getLabeledArcScore(t, s, typeTS); //ntScores[s][typeTS][0][1] + ntScores[t][typeTS][0][0];
 				//}
                 if (addLoss) {
-                	if (labelLossType == 0) {
-	                    arcST += deps[t] == s ? 0.0 : 1.0;
-	                    arcTS += deps[s] == t ? 0.0 : 1.0;
-	                    //if (options.learnLabel) {
-	                    //    arcST += labs[t] == typeST ? 0.0 : 1.0;
-	                    //    arcTS += labs[s] == typeTS ? 0.0 : 1.0;
-	                    //}
-                	} else {
-                		//if (options.learnLabel) {
-                		//	arcST += (deps[t] == s && labs[t] == typeST) ? 0.0 : 1.0;
-                		//	arcTS += (deps[s] == t && labs[s] == typeTS) ? 0.0 : 1.0;
-                		//} else {
-    	                    arcST += deps[t] == s ? 0.0 : 1.0;
-    	                    arcTS += deps[s] == t ? 0.0 : 1.0;
-                		//}
-                	}
+                	arcST += deps[t] == s ? 0.0 : 1.0;
+                    arcTS += deps[s] == t ? 0.0 : 1.0;
                 }
 				
 				for (int r = s; r < t; ++r) {

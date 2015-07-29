@@ -19,7 +19,6 @@ public class HillClimbingDecoder extends DependencyDecoder {
 	LocalFeatureData lfd;
 	GlobalFeatureData gfd;
 	boolean addLoss;
-	final int labelLossType;
 	
 	//int[][] staticTypes;
 	
@@ -33,7 +32,6 @@ public class HillClimbingDecoder extends DependencyDecoder {
 	
 	public HillClimbingDecoder(Options options) {
 		this.options = options;
-		labelLossType = options.labelLossType;
         executorService = Executors.newFixedThreadPool(options.numHcThreads);
 		decodingService = new ExecutorCompletionService<Object>(executorService);
 		tasks = new HillClimbingTask[options.numHcThreads];

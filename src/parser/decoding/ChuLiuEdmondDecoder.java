@@ -7,12 +7,9 @@ import parser.Options;
 
 public class ChuLiuEdmondDecoder extends DependencyDecoder {
 	
-	final int labelLossType;
-	
 	public ChuLiuEdmondDecoder(Options options)
 	{
 		this.options = options;
-		this.labelLossType = options.labelLossType;
 	}
 	
 	private static boolean print = false;

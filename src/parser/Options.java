@@ -38,7 +38,6 @@ public class Options implements Cloneable, Serializable {
 	public boolean learnLabel = false;
 	public boolean pruning = true;
 	public double pruningCoeff = 0.2;
-	public int labelLossType = 0;
 	
 	public int numHcThreads = 4;		// hill climbing: number of threads
 	
@@ -51,7 +50,7 @@ public class Options implements Cloneable, Serializable {
 	public boolean average = true;
 	public double C = 0.01;
 	public double gamma = 0.3, gammaLabel = 0.3;
-	public int R = 50;
+	public int R = 50, R2 = 50;
 	
 	// feature set
 	public int bits = 30;
@@ -155,6 +154,9 @@ public class Options implements Cloneable, Serializable {
             else if (arg.startsWith("R:")) {
                 R = Integer.parseInt(arg.split(":")[1]);
             }
+            else if (arg.startsWith("R2:")) {
+                R2 = Integer.parseInt(arg.split(":")[1]);
+            }
             else if (arg.startsWith("word-vector:")) {
             	wordVectorFile = arg.split(":")[1];
             }
@@ -241,9 +243,9 @@ public class Options implements Cloneable, Serializable {
     	System.out.println("label: " + learnLabel);
         System.out.println("max-sent: " + maxNumSent);      
         System.out.println("C: " + C);
-        System.out.println("label-loss-type: " + labelLossType);
         System.out.println("gamma: " + gamma + " " + gammaLabel);
         System.out.println("R: " + R);
+        System.out.println("R2: " + R2);
         System.out.println("word-vector:" + wordVectorFile);
         System.out.println("projective: " + projective);
         System.out.println("pruning: " + pruning);

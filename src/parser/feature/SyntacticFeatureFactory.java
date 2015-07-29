@@ -12,7 +12,7 @@ import parser.DependencyArcList;
 import parser.DependencyInstance;
 import parser.DependencyPipe;
 import parser.GlobalFeatureData;
-import parser.LowRankParam;
+import parser.LowRankTensor;
 import parser.Options;
 import parser.Parameters;
 import parser.DependencyInstance.SpecialPos;
@@ -58,7 +58,7 @@ public class SyntacticFeatureFactory implements Serializable {
 	private Alphabet wordAlphabet;		// the alphabet of word features (e.g. \phi_h, \phi_m)
 	//private Alphabet arcAlphabet;		// the alphabet of 1st order arc features (e.g. \phi_{h->m})
 	
-	public boolean preTrain = false;
+	//public boolean preTrain = false;
 	
 	public SyntacticFeatureFactory(Options options)
 	{
@@ -357,7 +357,7 @@ public class SyntacticFeatureFactory implements Serializable {
     public void createArcFeatures(Collector fv, DependencyInstance inst, int h, int c) 
     {
     	
-    	int attDist = getBinnedDistance(h-c);
+    	int attDist = Utils.getBinnedDistance(h-c);
     	
     	addBasic1OFeatures(fv, inst, h, c, attDist);
     	
@@ -893,7 +893,7 @@ public class SyntacticFeatureFactory implements Serializable {
     
     public void addWordVectorFeatures(DependencyInstance inst, int i, int dis, FeatureVector fv) {
     	
-    	int d = getBinnedDistance(dis);
+    	int d = Utils.getBinnedDistance(dis);
     	double [] v = unknownWv;
     	int pos = i + dis;
     	
@@ -1826,7 +1826,7 @@ public class SyntacticFeatureFactory implements Serializable {
 
 
     	//Utils.Assert(ch1 < ch2);
-    	int flag = getBinnedDistance(ch1 - ch2);
+    	int flag = Utils.getBinnedDistance(ch1 - ch2);
 
     	long code = 0;
 
@@ -2026,7 +2026,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	//int[] lemma = inst.lemmaids;
     	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
     	
-    	int flag = (((((gp < par ? 0 : 1) << 1) | (par < c ? 0 : 1)) << 1) | 1);
+    	int flag = (((((gp > par ? 0 : 1) << 1) | (par > c ? 0 : 1)) << 1) | 1);
     	int tid = ((ptype << depNumBits) | type) << 4;
     	
     	int GP = pos[gp];
@@ -3250,7 +3250,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	int[] posA = inst.cpostagids;
     	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
 
-    	int distFlag = getBinnedDistance(head - mod);
+    	int distFlag = Utils.getBinnedDistance(head - mod);
 
     	// use head->mod, rather than small->large
     	int HC = posA[head];
@@ -3439,23 +3439,6 @@ public class SyntacticFeatureFactory implements Serializable {
      *        DIST is the integer binned length  (4 bits)
      ************************************************************************/
     
-    public final int getBinnedDistance(int x) {
-    	int flag = 0;
-    	int add = 0;
-    	if (x < 0) {
-    		x = -x;
-    		//flag = 8;
-    		add = 7;
-    	}
-    	if (x > 10)          // x > 10
-    		flag |= 0x7;
-    	else if (x > 5)		 // x = 6 .. 10
-    		flag |= 0x6;
-    	else
-    		flag |= x;   	 // x = 1 .. 5
-    	return flag+add;
-    }
-    
     private final long extractArcTemplateCode(long code) {
     	return (code >> flagBits) & ((1 << numArcFeatBits)-1);
     }
@@ -3467,6 +3450,12 @@ public class SyntacticFeatureFactory implements Serializable {
     private final long extractLabelCode(long code) {
     	if (options.learnLabel)
     		return (code >> 4) & ((1 << depNumBits)-1);
+    	return 0;
+    }
+    
+    private final long extractPLabelCode(long code) {
+    	if (options.learnLabel)
+    		return (code >> (depNumBits+4)) & ((1 << depNumBits)-1);
     	return 0;
     }
     
@@ -3502,6 +3491,30 @@ public class SyntacticFeatureFactory implements Serializable {
 	    x[0] = (int) (code & ((1 << tagNumBits)-1));
     }
     
+    private final void extractArcCodePPPPP(long code, int[] x) {
+    	code = (code >> flagBits) >> numArcFeatBits;
+    	x[4] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+    	x[3] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[2] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[1] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[0] = (int) (code & ((1 << tagNumBits)-1));
+    }
+    
+    private final void extractArcCodeWPPP(long code, int[] x) {
+    	code = (code >> flagBits) >> numArcFeatBits;
+	    x[3] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[2] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[1] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[0] = (int) (code & ((1 << wordNumBits)-1));
+    }
+    
     private final void extractArcCodeW(long code, int[] x) {
     	code = (code >> flagBits) >> numArcFeatBits;
 	    x[0] = (int) (code & ((1 << wordNumBits)-1));
@@ -3527,6 +3540,15 @@ public class SyntacticFeatureFactory implements Serializable {
 	    code = code >> tagNumBits;
 	    x[1] = (int) (code & ((1 << tagNumBits)-1));
 	    code = code >> tagNumBits;
+	    x[0] = (int) (code & ((1 << wordNumBits)-1));
+    }
+    
+    private final void extractArcCodeWWP(long code, int[] x) {
+    	code = (code >> flagBits) >> numArcFeatBits;
+	    x[2] = (int) (code & ((1 << tagNumBits)-1));
+	    code = code >> tagNumBits;
+	    x[1] = (int) (code & ((1 << wordNumBits)-1));
+	    code = code >> wordNumBits;
 	    x[0] = (int) (code & ((1 << wordNumBits)-1));
     }
     
@@ -3629,12 +3651,12 @@ public class SyntacticFeatureFactory implements Serializable {
     	featureHashSet = null;
     }
     
-    public void fillParameters(LowRankParam tensor, Parameters params) {
+    public void fillParameters(LowRankTensor tensor, LowRankTensor tensor2, Parameters params) {
         //System.out.println(arcAlphabet.size());	
     	long[] codes = //arcAlphabet.toArray();
     					featureHashSet.toArray();
     	clearFeatureHashSet();
-    	int[] x = new int[4];
+    	int[] x = new int[5];
     	
     	for (long code : codes) {
     		
@@ -3642,8 +3664,9 @@ public class SyntacticFeatureFactory implements Serializable {
     		int temp = (int) extractArcTemplateCode(code);
     		
     		int label = (int) extractLabelCode(code);
+    		int plabel = (int) extractPLabelCode(code);
     		
-    		long head = 0, mod = 0;
+    		long head = 0, mod = 0, gp = 0;
 
         	//code = createArcCodePPPP(CORE_POS_PT0, pHeadLeft, pHead, pMod, pModRight);
     		if (temp == HPp_HP_MP_MPn.ordinal()) {
@@ -3852,6 +3875,399 @@ public class SyntacticFeatureFactory implements Serializable {
     			head = createWordCodeP(WORDFV_BIAS, 0);
     		}
     		
+    		// second order
+    		else if (temp == GP_HP_MP.ordinal()) {
+    			extractArcCodePPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC.ordinal()) {
+    			extractArcCodePPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GL_HC_MC.ordinal()) {
+    			extractArcCodeWPP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HL_MC.ordinal()) {
+    			extractArcCodeWPP(code, x);		// HL, GC, MC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_ML.ordinal()) {
+    			extractArcCodeWPP(code, x);		// ML, GC, HC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+
+    		else if (temp == GL_HL_MC.ordinal()) {
+    			extractArcCodeWWP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeW(WORDFV_W0, x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GL_HC_ML.ordinal()) {
+    			extractArcCodeWWP(code, x);		// GL, ML, HC
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeW(WORDFV_W0, x[1]);
+    		}
+    		
+    		else if (temp == GC_HL_ML.ordinal()) {
+    			extractArcCodeWWP(code, x);		// HL, ML, GC
+    			gp = createWordCodeP(WORDFV_P0, x[2]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeW(WORDFV_W0, x[1]);
+    		}
+    		
+//    		else if (temp == GL_HL_ML.ordinal()) {
+//    			extractArcCodeWWW(code, x);
+//    			gp = createWordCodeW(WORDFV_W0, x[0]);
+//    			head = createWordCodeW(WORDFV_W0, x[1]);
+//    			mod = createWordCodeW(WORDFV_W0, x[2]);
+//    		}
+
+    		else if (temp == GC_HC.ordinal()) {
+    			extractArcCodePP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+    		
+    		else if (temp == GL_HC.ordinal()) {
+    			extractArcCodeWP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+    		
+    		else if (temp == GC_HL.ordinal()) {
+    			extractArcCodeWP(code, x);		// HL, GC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+    		
+    		else if (temp == GL_HL.ordinal()) {
+    			extractArcCodeWW(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeW(WORDFV_W0, x[1]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+
+    		else if (temp == GC_MC.ordinal()) {
+    			extractArcCodePP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == GL_MC.ordinal()) {
+    			extractArcCodeWP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == GC_ML.ordinal()) {
+    			extractArcCodeWP(code, x);		// ML, GC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == GL_ML.ordinal()) {
+    			extractArcCodeWW(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodeW(WORDFV_W0, x[1]);
+    		}
+    		
+    		else if (temp == HC_MC.ordinal()) {
+    			extractArcCodePP(code, x);
+    			gp = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeP(WORDFV_P0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == HL_MC.ordinal()) {
+    			extractArcCodeWP(code, x);
+    			gp = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[1]);
+    		}
+    		
+    		else if (temp == HC_ML.ordinal()) {
+    			extractArcCodeWP(code, x);		// ML, HC
+    			gp = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == HL_ML.ordinal()) {
+    			extractArcCodeWW(code, x);
+    			gp = createWordCodeP(WORDFV_BIAS, 0);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeW(WORDFV_W0, x[1]);
+    		}
+
+    		else if (temp == pGC_GC_HC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			gp = createWordCodePP(WORDFV_PpP0, x[0], x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_nGC_HC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			gp = createWordCodePP(WORDFV_P0Pn, x[0], x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_pHC_HC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_HC_nHC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_HC_pMC_MC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_nMC.ordinal()) {
+    			extractArcCodePPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    		}
+
+    		else if (temp == pGC_GL_HC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// GL, pGC, HC, MC
+    			gp = createWordCodeWP(WORDFV_W0Pp, x[0], x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GL_nGC_HC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			gp = createWordCodeWP(WORDFV_W0Pn, x[0], x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GL_pHC_HC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GL_HC_nHC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GL_HC_pMC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    		}
+    		
+    		else if (temp == GL_HC_MC_nMC.ordinal()) {
+    			extractArcCodeWPPP(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    		}
+
+    		else if (temp == pGC_GC_HL_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, pGC, GC, MC
+    			gp = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_nGC_HL_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, GC, nGC, MC
+    			gp = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_pHC_HL_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, GC, pHC, MC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeWP(WORDFV_W0Pp, x[0], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_HL_nHC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, GC, nHC, MC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeWP(WORDFV_W0Pn, x[0], x[2]);
+    			mod = createWordCodeP(WORDFV_P0, x[3]);
+    		}
+    		
+    		else if (temp == GC_HL_pMC_MC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, GC, pMC, MC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    		}
+    		
+    		else if (temp == GC_HL_MC_nMC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// HL, GC, MC, nMC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeW(WORDFV_W0, x[0]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    		}
+
+    		else if (temp == pGC_GC_HC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, pGC, GC, HC
+    			gp = createWordCodePP(WORDFV_PpP0, x[1], x[2]);
+    			head = createWordCodeP(WORDFV_P0, x[3]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == GC_nGC_HC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, GC, nGC, HC
+    			gp = createWordCodePP(WORDFV_P0Pn, x[1], x[2]);
+    			head = createWordCodeP(WORDFV_P0, x[3]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == GC_pHC_HC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, GC, pHC, HC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodePP(WORDFV_PpP0, x[2], x[3]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == GC_HC_nHC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, GC, HC, nHC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodePP(WORDFV_P0Pn, x[2], x[3]);
+    			mod = createWordCodeW(WORDFV_W0, x[0]);
+    		}
+    		
+    		else if (temp == GC_HC_pMC_ML.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, GC, HC, pMC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeWP(WORDFV_W0Pp, x[0], x[3]);
+    		}
+    		
+    		else if (temp == GC_HC_ML_nMC.ordinal()) {
+    			extractArcCodeWPPP(code, x);		// ML, GC, HC, nMC
+    			gp = createWordCodeP(WORDFV_P0, x[1]);
+    			head = createWordCodeP(WORDFV_P0, x[2]);
+    			mod = createWordCodeWP(WORDFV_W0Pn, x[0], x[3]);
+    		}
+
+    		else if (temp == GC_HC_MC_pGC_pHC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			head = createWordCodePP(WORDFV_PpP0, x[4], x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_pGC_pMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_pHC_pMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodePP(WORDFV_PpP0, x[3], x[1]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_nGC_nHC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[4]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_nGC_nMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_nHC_nMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[3]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_pGC_nHC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			head = createWordCodePP(WORDFV_P0Pn, x[1], x[4]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_pGC_nMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_PpP0, x[3], x[0]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_pHC_nMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodeP(WORDFV_P0, x[0]);
+    			head = createWordCodePP(WORDFV_PpP0, x[3], x[1]);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[2], x[4]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_nGC_pHC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			head = createWordCodePP(WORDFV_PpP0, x[4], x[1]);
+    			mod = createWordCodeP(WORDFV_P0, x[2]);
+    		}
+    		
+    		else if (temp == GC_HC_MC_nGC_pMC.ordinal()) {
+    			extractArcCodePPPPP(code, x);
+    			gp = createWordCodePP(WORDFV_P0Pn, x[0], x[3]);
+    			head = createWordCodeP(WORDFV_P0, x[1]);
+    			mod = createWordCodePP(WORDFV_PpP0, x[4], x[2]);
+    		}
+    		
     		else {
     			//System.out.println(temp);
     			continue;
@@ -3864,13 +4280,30 @@ public class SyntacticFeatureFactory implements Serializable {
     				int id = hashcode2int(code) & numArcFeats;
     	    		if (id < 0) continue;
     	    		double value = params.params[id];
-    	    		tensor.putEntry(headId, modId, dist, value);
+    	    		int[] y = {headId, modId, dist};
+    	    		tensor.add(y, value);
+    	    		//tensor.putEntry(headId, modId, dist, value);
     			}
-    			else if (dist < 3) {
+    			else {
     				int id = hashcode2int(code) & numLabeledArcFeats;
     				if (id < 0) continue;
     				double value = params.paramsL[id];
-    				tensor.putEntry(headId, modId, params.D+dist*params.T+label-1, value);
+    				if (plabel == 0) {
+    					int[] y = {headId, modId, params.D+dist*params.T+label-1};
+    					tensor.add(y, value);
+    					//tensor.putEntry(headId, modId, params.D+dist*params.T+label-1, value);
+    				}
+    				else {
+    					int gpId = wordAlphabet.lookupIndex(gp);
+    					if (gpId < 0) continue;
+    					int dir = 0, pdir = 0;
+    					if (dist != 0) {
+    						dir = ((dist>>1) & 1) + 1;
+    						pdir = ((dist>>2) & 1) + 1;
+    					}
+    					int[] y = {gpId, headId, modId, pdir*params.T+plabel-1, dir*params.T+label-1};
+    					tensor2.add(y, value);
+    				}
     			}
             }
     	}

@@ -158,7 +158,7 @@ public class GlobalFeatureData {
 	
 	public FeatureVector getNonprojFeatureVector(DependencyArcList arclis, int h, int m) {
 		int id = lfd.arc2id[m * lfd.len + h];
-		int num = synFactory.getBinnedDistance(arclis.nonproj[m]);
+		int num = Utils.getBinnedDistance(arclis.nonproj[m]);
 		
 		Utils.Assert(id >= 0 && num >= 0 && num < BINNED_BUCKET);
 		
@@ -271,7 +271,7 @@ public class GlobalFeatureData {
 	
 	public double getNonprojScore(DependencyArcList arclis, int h, int m) {
 		int id = lfd.arc2id[m * lfd.len + h];
-		int num = synFactory.getBinnedDistance(arclis.nonproj[m]);
+		int num = Utils.getBinnedDistance(arclis.nonproj[m]);
 		
 		Utils.Assert(id >= 0 && num >= 0 && num < BINNED_BUCKET);
 		

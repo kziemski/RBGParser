@@ -11,141 +11,178 @@ public class Parameters implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 	
 	public static final int d = 7;
 	
-	public transient Options options;
-	public final int labelLossType;
+	public boolean learnLabel;
 	public double C, gamma, gammaL;
 	public int size, sizeL;
-	public int rank;
-	public int N, M, T, D, DL;
+	public int rank, rank2;
+	public int N, T, D, DL;
 	
 	public float[] params, paramsL;
 	public double[][] U, V, W, WL;
+	public double[][] U2, V2, W2, X2, Y2;	//second order for label
 	public transient float[] total, totalL;
 	public transient double[][] totalU, totalV, totalW, totalWL;
+	public transient double[][] totalU2, totalV2, totalW2, totalX2, totalY2;
 	
 	public transient FeatureVector[] dU, dV, dW, dWL;
+	public transient FeatureVector[] dU2, dV2, dW2, dX2, dY2;
 	
 	public Parameters(DependencyPipe pipe, Options options) 
 	{
-        D = d * 2 + 1;
-        T = pipe.types.length;
-        DL = T * 3;
-		size = pipe.synFactory.numArcFeats+1;		
+		N = pipe.synFactory.numWordFeats;
+		T = pipe.types.length;
+		D = d * 2 + 1;
+		DL = T * 3;
+        learnLabel = options.learnLabel;
+		C = options.C;
+		gamma = options.gamma;
+		gammaL = options.gammaLabel;
+		rank = options.R;
+		rank2 = options.R2;
+        
+		size = pipe.synFactory.numArcFeats+1;	
 		params = new float[size];
 		total = new float[size];
+		
+		U = new double[rank][N];		
+		V = new double[rank][N];
+		W = new double[rank][D];
+		totalU = new double[rank][N];
+		totalV = new double[rank][N];
+		totalW = new double[rank][D];
+		dU = new FeatureVector[rank];
+		dV = new FeatureVector[rank];
+		dW = new FeatureVector[rank];
 		
 		if (options.learnLabel) {
 			sizeL = pipe.synFactory.numLabeledArcFeats+1;
 			paramsL = new float[sizeL];
 			totalL = new float[sizeL];
+			
+			WL = new double[rank][DL];
+			totalWL = new double[rank][DL];
+			dWL = new FeatureVector[rank];
+			
+			U2 = new double[rank2][N];
+			V2 = new double[rank2][N];
+			W2 = new double[rank2][N];
+			X2 = new double[rank2][DL];
+			Y2 = new double[rank2][DL];
+			totalU2 = new double[rank2][N];
+			totalV2 = new double[rank2][N];
+			totalW2 = new double[rank2][N];
+			totalX2 = new double[rank2][DL];
+			totalY2 = new double[rank2][DL];
+			dU2 = new FeatureVector[rank2];
+			dV2 = new FeatureVector[rank2];
+			dW2 = new FeatureVector[rank2];
+			dX2 = new FeatureVector[rank2];
+			dY2 = new FeatureVector[rank2];
 		}
-		
-		this.options = options;
-		this.labelLossType = options.labelLossType;
-		C = options.C;
-		gamma = options.gamma;
-		gammaL = options.gammaLabel;
-		rank = options.R;
-		
-		N = pipe.synFactory.numWordFeats;
-		M = N;
-		U = new double[rank][N];		
-		V = new double[rank][M];
-		W = new double[rank][D];
-		WL = new double[rank][DL];
-		totalU = new double[rank][N];
-		totalV = new double[rank][M];
-		totalW = new double[rank][D];
-		totalWL = new double[rank][DL];
-		dU = new FeatureVector[rank];
-		dV = new FeatureVector[rank];
-		dW = new FeatureVector[rank];
-		dWL = new FeatureVector[rank];
 	}
 	
-	public void randomlyInitUVWWL() 
+	public void assignTotal()
 	{
 		for (int i = 0; i < rank; ++i) {
-			U[i] = Utils.getRandomUnitVector(N);
-			V[i] = Utils.getRandomUnitVector(M);
-			W[i] = Utils.getRandomUnitVector(D);
-			WL[i] = Utils.getRandomUnitVector(DL);
 			totalU[i] = U[i].clone();
 			totalV[i] = V[i].clone();
 			totalW[i] = W[i].clone();
-			totalWL[i] = WL[i].clone();
+			if (learnLabel) {
+				totalWL[i] = WL[i].clone();
+			}
 		}
+		if (learnLabel) {
+			for (int i = 0; i < rank2; ++i) {
+				totalU2[i] = U2[i].clone();
+				totalV2[i] = V2[i].clone();
+				totalW2[i] = W2[i].clone();
+				totalX2[i] = X2[i].clone();
+				totalY2[i] = Y2[i].clone();
+			}
+		}
+	}
+	
+	public void randomlyInit() 
+	{
+		for (int i = 0; i < rank; ++i) {
+			U[i] = Utils.getRandomUnitVector(N);
+			V[i] = Utils.getRandomUnitVector(N);
+			W[i] = Utils.getRandomUnitVector(D);
+			if (learnLabel) {
+				WL[i] = Utils.getRandomUnitVector(DL);
+			}
+		}
+		if (learnLabel) {
+			for (int i = 0; i < rank2; ++i) {
+				U2[i] = Utils.getRandomUnitVector(N);
+				V2[i] = Utils.getRandomUnitVector(N);
+				W2[i] = Utils.getRandomUnitVector(N);
+				X2[i] = Utils.getRandomUnitVector(DL);
+				Y2[i] = Utils.getRandomUnitVector(DL);
+			}
+		}
+		assignTotal();
+	}
+	
+	private void averageTheta(float[] a, float[] totala, int T, double c)
+	{
+		int n = a.length;
+		for (int i = 0; i < n; ++i) {
+			a[i] += c*totala[i]/T;
+		}
+	}
+	
+	private void averageTensor(double[][] a, double[][] totala, int T, double c)
+	{
+		int n = a.length;
+		if (n == 0)
+			return;
+		int m = a[0].length;
+		for (int i = 0; i < n; ++i)
+			for (int j = 0; j < m; ++j) {
+				a[i][j] += c*totala[i][j]/T;
+			}
 	}
 	
 	public void averageParameters(int T) 
 	{
-		
-		for (int i = 0; i < size; ++i) {
-			params[i] += total[i]/T;
-		}		
-
-		for (int i = 0; i < sizeL; ++i) {
-			paramsL[i] += totalL[i]/T;
-		}		
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				U[i][j] += totalU[i][j]/T;
-			}
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < M; ++j) {
-				V[i][j] += totalV[i][j]/T;
-			}
-
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < D; ++j) {
-				W[i][j] += totalW[i][j]/T;
-			}
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < DL; ++j) {
-				WL[i][j] += totalWL[i][j]/T;
-			}
+		averageTheta(params, total, T, 1);
+		averageTensor(U, totalU, T, 1);
+		averageTensor(V, totalV, T, 1);
+		averageTensor(W, totalW, T, 1);
+		if (learnLabel) {
+			averageTheta(paramsL, totalL, T, 1);
+			averageTensor(WL, totalWL, T, 1);
+			averageTensor(U2, totalU2, T, 1);
+			averageTensor(V2, totalV2, T, 1);
+			averageTensor(W2, totalW2, T, 1);
+			averageTensor(X2, totalX2, T, 1);
+			averageTensor(Y2, totalY2, T, 1);
+		}
 	}
 	
 	public void unaverageParameters(int T) 
 	{
-		
-		for (int i = 0; i < size; ++i) {
-			params[i] -= total[i]/T;
-		}	
-		
-		for (int i = 0; i < sizeL; ++i) {
-			paramsL[i] -= totalL[i]/T;
-		}	
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < N; ++j) {
-				U[i][j] -= totalU[i][j]/T;
-			}
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < M; ++j) {
-				V[i][j] -= totalV[i][j]/T;
-			}
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < D; ++j) {				
-				W[i][j] -= totalW[i][j]/T;
-			}
-		
-		for (int i = 0; i < rank; ++i)
-			for (int j = 0; j < DL; ++j) {
-				WL[i][j] -= totalWL[i][j]/T;
-			}
+		averageTheta(params, total, T, -1);
+		averageTensor(U, totalU, T, -1);
+		averageTensor(V, totalV, T, -1);
+		averageTensor(W, totalW, T, -1);
+		if (learnLabel) {
+			averageTheta(paramsL, totalL, T, -1);
+			averageTensor(WL, totalWL, T, -1);
+			averageTensor(U2, totalU2, T, -1);
+			averageTensor(V2, totalV2, T, -1);
+			averageTensor(W2, totalW2, T, -1);
+			averageTensor(X2, totalX2, T, -1);
+			averageTensor(Y2, totalY2, T, -1);
+		}
 	}
 	
-	public void clearUVW() 
+	public void clearTensor() 
 	{
 		for (int i = 0; i < rank; ++i) {
 			Arrays.fill(U[i], 0);
@@ -154,9 +191,23 @@ public class Parameters implements Serializable {
 			Arrays.fill(totalU[i], 0);
 			Arrays.fill(totalV[i], 0);
 			Arrays.fill(totalW[i], 0);
-			if (options.learnLabel) {
+			if (learnLabel) {
 				Arrays.fill(WL[i], 0);
 				Arrays.fill(totalWL[i], 0);
+			}
+		}
+		if (learnLabel) {
+			for (int i = 0; i < rank2; ++i) {
+				Arrays.fill(U2[i], 0);
+				Arrays.fill(totalU2[i], 0);
+				Arrays.fill(V2[i], 0);
+				Arrays.fill(totalV2[i], 0);
+				Arrays.fill(W2[i], 0);
+				Arrays.fill(totalW2[i], 0);
+				Arrays.fill(X2[i], 0);
+				Arrays.fill(totalX2[i], 0);
+				Arrays.fill(Y2[i], 0);
+				Arrays.fill(totalY2[i], 0);
 			}
 		}
 	}
@@ -165,96 +216,38 @@ public class Parameters implements Serializable {
 	{
 		Arrays.fill(params, 0);
 		Arrays.fill(total, 0);
-		if (options.learnLabel) {
+		if (learnLabel) {
 			Arrays.fill(paramsL, 0);
 			Arrays.fill(totalL, 0);
 		}
 	}
 	
-	public void printUStat() 
+	private void printStat(double[][] a, String s) 
 	{
+		int n = a.length;
 		double sum = 0;
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(U[i]);
-			min = Math.min(min, Utils.min(U[i]));
-			max = Math.max(max, Utils.max(U[i]));
+		for (int i = 0; i < n; ++i) {
+			sum += Utils.squaredSum(a[i]);
+			min = Math.min(min, Utils.min(a[i]));
+			max = Math.max(max, Utils.max(a[i]));
 		}
-		System.out.printf(" |U|^2: %f min: %f\tmax: %f%n", sum, min, max);
+		System.out.printf(" |%s|^2: %f min: %f\tmax: %f%n", s, sum, min, max);
 	}
 	
-	public void printVStat() 
+	public void printStat()
 	{
-		double sum = 0;
-		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(V[i]);
-			min = Math.min(min, Utils.min(V[i]));
-			max = Math.max(max, Utils.max(V[i]));
+		printStat(U, "U");
+		printStat(V, "V");
+		printStat(W, "W");
+		if (learnLabel) {
+			printStat(WL, "WL");
+			printStat(U2, "U2");
+			printStat(V2, "V2");
+			printStat(W2, "W2");
+			printStat(X2, "X2");
+			printStat(Y2, "Y2");
 		}
-		System.out.printf(" |V|^2: %f min: %f\tmax: %f%n", sum, min, max);
-	}
-	
-	public void printWStat() 
-	{
-		double sum = 0;
-		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(W[i]);
-			min = Math.min(min, Utils.min(W[i]));
-			max = Math.max(max, Utils.max(W[i]));
-		}
-		System.out.printf(" |W|^2: %f min: %f\tmax: %f%n", sum, min, max);
-	}
-	
-	public void printWLStat() 
-	{
-		double sum = 0;
-		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(WL[i]);
-			min = Math.min(min, Utils.min(WL[i]));
-			max = Math.max(max, Utils.max(WL[i]));
-		}
-		System.out.printf(" |WL|^2: %f min: %f\tmax: %f%n", sum, min, max);
-	}
-	
-	private double printdWStat() 
-	{
-		double sum = 0;
-		for (int i = 0; i < rank; ++i) {
-			sum += dW[i].Squaredl2NormUnsafe();
-		}
-		//System.out.printf(" |dW|^2: %f\n", sum);
-		return sum;
-	}
-	
-	private double printdWLStat() 
-	{
-		double sum = 0;
-		for (int i = 0; i < rank; ++i) {
-			sum += dWL[i].Squaredl2NormUnsafe();
-		}
-		//System.out.printf(" |dWL|^2: %f\n", sum);
-		return sum;
-	}
-	
-	private double WNorm()
-	{
-		double sum = 0;
-		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(W[i]);
-		}
-		return sum;
-	}
-	
-	private double WLNorm()
-	{
-		double sum = 0;
-		for (int i = 0; i < rank; ++i) {
-			sum += Utils.squaredSum(WL[i]);
-		}
-		return sum;
 	}
 	
 	public void printThetaStat() 
@@ -277,6 +270,24 @@ public class Parameters implements Serializable {
 			proj[r] = fv.dotProduct(V[r]);
 	}
 	
+	public void projectU2(FeatureVector fv, double[] proj)
+	{
+		for (int r = 0; r < rank2; ++r) 
+			proj[r] = fv.dotProduct(U2[r]);
+	}
+	
+	public void projectV2(FeatureVector fv, double[] proj)
+	{
+		for (int r = 0; r < rank2; ++r) 
+			proj[r] = fv.dotProduct(V2[r]);
+	}
+	
+	public void projectW2(FeatureVector fv, double[] proj)
+	{
+		for (int r = 0; r < rank2; ++r) 
+			proj[r] = fv.dotProduct(W2[r]);
+	}
+	
 	public double dotProduct(FeatureVector fv)
 	{
 		return fv.dotProduct(params);
@@ -290,17 +301,59 @@ public class Parameters implements Serializable {
 	public double dotProduct(double[] proju, double[] projv, int dist)
 	{
 		double sum = 0;
-		int binDist = getBinnedDistance(dist);
+		int binDist = Utils.getBinnedDistance(dist);
 		for (int r = 0; r < rank; ++r)
 			sum += proju[r] * projv[r] * (W[r][binDist] + W[r][0]);
 		return sum;
 	}
 	
-	public double updateLabel(DependencyInstance gold, DependencyInstance pred,
-			LocalFeatureData lfd, GlobalFeatureData gfd,
-			int updCnt)
+	public double dotProductL1(double[] proju, double[] projv, int lab, int dir)
 	{
-		int N = gold.length;
+		double sum = 0;
+		for (int r = 0; r < rank; ++r)
+			sum += proju[r] * projv[r] * (WL[r][lab] + WL[r][dir*T+lab]);
+		return sum;
+	}
+	
+	public double dotProductL2(double[] proju, double[] projv, double[] projw,
+			int plab, int lab, int pdir, int dir)
+	{
+		double sum = 0;
+		for (int r = 0; r < rank2; ++r)
+			sum += proju[r] * projv[r] * projw[r] * (X2[r][plab] + X2[r][pdir*T+plab])
+					* (Y2[r][lab] + Y2[r][dir*T+lab]);
+		return sum;
+	}
+	
+	private void updateTheta(float[] a, float[] totala, FeatureVector da,
+			double coeff, double coeff2)
+	{
+		for (int i = 0, K = da.size(); i < K; ++i) {
+    		int x = da.x(i);
+    		double z = da.value(i);
+    		a[x] += coeff * z;
+    		totala[x] += coeff2 * z;
+		}
+	}
+	
+	private void updateTensor(double[][] a, double[][] totala, FeatureVector[] da,
+			double coeff, double coeff2)
+	{
+		int n = a.length;
+		for (int k = 0; k < n; ++k) {
+    		FeatureVector dak = da[k];
+    		for (int i = 0, K = dak.size(); i < K; ++i) {
+    			int x = dak.x(i);
+    			double z = dak.value(i);
+    			a[k][x] += coeff * z;
+    			totala[k][x] += coeff2 * z;
+    		}
+    	}
+	}
+	
+	public double updateLabel(DependencyInstance gold, DependencyInstance pred,
+			LocalFeatureData lfd, int updCnt)
+	{
     	int[] actDeps = gold.heads;
     	int[] actLabs = gold.deplbids;
     	int[] predDeps = pred.heads;
@@ -323,75 +376,66 @@ public class Parameters implements Serializable {
     	for (int k = 0; k < rank; ++k) {
     		FeatureVector dVk = getdVL(k, lfd, actDeps, actLabs, predDeps, predLabs);
         	l2norm += dVk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
-        	//loss -= dVk.dotProduct(V[k]) * (1-gammaL);
         	dV[k] = dVk;
     	}        	
         // update WL
     	for (int k = 0; k < rank; ++k) {
     		FeatureVector dWLk = getdWL(k, lfd, actDeps, actLabs, predDeps, predLabs);
         	l2norm += dWLk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
-        	//loss -= dWLk.dotProduct(WL[k]) * (1-gammaL);
         	dWL[k] = dWLk;
     	}
+    	
+    	// update U2
+    	for (int k = 0; k < rank2; ++k) {        		
+    		FeatureVector dU2k = getdU2(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dU2k.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);            	
+        	loss -= dU2k.dotProduct(U2[k]) * (1-gammaL);
+        	dU2[k] = dU2k;
+    	}
+    	// update V2
+    	for (int k = 0; k < rank2; ++k) {
+    		FeatureVector dV2k = getdV2(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dV2k.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
+        	dV2[k] = dV2k;
+    	} 
+    	// update W2
+    	for (int k = 0; k < rank2; ++k) {
+    		FeatureVector dW2k = getdW2(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dW2k.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
+        	dW2[k] = dW2k;
+    	}
+    	// update X2
+    	for (int k = 0; k < rank2; ++k) {
+    		FeatureVector dX2k = getdX2(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dX2k.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
+        	dX2[k] = dX2k;
+    	}
+    	// update Y2
+    	for (int k = 0; k < rank2; ++k) {
+    		FeatureVector dY2k = getdY2(k, lfd, actDeps, actLabs, predDeps, predLabs);
+        	l2norm += dY2k.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);
+        	dY2[k] = dY2k;
+    	} 
         
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
+    		double coeff, coeff2;
     		
-    		{
-    			// update thetaL
-	    		double coeff = alpha * gammaL;
-	    		double coeff2 = coeff * (1-updCnt);
-	    		for (int i = 0, K = dtl.size(); i < K; ++i) {
-		    		int x = dtl.x(i);
-		    		double z = dtl.value(i);
-		    		paramsL[x] += coeff * z;
-		    		totalL[x] += coeff2 * z;
-	    		}
-    		}
+    		coeff = alpha * gammaL;
+    		coeff2 = coeff * (1-updCnt);
+    		updateTheta(paramsL, totalL, dtl, coeff, coeff2);
     		
-    		{
-    			// update U
-    			double coeff = alpha * (1-gammaL);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dUk = dU[k];
-            		for (int i = 0, K = dUk.size(); i < K; ++i) {
-            			int x = dUk.x(i);
-            			double z = dUk.value(i);
-            			U[k][x] += coeff * z;
-            			totalU[k][x] += coeff2 * z;
-            		}
-            	}
-    		}	
-    		{
-    			// update V
-    			double coeff = alpha * (1-gammaL);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dVk = dV[k];
-            		for (int i = 0, K = dVk.size(); i < K; ++i) {
-            			int x = dVk.x(i);
-            			double z = dVk.value(i);
-            			V[k][x] += coeff * z;
-            			totalV[k][x] += coeff2 * z;
-            		}
-            	}            	
-    		} 
-    		{
-	    		// update WL
-				double coeff = alpha * (1-gammaL);
-				double coeff2 = coeff * (1-updCnt);
-	        	for (int k = 0; k < rank; ++k) {
-	        		FeatureVector dWLk = dWL[k];
-	        		for (int i = 0, K = dWLk.size(); i < K; ++i) {
-	        			int x = dWLk.x(i);
-	        			double z = dWLk.value(i);
-	        			WL[k][x] += coeff * z;
-	        			totalWL[k][x] += coeff2 * z;
-	        		}
-	        	}
-    		}
+    		coeff = alpha * (1-gammaL);
+			coeff2 = coeff * (1-updCnt);
+			updateTensor(U, totalU, dU, coeff, coeff2);
+			updateTensor(V, totalV, dV, coeff, coeff2);
+			updateTensor(WL, totalWL, dWL, coeff, coeff2);
+			updateTensor(U2, totalU2, dU2, coeff, coeff2);
+			updateTensor(V2, totalV2, dV2, coeff, coeff2);
+			updateTensor(W2, totalW2, dW2, coeff, coeff2);
+			updateTensor(X2, totalX2, dX2, coeff, coeff2);
+			updateTensor(Y2, totalY2, dY2, coeff, coeff2);
     	}
     	return loss;
 	}
@@ -401,7 +445,6 @@ public class Parameters implements Serializable {
 			LocalFeatureData lfd, GlobalFeatureData gfd,
 			int updCnt, int offset)
 	{
-		int N = gold.length;
     	int[] actDeps = gold.heads;
     	int[] actLabs = gold.deplbids;
     	int[] predDeps = pred.heads;
@@ -440,61 +483,17 @@ public class Parameters implements Serializable {
         double alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
+    		double coeff, coeff2;
     		
-    		{
-    			// update theta
-	    		double coeff = alpha * gamma;
-	    		double coeff2 = coeff * (1-updCnt);
-	    		for (int i = 0, K = dt.size(); i < K; ++i) {
-		    		int x = dt.x(i);
-		    		double z = dt.value(i);
-		    		params[x] += coeff * z;
-		    		total[x] += coeff2 * z;
-	    		}
-    		}
-    		
-    		{
-    			// update U
-    			double coeff = alpha * (1-gamma);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dUk = dU[k];
-            		for (int i = 0, K = dUk.size(); i < K; ++i) {
-            			int x = dUk.x(i);
-            			double z = dUk.value(i);
-            			U[k][x] += coeff * z;
-            			totalU[k][x] += coeff2 * z;
-            		}
-            	}
-    		}	
-    		{
-    			// update V
-    			double coeff = alpha * (1-gamma);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dVk = dV[k];
-            		for (int i = 0, K = dVk.size(); i < K; ++i) {
-            			int x = dVk.x(i);
-            			double z = dVk.value(i);
-            			V[k][x] += coeff * z;
-            			totalV[k][x] += coeff2 * z;
-            		}
-            	}            	
-    		} 
-    		{
-    			// update W
-    			double coeff = alpha * (1-gamma);
-    			double coeff2 = coeff * (1-updCnt);
-            	for (int k = 0; k < rank; ++k) {
-            		FeatureVector dWk = dW[k];
-            		for (int i = 0, K = dWk.size(); i < K; ++i) {
-            			int x = dWk.x(i);
-            			double z = dWk.value(i);
-            			W[k][x] += coeff * z;
-            			totalW[k][x] += coeff2 * z;
-            		}
-            	}  
-    		}
+    		coeff = alpha * gamma;
+    		coeff2 = coeff * (1-updCnt);
+    		updateTheta(params, total, dt, coeff, coeff2);
+
+			coeff = alpha * (1-gamma);
+			coeff2 = coeff * (1-updCnt);
+			updateTensor(U, totalU, dU, coeff, coeff2);
+			updateTensor(V, totalV, dV, coeff, coeff2);
+			updateTensor(W, totalW, dW, coeff, coeff2);
     	}
         return loss;
 	}
@@ -510,15 +509,9 @@ public class Parameters implements Serializable {
 		double alpha = loss/l2norm;
 	    alpha = Math.min(C, alpha);
 	    if (alpha > 0) {
-			// update theta
     		double coeff = alpha;
     		double coeff2 = coeff * (1-updCnt);
-    		for (int i = 0, K = fv.size(); i < K; ++i) {
-	    		int x = fv.x(i);
-	    		double z = fv.value(i);
-	    		params[x] += coeff * z;
-	    		total[x] += coeff2 * z;
-    		}
+    		updateTheta(params, total, fv, coeff, coeff2);
 	    }
 	}
 	
@@ -532,8 +525,8 @@ public class Parameters implements Serializable {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = Utils.getBinnedDistance(head-mod);
+    		int d2 = Utils.getBinnedDistance(head2-mod);
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
     		dU.addEntries(wordFvs[head], dotv * (W[k][0] + W[k][d]));
     		dU.addEntries(wordFvs[head2], - dotv * (W[k][0] + W[k][d2]));
@@ -565,13 +558,13 @@ public class Parameters implements Serializable {
     	double[][] wpU = lfd.wpU;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	FeatureVector dV = new FeatureVector(M);
+    	FeatureVector dV = new FeatureVector(N);
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = Utils.getBinnedDistance(head-mod);
+    		int d2 = Utils.getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		dV.addEntries(wordFvs[mod], dotu  * (W[k][0] + W[k][d])
@@ -585,7 +578,7 @@ public class Parameters implements Serializable {
     	double[][] wpU = lfd.wpU;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	FeatureVector dV = new FeatureVector(M);
+    	FeatureVector dV = new FeatureVector(N);
     	for (int mod = 1; mod < L; ++mod) {
     		assert(actDeps[mod] == predDeps[mod]);
     		int head  = actDeps[mod];
@@ -609,8 +602,8 @@ public class Parameters implements Serializable {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
-    		int d = getBinnedDistance(head-mod);
-    		int d2 = getBinnedDistance(head2-mod);
+    		int d = Utils.getBinnedDistance(head-mod);
+    		int d2 = Utils.getBinnedDistance(head2-mod);
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
     		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
@@ -622,7 +615,6 @@ public class Parameters implements Serializable {
     	FeatureVector dW2 = new FeatureVector(D);
     	for (int i = 0; i < D; ++i)
     		dW2.addEntry(i, dW[i]);
-    	//System.out.printf("W: %f\n",dW2.Squaredl2NormUnsafe());
     	return dW2;
     }
     
@@ -650,8 +642,158 @@ public class Parameters implements Serializable {
     	FeatureVector dWL2 = new FeatureVector(DL);
     	for (int i = 0; i < DL; ++i)
     		dWL2.addEntry(i, dWL[i]);
-    	//System.out.printf("WL: %f\n",dWL2.Squaredl2NormUnsafe());
     	return dWL2;
+    }
+    
+    private FeatureVector getdU2(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpV2 = lfd.wpV2;
+    	double[][] wpW2 = lfd.wpW2;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dU2 = new FeatureVector(N);
+    	for (int mod = 1; mod < L; ++mod) {
+    		int head  = actDeps[mod];
+    		int gp = actDeps[head];
+    		if (gp == -1)
+    			continue;
+    		int dir = head > mod ? 1 : 2;
+    		int pdir = gp > head ? 1 : 2;
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
+    		double dotv2 = wpV2[head][k];
+    		double dotw2 = wpW2[mod][k];
+    		dU2.addEntries(wordFvs[gp], dotv2 * dotw2 * (X2[k][plab] + X2[k][pdir*T+plab]) * (Y2[k][lab] + Y2[k][dir*T+lab])
+    								  - dotv2 * dotw2 * (X2[k][plab2] + X2[k][pdir*T+plab2]) * (Y2[k][lab2] + Y2[k][dir*T+lab2]));
+    	}
+    	return dU2;
+    }
+    
+    private FeatureVector getdV2(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpU2 = lfd.wpU2;
+    	double[][] wpW2 = lfd.wpW2;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dV2 = new FeatureVector(N);
+    	for (int mod = 1; mod < L; ++mod) {
+    		int head  = actDeps[mod];
+    		int gp = actDeps[head];
+    		if (gp == -1)
+    			continue;
+    		int dir = head > mod ? 1 : 2;
+    		int pdir = gp > head ? 1 : 2;
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
+    		double dotu2 = wpU2[gp][k];
+    		double dotw2 = wpW2[mod][k];
+    		dV2.addEntries(wordFvs[head], dotu2 * dotw2 * (X2[k][plab] + X2[k][pdir*T+plab]) * (Y2[k][lab] + Y2[k][dir*T+lab])
+    								    - dotu2 * dotw2 * (X2[k][plab2] + X2[k][pdir*T+plab2]) * (Y2[k][lab2] + Y2[k][dir*T+lab2]));
+    	}
+    	return dV2;
+    }
+    
+    private FeatureVector getdW2(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpU2 = lfd.wpU2;
+    	double[][] wpV2 = lfd.wpV2;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	FeatureVector dW2 = new FeatureVector(N);
+    	for (int mod = 1; mod < L; ++mod) {
+    		int head  = actDeps[mod];
+    		int gp = actDeps[head];
+    		if (gp == -1)
+    			continue;
+    		int dir = head > mod ? 1 : 2;
+    		int pdir = gp > head ? 1 : 2;
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
+    		double dotu2 = wpU2[gp][k];
+    		double dotv2 = wpV2[head][k];
+    		dW2.addEntries(wordFvs[mod], dotu2 * dotv2 * (X2[k][plab] + X2[k][pdir*T+plab]) * (Y2[k][lab] + Y2[k][dir*T+lab])
+    								  - dotu2 * dotv2 * (X2[k][plab2] + X2[k][pdir*T+plab2]) * (Y2[k][lab2] + Y2[k][dir*T+lab2]));
+    	}
+    	return dW2;
+    }
+    
+    private FeatureVector getdX2(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpU2 = lfd.wpU2, wpV2 = lfd.wpV2, wpW2 = lfd.wpW2;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	double[] dX2 = new double[DL];
+    	for (int mod = 1; mod < L; ++mod) {
+    		int head  = actDeps[mod];
+    		int gp = actDeps[head];
+    		if (gp == -1)
+    			continue;
+    		int dir = head > mod ? 1 : 2;
+    		int pdir = gp > head ? 1 : 2;
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
+    		double dotu2 = wpU2[gp][k];
+    		double dotv2 = wpV2[head][k];
+    		double dotw2 = wpW2[mod][k];
+    		double val = dotu2 * dotv2 * dotw2 * (Y2[k][lab] + Y2[k][dir*T+lab]);
+    		double val2 = dotu2 * dotv2 * dotw2 * (Y2[k][lab2] + Y2[k][dir*T+lab2]);
+    		dX2[plab] += val;
+    		dX2[pdir*T+plab] += val;
+    		dX2[plab2] -= val2;
+    		dX2[pdir*T+plab2] -= val2;
+    	}
+    	
+    	FeatureVector dX2fv = new FeatureVector(DL);
+    	for (int i = 0; i < DL; ++i)
+    		dX2fv.addEntry(i, dX2[i]);
+    	return dX2fv;
+    }
+    
+    private FeatureVector getdY2(int k, LocalFeatureData lfd, int[] actDeps, int[] actLabs,
+			int[] predDeps, int[] predLabs) {
+    	double[][] wpU2 = lfd.wpU2, wpV2 = lfd.wpV2, wpW2 = lfd.wpW2;
+    	FeatureVector[] wordFvs = lfd.wordFvs;
+    	int L = wordFvs.length;
+    	double[] dY2 = new double[DL];
+    	for (int mod = 1; mod < L; ++mod) {
+    		int head  = actDeps[mod];
+    		int gp = actDeps[head];
+    		if (gp == -1)
+    			continue;
+    		int dir = head > mod ? 1 : 2;
+    		int pdir = gp > head ? 1 : 2;
+    		int lab  = actLabs[mod];
+    		int lab2 = predLabs[mod];
+    		int plab = actLabs[head];
+    		int plab2 = predLabs[head];
+    		if (lab == lab2 && plab == plab2) continue;
+    		double dotu2 = wpU2[gp][k];
+    		double dotv2 = wpV2[head][k];
+    		double dotw2 = wpW2[mod][k];
+    		double val = dotu2 * dotv2 * dotw2 * (X2[k][plab] + X2[k][pdir*T+plab]);
+    		double val2 = dotu2 * dotv2 * dotw2 * (X2[k][plab2] + X2[k][pdir*T+plab2]);
+    		dY2[lab] += val;
+    		dY2[dir*T+lab] += val;
+    		dY2[lab2] -= val2;
+    		dY2[dir*T+lab2] -= val2;
+    	}
+    	
+    	FeatureVector dY2fv = new FeatureVector(DL);
+    	for (int i = 0; i < DL; ++i)
+    		dY2fv.addEntry(i, dY2[i]);
+    	return dY2fv;
     }
     
 	public double getHammingDis(int[] actDeps, int[] actLabs,
@@ -659,14 +801,7 @@ public class Parameters implements Serializable {
 	{
 		double dis = 0;
 		for (int i = 1; i < actDeps.length; ++i)
-			//if (options.learnLabel) {
-			//	if (labelLossType == 0) {
-			//		if (actDeps[i] != predDeps[i]) dis += 1.0;
-			//		if (actLabs[i] != predLabs[i]) dis += 1.0;
-			//	} else if (actDeps[i] != predDeps[i] || actLabs[i] != predLabs[i]) dis += 1;
-			//} else {
-				if (actDeps[i] != predDeps[i]) dis += 1;
-			//}
+			if (actDeps[i] != predDeps[i]) dis += 1;
 		return dis;
     }
 	
@@ -679,16 +814,5 @@ public class Parameters implements Serializable {
 			if (actLabs[i] != predLabs[i]) dis += 1;
 		}
 		return dis;
-    }
-    public int getBinnedDistance(int x) {
-    	int y = x > 0 ? x : -x;
-    	int dis = 0;
-    	if (y > 10)
-    		dis = 7;
-    	else if (y > 5)
-    		dis = 6;
-    	else dis = y;
-    	if (dis > d) dis = d;
-    	return x > 0 ? dis : dis + d;
     }
 }

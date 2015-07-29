@@ -7,7 +7,6 @@ import parser.DependencyParser;
 import parser.DependencyPipe;
 import parser.GlobalFeatureData;
 import parser.LocalFeatureData;
-import parser.LowRankParam;
 import parser.Options;
 import parser.Parameters;
 import parser.Options.LearningMode;

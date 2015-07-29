@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -163,8 +164,7 @@ public class DependencyParser implements Serializable {
         if (options.pruning && options.learningMode != LearningMode.Basic)
         	//pruner = (DependencyParser) in.readObject();
         	pruner = (BasicArcPruner) in.readObject();
-        pipe.options = options;
-        parameters.options = options;        
+        pipe.options = options;      
         in.close();
         pipe.closeAlphabets();
     }
@@ -199,14 +199,12 @@ public class DependencyParser implements Serializable {
         	Options optionsBak = (Options) options.clone();
         	options.learningMode = LearningMode.Basic;
         	options.R = 0;
+        	options.R2 = 0;
         	options.gamma = 1.0;
         	options.gammaLabel = 1.0;
         	options.maxNumIters = options.numPretrainIters;
             options.useHO = false;
-        	parameters.gamma = 1.0;
-        	parameters.gammaL = 1.0;
-        	parameters.rank = 0;
-        	pipe.synFactory.preTrain = true;
+        	parameters = new Parameters(pipe, options);
     		System.out.println("=============================================");
     		System.out.printf(" Pre-training:%n");
     		System.out.println("=============================================");
@@ -217,36 +215,51 @@ public class DependencyParser implements Serializable {
     		trainIter(lstTrain, false);
     		System.out.println();
     		
+    		options = optionsBak;
     		System.out.println("Init tensor ... ");
-    		LowRankParam tensor = new LowRankParam(parameters);
-    		pipe.synFactory.fillParameters(tensor, parameters);
-    		tensor.decompose(parameters);
+    		
+    		int[] N = {parameters.N, parameters.N, parameters.D + (options.learnLabel ? parameters.DL : 0)};
+        	LowRankTensor tensor = new LowRankTensor(N, options.R);
+        	int[] N2 = {parameters.N, parameters.N, parameters.N, parameters.DL, parameters.DL};
+        	LowRankTensor tensor2 = new LowRankTensor(N2, options.R2);
+        	pipe.synFactory.fillParameters(tensor, tensor2, parameters);
+        	tensor.decompose();
+        	if (options.learnLabel)
+        		tensor2.decompose();
+        	
+            parameters = new Parameters(pipe, options);
+        	if (options.learnLabel) {
+        		parameters.U = tensor.param.get(0);
+        		parameters.V = tensor.param.get(1);
+        		for (int i = 0; i < options.R; ++i) {
+        			for (int j = 0; j < parameters.D; ++j)
+        				parameters.W[i][j] = tensor.param.get(2)[i][j];
+        			for (int j = parameters.D; j < parameters.D+parameters.DL; ++j)
+        				parameters.WL[i][j-parameters.D] = tensor.param.get(2)[i][j];
+        		}
+        		parameters.U2 = tensor2.param.get(0);
+        		parameters.V2 = tensor2.param.get(1);
+        		parameters.W2 = tensor2.param.get(2);
+        		parameters.X2 = tensor2.param.get(3);
+        		parameters.Y2 = tensor2.param.get(4);
+        	}
+        	else {
+        		parameters.U = tensor.param.get(0);
+        		parameters.V = tensor.param.get(1);
+        		parameters.W = tensor.param.get(2);
+        	}
+        	parameters.assignTotal();
+        	parameters.printStat();
+        	
             System.out.println();
     		end = System.currentTimeMillis();
-    		
-    		options.learningMode = optionsBak.learningMode;
-    		options.R = optionsBak.R;
-    		options.gamma = optionsBak.gamma;
-    		options.gammaLabel = optionsBak.gammaLabel;
-    		options.maxNumIters = optionsBak.maxNumIters;
-            options.useHO = optionsBak.useHO;
-    		parameters.rank = optionsBak.R;
-    		parameters.gamma = optionsBak.gamma;
-    		parameters.gammaL = optionsBak.gammaLabel;
-    		pipe.synFactory.preTrain = false;
-    		parameters.clearTheta();
-            parameters.printUStat();
-            parameters.printVStat();
-            parameters.printWStat();
-            parameters.printWLStat();
-            
             System.out.println();
             System.out.printf("Pre-training took %d ms.%n", end-start);    		
     		System.out.println("=============================================");
-    		System.out.println();	    
+    		System.out.println();
 
         } else {
-        	parameters.randomlyInitUVWWL();
+        	parameters.randomlyInit();
         }
         
 		System.out.println("=============================================");
@@ -315,17 +328,17 @@ public class DependencyParser implements Serializable {
         					iIter * N + i + 1, offset);
         			lfd.updateProjection();
                 }
+        		
         		if (options.learnLabel) {
         			predInst.heads = inst.heads;
         			lfd.predictLabels(predInst.heads, predInst.deplbids, true);
         			la = evaluateLabelCorrect(inst, predInst);
         			if (la != n-1) {
-        				loss += parameters.updateLabel(inst, predInst, lfd, gfd,
+        				loss += parameters.updateLabel(inst, predInst, lfd,
         						iIter * N + i + 1);
         			}
         			las += la;
         		}
-
     		}
     		
     		System.out.printf("%n  Iter %d\tloss=%.4f\tuas=%.4f\tlas=%.4f\t[%ds]%n", iIter+1,
@@ -333,10 +346,7 @@ public class DependencyParser implements Serializable {
     				(System.currentTimeMillis() - start)/1000);
     		System.out.println();
     		
-    		parameters.printUStat();
-    		parameters.printVStat();
-    		parameters.printWStat();
-    		parameters.printWLStat();
+    		parameters.printStat();
     		
     		if (options.learningMode != LearningMode.Basic && options.pruning && pruner != null)
     			pruner.printPruningStats();

@@ -112,4 +112,14 @@ public final class Utils {
 		return dot;
 	}
 	
+	public static int getBinnedDistance(int x) {
+    	int y = x > 0 ? x : -x;
+    	int dis = 0;
+    	if (y > 10)
+    		dis = 7;
+    	else if (y > 5)
+    		dis = 6;
+    	else dis = y;
+    	return x > 0 ? dis : dis + 7;
+    }
 }
