@@ -12,6 +12,7 @@ public class Options implements Cloneable, Serializable {
 
 	public enum LearningMode {
 		Basic,			// 1st order arc factored model
+		Second,			// 2nd order grandparent
 		Standard,		// 3rd order using similar features as TurboParser
 		Full			// full model with two additional 3rd order features and global features
 	}
@@ -194,6 +195,8 @@ public class Options implements Cloneable, Serializable {
             	String str = arg.split(":")[1];
             	if (str.equals("basic"))
             		learningMode = LearningMode.Basic;
+            	else if (str.equals("second"))
+            		learningMode = LearningMode.Second;
             	else if (str.equals("standard"))
             		learningMode = LearningMode.Standard;
             	else if (str.equals("full"))
@@ -210,6 +213,15 @@ public class Options implements Cloneable, Serializable {
     		case Basic:
     			useCS = false;
     			useGP = false;
+    			useHB = false;
+    			useGS = false;
+    			useTS = false;
+    			useGGP = false;
+    			usePSC = false;
+    			useHO = false;
+    			break;
+    		case Second:
+    			useCS = false;
     			useHB = false;
     			useGS = false;
     			useTS = false;

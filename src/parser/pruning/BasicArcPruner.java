@@ -99,7 +99,7 @@ public class BasicArcPruner extends DependencyParser {
     	}
     	
 		if (options.average)
-			parameters.averageParameters(updCnt);
+			parameters.averageParameters(updCnt, 1);
 		
 		// free auxiliary arrays to save memory
 		parameters.total = null;

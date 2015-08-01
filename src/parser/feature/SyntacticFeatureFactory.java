@@ -1919,7 +1919,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	//int[] lemma = inst.lemmaids;
     	int[] lemma = inst.lemmaids != null ? inst.lemmaids : inst.formids;
     	
-    	int flag = (((((gp < par ? 0 : 1) << 1) | (par < c ? 0 : 1)) << 1) | 1);
+    	int flag = (((((gp > par ? 0 : 1) << 1) | (par > c ? 0 : 1)) << 1) | 1);
 
     	int GP = pos[gp];
     	int HP = pos[par];
@@ -3666,7 +3666,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		int label = (int) extractLabelCode(code);
     		int plabel = (int) extractPLabelCode(code);
     		
-    		long head = 0, mod = 0, gp = 0;
+    		long head = -1, mod = -1, gp = -1;
 
         	//code = createArcCodePPPP(CORE_POS_PT0, pHeadLeft, pHead, pMod, pModRight);
     		if (temp == HPp_HP_MP_MPn.ordinal()) {
@@ -4273,35 +4273,42 @@ public class SyntacticFeatureFactory implements Serializable {
     			continue;
     		}
     		
-    		int headId = wordAlphabet.lookupIndex(head);
-    		int modId = wordAlphabet.lookupIndex(mod);
-    		if (headId >= 0 && modId >= 0) {
+    		int headId, modId, gpId = 0;
+    		int dir = 0, pdir = 0;
+    		headId = wordAlphabet.lookupIndex(head);
+    		modId = wordAlphabet.lookupIndex(mod);
+    		if (gp != -1) {
+    			gpId = wordAlphabet.lookupIndex(gp);
+    			if (dist != 0) {
+					dir = ((dist>>1) & 1) + 1;
+					pdir = ((dist>>2) & 1) + 1;
+				}
+    		}
+    		
+    		if (headId >= 0 && modId >= 0 && gpId >= 0) {
     			if (label == 0) {
     				int id = hashcode2int(code) & numArcFeats;
     	    		if (id < 0) continue;
     	    		double value = params.params[id];
-    	    		int[] y = {headId, modId, dist};
-    	    		tensor.add(y, value);
-    	    		//tensor.putEntry(headId, modId, dist, value);
+    	    		if (gp == -1) {
+	    	    		int[] y = {headId, modId, dist};
+	    	    		tensor.add(y, value);
+    	    		}
+    	    		else {
+    					int[] y = {gpId, headId, modId, pdir, dir};
+    					tensor2.add(y, value);
+    	    		}
     			}
     			else {
     				int id = hashcode2int(code) & numLabeledArcFeats;
     				if (id < 0) continue;
     				double value = params.paramsL[id];
-    				if (plabel == 0) {
+    				if (gp == -1) {
     					int[] y = {headId, modId, params.D+dist*params.T+label-1};
     					tensor.add(y, value);
-    					//tensor.putEntry(headId, modId, params.D+dist*params.T+label-1, value);
     				}
     				else {
-    					int gpId = wordAlphabet.lookupIndex(gp);
-    					if (gpId < 0) continue;
-    					int dir = 0, pdir = 0;
-    					if (dist != 0) {
-    						dir = ((dist>>1) & 1) + 1;
-    						pdir = ((dist>>2) & 1) + 1;
-    					}
-    					int[] y = {gpId, headId, modId, pdir*params.T+plabel-1, dir*params.T+label-1};
+    					int[] y = {gpId, headId, modId, params.D2+pdir*params.T+plabel-1, params.D2+dir*params.T+label-1};
     					tensor2.add(y, value);
     				}
     			}

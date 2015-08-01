@@ -197,13 +197,21 @@ public class DependencyParser implements Serializable {
         if (options.R > 0 && options.gamma < 1 && options.initTensorWithPretrain) {
 
         	Options optionsBak = (Options) options.clone();
-        	options.learningMode = LearningMode.Basic;
+        	if (options.useGP)
+        		options.learningMode = LearningMode.Second;
+        	else options.learningMode = LearningMode.Basic;
+        	options.useCS = false;
+        	options.useHB = false;
+        	options.useGS = false;
+        	options.useTS = false;
+        	options.useGGP = false;
+        	options.usePSC = false;
+        	options.useHO = false;
         	options.R = 0;
         	options.R2 = 0;
         	options.gamma = 1.0;
         	options.gammaLabel = 1.0;
         	options.maxNumIters = options.numPretrainIters;
-            options.useHO = false;
         	parameters = new Parameters(pipe, options);
     		System.out.println("=============================================");
     		System.out.printf(" Pre-training:%n");
@@ -216,38 +224,42 @@ public class DependencyParser implements Serializable {
     		System.out.println();
     		
     		options = optionsBak;
-    		System.out.println("Init tensor ... ");
     		
-    		int[] N = {parameters.N, parameters.N, parameters.D + (options.learnLabel ? parameters.DL : 0)};
-        	LowRankTensor tensor = new LowRankTensor(N, options.R);
-        	int[] N2 = {parameters.N, parameters.N, parameters.N, parameters.DL, parameters.DL};
-        	LowRankTensor tensor2 = new LowRankTensor(N2, options.R2);
+    		System.out.println("Init tensor ... ");
+    		int n = parameters.N;
+    		int d = parameters.D + (options.learnLabel ? parameters.DL : 0);
+    		int d2 = parameters.D2 + (options.learnLabel ? parameters.DL : 0);
+        	LowRankTensor tensor = new LowRankTensor(new int[] {n, n, d}, options.R);
+        	LowRankTensor tensor2 = new LowRankTensor(new int[] {n, n, n, d2, d2}, options.R2);
         	pipe.synFactory.fillParameters(tensor, tensor2, parameters);
         	tensor.decompose();
-        	if (options.learnLabel)
+        	if (options.useGP)
         		tensor2.decompose();
         	
             parameters = new Parameters(pipe, options);
-        	if (options.learnLabel) {
-        		parameters.U = tensor.param.get(0);
-        		parameters.V = tensor.param.get(1);
-        		for (int i = 0; i < options.R; ++i) {
-        			for (int j = 0; j < parameters.D; ++j)
-        				parameters.W[i][j] = tensor.param.get(2)[i][j];
-        			for (int j = parameters.D; j < parameters.D+parameters.DL; ++j)
-        				parameters.WL[i][j-parameters.D] = tensor.param.get(2)[i][j];
-        		}
-        		parameters.U2 = tensor2.param.get(0);
-        		parameters.V2 = tensor2.param.get(1);
-        		parameters.W2 = tensor2.param.get(2);
-        		parameters.X2 = tensor2.param.get(3);
-        		parameters.Y2 = tensor2.param.get(4);
-        	}
-        	else {
-        		parameters.U = tensor.param.get(0);
-        		parameters.V = tensor.param.get(1);
-        		parameters.W = tensor.param.get(2);
-        	}
+            parameters.U = tensor.param.get(0);
+    		parameters.V = tensor.param.get(1);
+    		for (int i = 0; i < options.R; ++i) {
+    			for (int j = 0; j < parameters.D; ++j)
+    				parameters.W[i][j] = tensor.param.get(2)[i][j];
+    			for (int j = parameters.D; j < d; ++j)
+    				parameters.WL[i][j-parameters.D] = tensor.param.get(2)[i][j];
+    		}
+    		if (options.useGP) {
+	    		parameters.U2 = tensor2.param.get(0);
+	    		parameters.V2 = tensor2.param.get(1);
+	    		parameters.W2 = tensor2.param.get(2);
+	    		for (int i = 0; i < options.R2; ++i) {
+	    			for (int j = 0; j < parameters.D2; ++j) {
+	    				parameters.X2[i][j] = tensor2.param.get(3)[i][j];
+	    				parameters.Y2[i][j] = tensor2.param.get(4)[i][j];
+	    			}
+	    			for (int j = parameters.D2; j < d2; ++j) {
+	    				parameters.X2L[i][j-parameters.D2] = tensor2.param.get(3)[i][j];
+	    				parameters.Y2L[i][j-parameters.D2] = tensor2.param.get(4)[i][j];
+	    			}
+	    		}
+    		}
         	parameters.assignTotal();
         	parameters.printStat();
         	
@@ -359,7 +371,7 @@ public class DependencyParser implements Serializable {
 	  			System.out.printf(" Evaluation: %s%n", options.testFile);
 	  			System.out.println(); 
                 if (options.average) 
-                	parameters.averageParameters((iIter+1)*N);
+                	parameters.averageParameters((iIter+1)*N, 1);
                 int cnvg = options.numTestConverge;
                 options.numTestConverge = options.numTrainConverge;
 	  			double res = evaluateSet(false, false);
@@ -368,12 +380,12 @@ public class DependencyParser implements Serializable {
 	  			System.out.println("_____________________________________________");
 	  			System.out.println();
                 if (options.average) 
-                	parameters.unaverageParameters((iIter+1)*N);
+                	parameters.averageParameters((iIter+1)*N, -1);
     		} 
     	}
     	
     	if (evalAndSave && options.average) {
-            parameters.averageParameters(options.maxNumIters * N);
+            parameters.averageParameters(options.maxNumIters * N, 1);
     	}
 
         decoder.shutdown();
