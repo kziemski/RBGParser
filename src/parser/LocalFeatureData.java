@@ -112,6 +112,9 @@ public class LocalFeatureData {
 		for (int i = 0; i < len; ++i) {
 			parameters.projectU(wordFvs[i], wpU[i]);
 			parameters.projectV(wordFvs[i], wpV[i]);
+			parameters.projectU2(wordFvs[i], wpU2[i]);
+			parameters.projectV2(wordFvs[i], wpV2[i]);
+			parameters.projectW2(wordFvs[i], wpW2[i]);
 		}
 	}
 	
