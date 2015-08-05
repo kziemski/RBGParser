@@ -212,7 +212,11 @@ public class DependencyParser implements Serializable {
         	options.gamma = 1.0;
         	options.gammaLabel = 1.0;
         	options.maxNumIters = options.numPretrainIters;
-        	parameters = new Parameters(pipe, options);
+        	parameters.rank = 0;
+        	parameters.rank2 = 0;
+        	parameters.gamma = 1.0;
+        	parameters.gammaL = 1.0;
+        	
     		System.out.println("=============================================");
     		System.out.printf(" Pre-training:%n");
     		System.out.println("=============================================");
@@ -224,6 +228,10 @@ public class DependencyParser implements Serializable {
     		System.out.println();
     		
     		options = optionsBak;
+    		parameters.rank = options.R;
+        	parameters.rank2 = options.R2;
+        	parameters.gamma = options.gamma;
+        	parameters.gammaL = options.gammaLabel;
     		
     		System.out.println("Init tensor ... ");
     		int n = parameters.N;
@@ -236,7 +244,6 @@ public class DependencyParser implements Serializable {
         	if (options.useGP)
         		tensor2.decompose();
         	
-            parameters = new Parameters(pipe, options);
             parameters.U = tensor.param.get(0);
     		parameters.V = tensor.param.get(1);
     		for (int i = 0; i < options.R; ++i) {

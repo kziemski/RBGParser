@@ -361,6 +361,8 @@ public class Parameters implements Serializable {
 	private void addTheta(float[] a, float[] totala, FeatureVector da,
 			double coeff, double coeff2)
 	{
+		if (da == null)
+			return;
 		for (int i = 0, K = da.size(); i < K; ++i) {
     		int x = da.x(i);
     		double z = da.value(i);
@@ -375,6 +377,8 @@ public class Parameters implements Serializable {
 		int n = a.length;
 		for (int k = 0; k < n; ++k) {
     		FeatureVector dak = da[k];
+    		if (dak == null)
+    			continue;
     		for (int i = 0, K = dak.size(); i < K; ++i) {
     			int x = dak.x(i);
     			double z = dak.value(i);
