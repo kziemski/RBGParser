@@ -240,33 +240,41 @@ public class DependencyParser implements Serializable {
         	LowRankTensor tensor = new LowRankTensor(new int[] {n, n, d}, options.R);
         	LowRankTensor tensor2 = new LowRankTensor(new int[] {n, n, n, d2, d2}, options.R2);
         	pipe.synFactory.fillParameters(tensor, tensor2, parameters);
-        	tensor.decompose();
-        	if (options.useGP)
-        		tensor2.decompose();
         	
-            parameters.U = tensor.param.get(0);
-    		parameters.V = tensor.param.get(1);
-    		for (int i = 0; i < options.R; ++i) {
+        	ArrayList<double[][]> param = new ArrayList<double[][]>();
+        	param.add(parameters.U);
+        	param.add(parameters.V);
+        	double[][] W = new double[options.R][d];
+        	param.add(W);
+        	tensor.decompose(param);
+        	for (int i = 0; i < options.R; ++i) {
     			for (int j = 0; j < parameters.D; ++j)
-    				parameters.W[i][j] = tensor.param.get(2)[i][j];
+    				parameters.W[i][j] = W[i][j];
     			for (int j = parameters.D; j < d; ++j)
-    				parameters.WL[i][j-parameters.D] = tensor.param.get(2)[i][j];
+    				parameters.WL[i][j-parameters.D] = W[i][j];
     		}
-    		if (options.useGP) {
-	    		parameters.U2 = tensor2.param.get(0);
-	    		parameters.V2 = tensor2.param.get(1);
-	    		parameters.W2 = tensor2.param.get(2);
-	    		for (int i = 0; i < options.R2; ++i) {
+        	
+        	if (options.useGP) {
+        		ArrayList<double[][]> param2 = new ArrayList<double[][]>();
+        		param2.add(parameters.U2);
+        		param2.add(parameters.V2);
+        		param2.add(parameters.W2);
+        		double[][] X2 = new double[options.R2][d2];
+            	param2.add(X2);
+            	double[][] Y2 = new double[options.R2][d2];
+            	param2.add(Y2);
+            	tensor2.decompose(param2);
+            	for (int i = 0; i < options.R2; ++i) {
 	    			for (int j = 0; j < parameters.D2; ++j) {
-	    				parameters.X2[i][j] = tensor2.param.get(3)[i][j];
-	    				parameters.Y2[i][j] = tensor2.param.get(4)[i][j];
+	    				parameters.X2[i][j] = X2[i][j];
+	    				parameters.Y2[i][j] = Y2[i][j];
 	    			}
 	    			for (int j = parameters.D2; j < d2; ++j) {
-	    				parameters.X2L[i][j-parameters.D2] = tensor2.param.get(3)[i][j];
-	    				parameters.Y2L[i][j-parameters.D2] = tensor2.param.get(4)[i][j];
+	    				parameters.X2L[i][j-parameters.D2] = X2[i][j];
+	    				parameters.Y2L[i][j-parameters.D2] = Y2[i][j];
 	    			}
 	    		}
-    		}
+        	}
         	parameters.assignTotal();
         	parameters.printStat();
         	

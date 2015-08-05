@@ -9,7 +9,6 @@ public class LowRankTensor {
 	public int dim, rank;
 	public int[] N;
 	public ArrayList<MatEntry> list;
-	public ArrayList<double[][]> param;
 	
 	public LowRankTensor(int[] _N, int _rank) 
 	{
@@ -17,10 +16,6 @@ public class LowRankTensor {
 		dim = N.length;
 		rank = _rank;
 		list = new ArrayList<MatEntry>();
-		param = new ArrayList<double[][]>();
-		for (int i = 0; i < dim; ++i) {
-			param.add(new double[rank][N[i]]);
-		}
 	}
 	
 	public void add(int[] x, double val)
@@ -28,7 +23,7 @@ public class LowRankTensor {
 		list.add(new MatEntry(x, val));
 	}
 	
-	public void decompose()
+	public void decompose(ArrayList<double[][]> param)
 	{	
 		int MAXITER=1000;
 		double eps = 1e-6;
