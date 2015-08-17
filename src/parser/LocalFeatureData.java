@@ -1066,6 +1066,7 @@ public class LocalFeatureData {
 			int j = arcLis.get(l);
 			treeDP(j, arcLis, lab0);
 			for (int p = lab0; p < ntypes; ++p) {
+				
 				double best = Double.NEGATIVE_INFINITY;
 				for (int q = lab0; q < ntypes; ++q) {
 					double s = f[j][q] + labScores[j][q][p];

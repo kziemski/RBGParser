@@ -118,6 +118,9 @@ public class DependencyParser implements Serializable {
 				parser.saveModel();
 			}
 			
+			DependencyInstance[] lstTrain = parser.pipe.createInstances(options.trainFile);
+			parser.pipe.pruneLabel(lstTrain);
+			
 			System.out.printf(" Evaluating: %s%n", options.testFile);
 			parser.evaluateSet(true, false);
 		}
@@ -478,6 +481,7 @@ public class DependencyParser implements Serializable {
     	Evaluator eval = new Evaluator(options, pipe);
     	
 		long start = System.currentTimeMillis();
+		long labelTime = 0;
     	
     	DependencyInstance inst = pipe.createInstance(reader);    	
     	while (inst != null) {
@@ -486,8 +490,11 @@ public class DependencyParser implements Serializable {
 
     		    		
             DependencyInstance predInst = decoder.decode(inst, lfd, gfd, false);
-            if (options.learnLabel)
+            if (options.learnLabel) {
+            	long st = System.currentTimeMillis();
             	lfd.predictLabels(predInst.heads, predInst.deplbids, false);
+            	labelTime += System.currentTimeMillis() - st;
+            }
             
             eval.add(inst, predInst, evalWithPunc);
     		
@@ -505,9 +512,9 @@ public class DependencyParser implements Serializable {
     	
     	System.out.printf("  Tokens: %d%n", eval.tot);
     	System.out.printf("  Sentences: %d%n", eval.nsents);
-    	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs]%n",
+    	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs, %.2fs]%n",
     			eval.UAS(), eval.LAS(), eval.CAS(),
-    			(System.currentTimeMillis() - start)/1000.0);
+    			(System.currentTimeMillis() - start)/1000.0, labelTime/1000.0);
     	if (options.pruning && options.learningMode != LearningMode.Basic && pruner != null) {
     		pruner.printPruningStats();
     		if (pruner.pruningRecall() < 0.99) {
