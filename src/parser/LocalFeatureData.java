@@ -1112,15 +1112,20 @@ public class LocalFeatureData {
 			for (int p = lab0; p < ntypes; ++p) {
 				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
 					deplbids[mod] = p;
-					double s1 = /*gammaL * getLabelScoreTheta(heads, deplbids, mod, 1) +
-							(1-gammaL) * */parameters.dotProductL(wpU[head], wpV[mod], p, dir);
+					double s1 = 0;
+					if (gammaL > 0)
+						s1 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 1);
+					if (gammaL < 1)
+						s1 += (1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
 					for (int q = lab0; q < ntypes; ++q) {
 						double s2 = 0;
 						if (options.useGP && gp != -1) {
 							if (pipe.pruneLabel[inst.postagids[gp]][inst.postagids[head]][q]) {
 								deplbids[head] = q;
-								s2 = /*gammaL * getLabelScoreTheta(heads, deplbids, mod, 2) +
-								 (1-gammaL) * */parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
+								if (gammaL > 0)
+									s2 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 2);
+								if (gammaL < 1)
+									s2 += (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
 							}
 							else s2 = Double.NEGATIVE_INFINITY;
 						}

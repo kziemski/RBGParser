@@ -50,8 +50,8 @@ public class Options implements Cloneable, Serializable {
 	
 	public boolean average = true;
 	public double C = 0.01;
-	public double gamma = 0.3, gammaLabel = 0.3;
-	public int R = 50, R2 = 50;
+	public double gamma = 0.3, gammaLabel = 0;
+	public int R = 50, R2 = 30;
 	
 	// feature set
 	public int bits = 30;

@@ -504,7 +504,9 @@ public class DependencyPipe implements Serializable {
 			}
 		}
 		else {
-			Arrays.fill(pruneLabel, true);
+			for (int i = 0; i < numPOS; i++)
+				for (int j = 0; j < numPOS; j++)
+						Arrays.fill(pruneLabel[i][j], true);
 			num = numPOS*numPOS*numLab;
 		}
 		

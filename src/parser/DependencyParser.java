@@ -118,9 +118,6 @@ public class DependencyParser implements Serializable {
 				parser.saveModel();
 			}
 			
-			DependencyInstance[] lstTrain = parser.pipe.createInstances(options.trainFile);
-			parser.pipe.pruneLabel(lstTrain);
-			
 			System.out.printf(" Evaluating: %s%n", options.testFile);
 			parser.evaluateSet(true, false);
 		}
@@ -512,9 +509,9 @@ public class DependencyParser implements Serializable {
     	
     	System.out.printf("  Tokens: %d%n", eval.tot);
     	System.out.printf("  Sentences: %d%n", eval.nsents);
-    	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs, %dms]%n",
+    	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs, %.2fs]%n",
     			eval.UAS(), eval.LAS(), eval.CAS(),
-    			(System.currentTimeMillis() - start)/1000.0, labelTime);
+    			(System.currentTimeMillis() - start)/1000.0, labelTime/1000.0);
     	if (options.pruning && options.learningMode != LearningMode.Basic && pruner != null) {
     		pruner.printPruningStats();
     		if (pruner.pruningRecall() < 0.99) {
