@@ -1109,18 +1109,24 @@ public class LocalFeatureData {
 			int gp = heads[head];
 			int pdir = gp > head ? 1 : 2;
 			for (int p = lab0; p < ntypes; ++p) {
-				deplbids[mod] = p;
-				double s1 = gammaL * getLabelScoreTheta(heads, deplbids, mod, 1) +
-						(1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
-				for (int q = lab0; q < ntypes; ++q) {
-					double s2 = 0;
-					if (options.useGP && gp != -1) {
-						deplbids[head] = q;
-						s2 = gammaL * getLabelScoreTheta(heads, deplbids, mod, 2) +
-						 (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
+				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
+					deplbids[mod] = p;
+					double s1 = gammaL * getLabelScoreTheta(heads, deplbids, mod, 1) +
+							(1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
+					for (int q = lab0; q < ntypes; ++q) {
+						double s2 = 0;
+						if (options.useGP && gp != -1) {
+							if (pipe.pruneLabel[inst.postagids[gp]][inst.postagids[head]][q]) {
+								deplbids[head] = q;
+								s2 = gammaL * getLabelScoreTheta(heads, deplbids, mod, 2) +
+								 (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
+							}
+							else s2 = Double.NEGATIVE_INFINITY;
+						}
+						labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
 					}
-					labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
 				}
+				else Arrays.fill(labScores[mod][p], Double.NEGATIVE_INFINITY);
 			}
 		}
 		

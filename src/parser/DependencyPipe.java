@@ -22,6 +22,8 @@ import java.util.LinkedList;
 //import javax.swing.text.html.HTMLDocument.HTMLReader.TagAction;
 
 
+
+
 import parser.DependencyInstance.SpecialPos;
 import parser.Options.LearningMode;
 import parser.Options.PossibleLang;
@@ -62,6 +64,9 @@ public class DependencyPipe implements Serializable {
 	// language specific info
 	public HashSet<String> conjWord;
 	public HashMap<String, String> coarseMap;
+	
+	// headPOS x modPOS x Label
+	public boolean[][][] pruneLabel;
 	
 	public DependencyPipe(Options options) throws IOException 
 	{
@@ -475,7 +480,26 @@ public class DependencyPipe implements Serializable {
     }
     
     
-    
+    public void pruneLabel(DependencyInstance[] lstTrain)
+    {
+		int numPOS = dictionaries.size(POS);
+		int numLab = dictionaries.size(DEPLABEL);
+		pruneLabel = new boolean [numPOS][numPOS][numLab];
+		int num = 0;
+		for (int i = 0; i < lstTrain.length; i++) {
+			DependencyInstance inst = lstTrain[i];
+			int n = inst.length;
+			for (int mod = 1; mod < n; ++mod) {
+				int head = inst.heads[mod];
+				int lab = inst.deplbids[mod];
+				if (pruneLabel[inst.postagids[head]][inst.postagids[mod]][lab] == false) {
+					pruneLabel[inst.postagids[head]][inst.postagids[mod]][lab] = true;
+					num++;
+				}
+			}
+		}
+		System.out.println("Prune label: " + num + "/" + numPOS*numPOS*numLab);
+    }
     
 	
 }

@@ -1,5 +1,8 @@
 package parser;
 
+import static utils.DictionarySet.DictionaryTypes.DEPLABEL;
+import static utils.DictionarySet.DictionaryTypes.POS;
+
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -92,6 +95,7 @@ public class DependencyParser implements Serializable {
 			pipe.createAlphabets(options.trainFile);
 			
 			DependencyInstance[] lstTrain = pipe.createInstances(options.trainFile);
+			pipe.pruneLabel(lstTrain);
 			
 			Parameters parameters = new Parameters(pipe, options);
 			parser.parameters = parameters;
