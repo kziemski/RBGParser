@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
 //import javax.swing.text.html.HTMLDocument.HTMLReader.TagAction;
+
 
 
 
@@ -497,6 +499,10 @@ public class DependencyPipe implements Serializable {
 					num++;
 				}
 			}
+		}
+		if (numLab <= 20) {
+			Arrays.fill(pruneLabel, true);
+			num = numPOS*numPOS*numLab;
 		}
 		System.out.println("Prune label: " + num + "/" + numPOS*numPOS*numLab);
     }
