@@ -512,9 +512,9 @@ public class DependencyParser implements Serializable {
     	
     	System.out.printf("  Tokens: %d%n", eval.tot);
     	System.out.printf("  Sentences: %d%n", eval.nsents);
-    	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs, %.2fs]%n",
+    	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs, %dms]%n",
     			eval.UAS(), eval.LAS(), eval.CAS(),
-    			(System.currentTimeMillis() - start)/1000.0, labelTime/1000.0);
+    			(System.currentTimeMillis() - start)/1000.0, labelTime);
     	if (options.pruning && options.learningMode != LearningMode.Basic && pruner != null) {
     		pruner.printPruningStats();
     		if (pruner.pruningRecall() < 0.99) {
