@@ -56,6 +56,8 @@ public class LocalFeatureData {
 	double[] ggpc;			// [dep id (ggp, gp)][dep id (p, mod)]
 	double[] psc;			// parent-sib-mod-child, [dep id (p, sib)][dep id (mod, child)]
 	
+	public long wordFVTime;
+	
 	public LocalFeatureData(DependencyInstance inst,
 			DependencyParser parser, boolean indexGoldArcs, boolean isTrain) 
 	{
@@ -94,7 +96,8 @@ public class LocalFeatureData {
 		
 		f = new double[len][ntypes];
 		labScores = new double[len][ntypes][ntypes];
-
+		
+		initWordFV();
 		if (options.learningMode != LearningMode.Basic) {
 			// construct unpruned arc list. All arcs are kept if there is no pruner.
 			initArcPruningMap(indexGoldArcs);
@@ -112,21 +115,34 @@ public class LocalFeatureData {
 		for (int i = 0; i < len; ++i) {
 			parameters.projectU(wordFvs[i], wpU[i]);
 			parameters.projectV(wordFvs[i], wpV[i]);
-			parameters.projectU2(wordFvs[i], wpU2[i]);
-			parameters.projectV2(wordFvs[i], wpV2[i]);
-			parameters.projectW2(wordFvs[i], wpW2[i]);
+			if (options.useGP) {
+				parameters.projectU2(wordFvs[i], wpU2[i]);
+				parameters.projectV2(wordFvs[i], wpV2[i]);
+				parameters.projectW2(wordFvs[i], wpW2[i]);
+			}
 		}
 	}
 	
-	private void initFirstOrderTables() 
+	private void initWordFV()
 	{
+		long t = System.currentTimeMillis();
+		
 		for (int i = 0; i < len; ++i) {
-			if (wordFvs[i] == null)
-				wordFvs[i] = synFactory.createWordFeatures(inst, i);
+			wordFvs[i] = synFactory.createWordFeatures(inst, i);
 			parameters.projectU(wordFvs[i], wpU[i]);
 			parameters.projectV(wordFvs[i], wpV[i]);
+			if (options.useGP) {
+				parameters.projectU2(wordFvs[i], wpU2[i]);
+				parameters.projectV2(wordFvs[i], wpV2[i]);
+				parameters.projectW2(wordFvs[i], wpW2[i]);
+			}
 		}
 		
+		wordFVTime =  System.currentTimeMillis() - t;
+	}
+	
+	private void initFirstOrderTables() 
+	{	
 		boolean nopruning = !options.pruning || pruner == null || options.learningMode == LearningMode.Basic;
 		
 		if (isTrain) {
@@ -148,18 +164,6 @@ public class LocalFeatureData {
 											+ parameters.dotProduct(wpU[i], wpV[j], i-j) * (1-gamma);
 					}
 		}
-		
-//		if (options.learnLabel) {
-//			for (int i = 0; i < len; ++i)
-//				for (int t = 0; t < ntypes; ++t)
-//					for (int j = 0; j < 2; ++j)
-//						for (int k = 0; k < 2; ++k) {
-//							lbFvs[i][t][j][k] = pipe.createLabelFeatures(
-//									inst, i, t, j == 1, k == 1);
-//							lbScores[i][t][j][k] = parameters.dotProduct(
-//									lbFvs[i][t][j][k]) * gammaLabel;
-//						}
-//		}
 	}
 	
 	public void initHighOrderFeatureTables() {
@@ -182,13 +186,6 @@ public class LocalFeatureData {
 			//gpc = new FeatureDataItem[nuparcs*len];
 			gpc = new double[numarcs*len];
 			Arrays.fill(gpc, NULL);
-			for (int i = 0; i < len; ++i) {
-				if (wordFvs[i] == null)
-					wordFvs[i] = synFactory.createWordFeatures(inst, i);
-				parameters.projectU2(wordFvs[i], wpU2[i]);
-				parameters.projectV2(wordFvs[i], wpV2[i]);
-				parameters.projectW2(wordFvs[i], wpW2[i]);
-			}
 		}
 		
 		if (options.useHB) {
@@ -1060,13 +1057,13 @@ public class LocalFeatureData {
 	
 	void treeDP(int i, DependencyArcList arcLis, int lab0)
 	{
+		Arrays.fill(f[i], 0);
 		int st = arcLis.startIndex(i);
 		int ed = arcLis.endIndex(i);
 		for (int l = st; l < ed ; ++l) {
 			int j = arcLis.get(l);
 			treeDP(j, arcLis, lab0);
 			for (int p = lab0; p < ntypes; ++p) {
-				
 				double best = Double.NEGATIVE_INFINITY;
 				for (int q = lab0; q < ntypes; ++q) {
 					double s = f[j][q] + labScores[j][q][p];
@@ -1137,9 +1134,6 @@ public class LocalFeatureData {
 		}
 		
 		DependencyArcList arcLis = new DependencyArcList(heads, options.useHO);
-		for (int i = 0; i < len; ++i)
-			Arrays.fill(f[i], 0);
-		
 		treeDP(0, arcLis, lab0);
 		deplbids[0] = inst.deplbids[0];
 		getType(0, arcLis, deplbids, lab0);

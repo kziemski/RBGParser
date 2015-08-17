@@ -484,7 +484,7 @@ public class DependencyParser implements Serializable {
     	while (inst != null) {
     		LocalFeatureData lfd = new LocalFeatureData(inst, this, true, false);
     		GlobalFeatureData gfd = new GlobalFeatureData(lfd); 
-
+    		labelTime += lfd.wordFVTime;
     		    		
             DependencyInstance predInst = decoder.decode(inst, lfd, gfd, false);
             if (options.learnLabel) {
