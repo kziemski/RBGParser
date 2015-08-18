@@ -118,6 +118,9 @@ public class DependencyParser implements Serializable {
 				parser.saveModel();
 			}
 			
+			DependencyInstance[] lstTrain = parser.pipe.createInstances(options.trainFile);
+			parser.pipe.pruneLabel(lstTrain);
+			
 			System.out.printf(" Evaluating: %s%n", options.testFile);
 			parser.evaluateSet(true, false);
 		}
@@ -487,6 +490,7 @@ public class DependencyParser implements Serializable {
     		labelTime += lfd.wordFVTime;
     		    		
             DependencyInstance predInst = decoder.decode(inst, lfd, gfd, false);
+            //predInst.heads = inst.heads;
             if (options.learnLabel) {
             	long st = System.currentTimeMillis();
             	lfd.predictLabels(predInst.heads, predInst.deplbids, false);
@@ -543,7 +547,7 @@ public class DependencyParser implements Serializable {
     	DependencyInstance inst = pipe.createInstance(reader);    	
     	while (inst != null) {
     		LocalFeatureData lfd = new LocalFeatureData(inst, this, true, false);
-    		GlobalFeatureData gfd = new GlobalFeatureData(lfd); 
+    		GlobalFeatureData gfd = new GlobalFeatureData(lfd);
     		
             DependencyInstance predInst = decoder.decode(inst, lfd, gfd, false);
             
