@@ -13,8 +13,6 @@ public class Options implements Cloneable, Serializable {
 	public enum LearningMode {
 		Basic,			// 1st order arc factored model
 		Second,			// 2nd order grandparent
-		Standard,		// 3rd order using similar features as TurboParser
-		Full			// full model with two additional 3rd order features and global features
 	}
 		
 	public String trainFile = null;
@@ -23,7 +21,6 @@ public class Options implements Cloneable, Serializable {
 	public String outFile = null;
 	public boolean train = false;
 	public boolean test = false;
-	public boolean dev = false;
 	public String wordVectorFile = null;
 	public String modelFile = "model.out";
     public String format = "CONLL-X";
@@ -33,36 +30,16 @@ public class Options implements Cloneable, Serializable {
 	public int maxNumIters = 10;
 	public boolean initTensorWithPretrain = true;
 	
-	//public LearningMode learningMode = LearningMode.Basic;
-	public LearningMode learningMode = LearningMode.Standard;
-	public boolean projective = false;
-	public boolean learnLabel = true;
-	public boolean pruning = true;
-	public double pruningCoeff = 0.2;
-	
-	public int numHcThreads = 4;		// hill climbing: number of threads
-	
-	// Number of hill climbing restarts to converge
-	// Training requires more restarts because of cost-augmented decoding
-	// Testing is easier therefore needs less restarts
-	public int numTrainConverge = 300;	
-	public int numTestConverge = 100;	
+	public LearningMode learningMode = LearningMode.Second;
 	
 	public boolean average = true;
 	public double C = 0.01;
-	public double gamma = 0.3, gammaLabel = 0;
+	public double gammaLabel = 0;
 	public int R = 50, R2 = 30;
 	
 	// feature set
 	public int bits = 30;
-	public boolean useCS = true;		// use consecutive siblings
 	public boolean useGP = true;		// use grandparent
-	public boolean useHB = true;		// use head bigram
-	public boolean useGS = true;		// use grand sibling
-	public boolean useTS = true;		// use tri-sibling
-	public boolean useGGP = true;		// use great-grandparent
-	public boolean usePSC = true;		// use parent-sibling-child
-	public boolean useHO = true;		// use global feature
 	
 	// CoNLL language specific info
 	// used only in Full learning mode
@@ -109,20 +86,10 @@ public class Options implements Cloneable, Serializable {
     		else if (arg.equals("test")) {
     			test = true;
     		}
-    		else if (arg.equals("dev")) {
-    			test = true;
-    			dev = true;
-    		}
-    		else if (arg.startsWith("label")) {
-    			learnLabel = Boolean.parseBoolean(arg.split(":")[1]);
-    		}
-            else if (arg.startsWith("proj")) {
-                projective = Boolean.parseBoolean(arg.split(":")[1]);
-            }
             else if (arg.startsWith("average:")) {
             	average = Boolean.parseBoolean(arg.split(":")[1]);
             }
-            else if (arg.startsWith("svd:")) {
+            else if (arg.startsWith("pretrain:")) {
             	initTensorWithPretrain = Boolean.parseBoolean(arg.split(":")[1]);
             }
     		else if (arg.startsWith("train-file:")) {
@@ -146,9 +113,6 @@ public class Options implements Cloneable, Serializable {
             else if (arg.startsWith("C:")) {
             	C = Double.parseDouble(arg.split(":")[1]);
             }
-            else if (arg.startsWith("gamma:")) {
-            	gamma = Double.parseDouble(arg.split(":")[1]);
-            }
             else if (arg.startsWith("gammaLabel:")) {
             	gammaLabel = Double.parseDouble(arg.split(":")[1]);
             }
@@ -167,29 +131,10 @@ public class Options implements Cloneable, Serializable {
             else if (arg.startsWith("pre-iters:")) {
                 numPretrainIters = Integer.parseInt(arg.split(":")[1]);
             }
-            else if (arg.startsWith("pruning:")) {
-                pruning = Boolean.parseBoolean(arg.split(":")[1]);
-            }
-            else if (arg.startsWith("pruning-weight:")) {
-            	pruningCoeff = Double.parseDouble(arg.split(":")[1]);
-            }
-            else if (arg.startsWith("thread:")) {
-            	numHcThreads = Integer.parseInt(arg.split(":")[1]);
-            }
             else if (arg.startsWith("bits:")) {
             	bits = Integer.parseInt(arg.split(":")[1]);
             	if (bits < 20) bits = 20;
             	if (bits > 31) bits = 31;
-            }
-            else if (arg.startsWith("converge:")) {
-            	numTrainConverge = Integer.parseInt(arg.split(":")[1]);
-            	numTestConverge = numTrainConverge;
-            }
-            else if (arg.startsWith("converge-train:")) {
-            	numTrainConverge = Integer.parseInt(arg.split(":")[1]);
-            }
-            else if (arg.startsWith("converge-test:")) {
-            	numTestConverge = Integer.parseInt(arg.split(":")[1]);
             }
             else if (arg.startsWith("model:")) {
             	String str = arg.split(":")[1];
@@ -197,10 +142,6 @@ public class Options implements Cloneable, Serializable {
             		learningMode = LearningMode.Basic;
             	else if (str.equals("second"))
             		learningMode = LearningMode.Second;
-            	else if (str.equals("standard"))
-            		learningMode = LearningMode.Standard;
-            	else if (str.equals("full"))
-            		learningMode = LearningMode.Full;
             }
             else if (arg.startsWith("format:")) {
             	format = arg.split(":")[1];
@@ -211,30 +152,9 @@ public class Options implements Cloneable, Serializable {
 
     	switch (learningMode) {
     		case Basic:
-    			useCS = false;
     			useGP = false;
-    			useHB = false;
-    			useGS = false;
-    			useTS = false;
-    			useGGP = false;
-    			usePSC = false;
-    			useHO = false;
     			break;
     		case Second:
-    			useCS = false;
-    			useHB = false;
-    			useGS = false;
-    			useTS = false;
-    			useGGP = false;
-    			usePSC = false;
-    			useHO = false;
-    			break;
-    		case Standard:
-    			useGGP = false;
-    			usePSC = false;
-    			useHO = false;
-    			break;
-    		case Full:
     			break;
     		default:
     			break;
@@ -252,30 +172,17 @@ public class Options implements Cloneable, Serializable {
     	System.out.println("train: " + train);
     	System.out.println("test: " + test);
         System.out.println("iters: " + maxNumIters);
-    	System.out.println("label: " + learnLabel);
-        System.out.println("max-sent: " + maxNumSent);      
+        System.out.println("max-sent: " + maxNumSent);   
+        System.out.println("gammaLabel: " + gammaLabel);
         System.out.println("C: " + C);
-        System.out.println("gamma: " + gamma + " " + gammaLabel);
         System.out.println("R: " + R);
         System.out.println("R2: " + R2);
         System.out.println("word-vector:" + wordVectorFile);
-        System.out.println("projective: " + projective);
-        System.out.println("pruning: " + pruning);
-        System.out.println("hill-climbing converge (train): " + numTrainConverge);
-        System.out.println("hill-climbing converge (test): " + numTestConverge);
-        System.out.println("thread: " + numHcThreads);
         System.out.println("file format: " + format);
         System.out.println("feature hash bits: " + bits);
         
         System.out.println();
-        System.out.println("use consecutive siblings: " + useCS);
         System.out.println("use grandparent: " + useGP);
-        System.out.println("use head bigram: " + useHB);
-        System.out.println("use grand siblings: " + useGS);
-        System.out.println("use tri-siblings: " + useTS);
-        System.out.println("use great-grandparent: " + useGGP);
-        System.out.println("use parent-sibling-child: " + usePSC);
-        System.out.println("use high-order: " + useHO);
         System.out.println("model: " + learningMode.name());
 
     	System.out.println("------\n");

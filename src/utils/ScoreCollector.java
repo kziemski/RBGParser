@@ -1,19 +1,12 @@
 package utils;
 
-import parser.Parameters;
-
 public class ScoreCollector implements Collector {
 	
 	float[] weights;
 	public double score;
 	
-	public ScoreCollector(Parameters params) {
-		weights = params.params;
-		score = 0;
-	}
-	
-	public ScoreCollector(Parameters params, boolean isLabel) {
-		weights = isLabel ? params.paramsL : params.params;
+	public ScoreCollector(float[] w) {
+		weights = w;
 		score = 0;
 	}
 	

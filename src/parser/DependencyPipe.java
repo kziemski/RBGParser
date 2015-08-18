@@ -253,10 +253,7 @@ public class DependencyPipe implements Serializable {
 		synFactory.wordNumBits = Utils.log2(dictionaries.size(WORD) + 1);
 		synFactory.tagNumBits = Utils.log2(dictionaries.size(POS) + 1);
 		synFactory.depNumBits = Utils.log2(dictionaries.size(DEPLABEL) + 1);
-		if (options.learnLabel)
-			synFactory.flagBits = 2*synFactory.depNumBits + 4;
-		else
-			synFactory.flagBits = 4;
+		synFactory.flagBits = 2*synFactory.depNumBits + 4;
 		
 		types = new String[dictionaries.size(DEPLABEL)];	 
 		Dictionary labelDict = dictionaries.get(DEPLABEL);
@@ -314,7 +311,7 @@ public class DependencyPipe implements Serializable {
 			
 			inst.setInstIds(dictionaries, coarseMap, conjWord, options.lang);
 			
-			eval.add(inst, inst, false);
+			eval.add(inst, inst.heads, inst.deplbids, false);
 		    synFactory.initFeatureAlphabets(inst);
 				
 		    inst = reader.nextInstance();
@@ -332,7 +329,7 @@ public class DependencyPipe implements Serializable {
 		System.out.printf("Num of CONLL coarse POS tags: %d%n", cposTagSet.size());
 		System.out.printf("Num of labels: %d%n", types.length);
 		System.out.printf("Num of Syntactic Features: %d %d%n", 
-				synFactory.numWordFeats, synFactory.numArcFeats);
+				synFactory.numWordFeats, synFactory.numLabeledArcFeats);
 		
 //	    if (wordVectors != null)
 //	    	System.out.printf("WV unseen rate: %f%n", 

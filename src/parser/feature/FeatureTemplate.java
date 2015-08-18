@@ -73,93 +73,10 @@ public class FeatureTemplate {
 	    HW_MW,					//CORE_BIGRAM_F,
 	    HP_MP,					//CORE_BIGRAM_G,
 	    
-	    // label feature
-//	    CORE_LABEL_NTS1,
-//	    CORE_LABEL_NTH,
-//	    CORE_LABEL_NTI,
-//	    CORE_LABEL_NTIA,
-//	    CORE_LABEL_NTIB,
-//	    CORE_LABEL_NTIC,
-//	    CORE_LABEL_NTJ,
-//	    HW_LABEL,
-//	    HP_LABEL,
-//	    MW_LABEL,
-//	    MP_LABEL,
-//	    //HW_MW_LABEL,
-//	    HW_MP_LABEL,
-//	    HP_MP_LABEL,
-//	    MW_HP_LABEL,
-//	    HP_pMP_LABEL,
-//	    HP_nMP_LABEL,
-//	    HP_pMW_LABEL,
-//	    HP_nMW_LABEL,
-//	    MP_pMP_LABEL,
-//	    MP_nMP_LABEL,
-//	    MP_pMW_LABEL,
-//	    MP_nMW_LABEL,
 	    
 		/*************************************************
 		 * 2o feature  
 		 * ***********************************************/
-
-	    HP_SP_MP,
-		HC_SC_MC,
-
-		pHC_HC_SC_MC,
-		HC_nHC_SC_MC,
-		HC_pSC_SC_MC,
-		HC_SC_nSC_MC,
-		HC_SC_pMC_MC,
-		HC_SC_MC_nMC,
-
-		pHC_HL_SC_MC,
-		HL_nHC_SC_MC,
-		HL_pSC_SC_MC,
-		HL_SC_nSC_MC,
-		HL_SC_pMC_MC,
-		HL_SC_MC_nMC,
-
-		pHC_HC_SL_MC,
-		HC_nHC_SL_MC,
-		HC_pSC_SL_MC,
-		HC_SL_nSC_MC,
-		HC_SL_pMC_MC,
-		HC_SL_MC_nMC,
-
-		pHC_HC_SC_ML,
-		HC_nHC_SC_ML,
-		HC_pSC_SC_ML,
-		HC_SC_nSC_ML,
-		HC_SC_pMC_ML,
-		HC_SC_ML_nMC,
-
-		HC_MC_SC_pHC_pMC,
-		HC_MC_SC_pHC_pSC,
-		HC_MC_SC_pMC_pSC,
-		HC_MC_SC_nHC_nMC,
-		HC_MC_SC_nHC_nSC,
-		HC_MC_SC_nMC_nSC,
-		HC_MC_SC_pHC_nMC,
-		HC_MC_SC_pHC_nSC,
-		HC_MC_SC_pMC_nSC,
-		HC_MC_SC_nHC_pMC,
-		HC_MC_SC_nHC_pSC,
-		HC_MC_SC_nMC_pSC,
-
-		SP_MP,
-		SW_MW,
-		SW_MP,
-		SP_MW,
-		SC_MC,
-		SL_ML,
-		SL_MC,
-		SC_ML,
-
-		// head bigram
-		H1P_H2P_M1P_M2P,
-		H1P_H2P_M1P_M2P_DIR,
-		H1C_H2C_M1C_M2C,
-		H1C_H2C_M1C_M2C_DIR,
 
 		// gp-p-c
 		GP_HP_MP,
@@ -228,132 +145,12 @@ public class FeatureTemplate {
 		GC_HC_MC_nGC_pMC,
 		GC_HC_MC_nHC_pMC,
 
-		// gp sibling
-		GC_HC_MC_SC,
-		GL_HC_MC_SC,
-		GC_HL_MC_SC,
-		GC_HC_ML_SC,
-		GC_HC_MC_SL,
-
-		// tri-sibling
-		HC_PC_MC_NC,
-		HL_PC_MC_NC,
-		HC_PL_MC_NC,
-		HC_PC_ML_NC,
-		HC_PC_MC_NL,
-
-		HC_PC_NC,
-		PC_MC_NC,
-		HL_PC_NC,
-		HC_PL_NC,
-		HC_PC_NL,
-		PL_MC_NC,
-		PC_ML_NC,
-		PC_MC_NL,
-
-		PC_NC,
-		PL_NC,
-		PC_NL,
-
-		// ggpc
-		GGC_GC_HC_MC,
-		GGL_GC_HC_MC,
-		GGC_GL_HC_MC,
-		GGC_GC_HL_MC,
-		GGC_GC_HC_ML,
-
-		GGC_HC_MC,
-		GGL_HC_MC,
-		GGC_HL_MC,
-		GGC_HC_ML,
-		GGC_GC_MC,
-		GGL_GC_MC,
-		GGC_GL_MC,
-		GGC_GC_ML,
-		GGC_MC,
-		GGL_MC,
-		GGC_ML,
-		GGL_ML,
-
-		// psc
-		HC_MC_CC_SC,
-		HL_MC_CC_SC,
-		HC_ML_CC_SC,
-		HC_MC_CL_SC,
-		HC_MC_CC_SL,
-
-		HC_CC_SC,
-		HL_CC_SC,
-		HC_CL_SC,
-		HC_CC_SL,
-
-		// pp attachment
-		PP_HC_MC,
-		PP_HL_MC,
-		PP_HC_ML,
-		PP_HL_ML,
-
-		PP_PL_HC_MC,
-		PP_PL_HL_MC,
-		PP_PL_HC_ML,
-		PP_PL_HL_ML,
-
-		// conjunction
-		CC_CP_LP_RP,
-		CC_CP_LC_RC,
-		CC_CW_LP_RP,
-		CC_CW_LC_RC,
-
-		CC_LC_RC_FID,
-
-		CC_CP_HC_AC,
-		CC_CP_HL_AL,
-		CC_CW_HC_AC,
-		CC_CW_HL_AL,
-
-		// PNX
-		PNX_MW,
-		PNX_HP_MW,
-
-		// right branch
-		RB,
-
-		// child num
-		CN_HP_NUM,
-		CN_HL_NUM,
-		CN_HP_LNUM_RNUM,
-		CN_STR,
-
-		// heavy
-		HV_HP,
-		HV_HC,
-
-		// neighbor
-		NB_HP_LC_RC,
-		NB_HC_LC_RC,
-		NB_HL_LC_RC,
-		NB_GC_HC_LC_RC,
-		NB_GC_HL_LC_RC,
-		NB_GL_HC_LC_RC,
-
-		// non-proj
-		NP,
-		NP_MC,
-		NP_HC,
-		NP_HL,
-		NP_ML,
-		NP_HC_MC,
-		NP_HL_MC,
-		NP_HC_ML,
-		NP_HL_ML,
-
 		/*************************************************
 		 * word embedding feature  
 		 * ***********************************************/
 	    
 	    HEAD_EMB,
 	    MOD_EMB,
-	    
 	    
 	    FEATURE_TEMPLATE_END;
 		

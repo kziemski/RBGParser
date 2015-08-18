@@ -17,7 +17,7 @@ public class Conll09Writer extends DependencyWriter {
 	}
 	
 	@Override
-	public void writeInstance(DependencyInstance gold, DependencyInstance pred) throws IOException {
+	public void writeInstance(DependencyInstance gold, int[] predDeps, int[] predLabs) throws IOException {
 		
 		if (first) 
 			first = false;
@@ -28,8 +28,6 @@ public class Conll09Writer extends DependencyWriter {
 		String[] lemmas = gold.lemmas;
 		String[] cpos = gold.cpostags;
 		String[] pos = gold.postags;
-		int[] heads = pred.heads;
-		int[] labelids = pred.deplbids;
 		
 	    /*
 	     * CoNLL 2009 format:
@@ -54,9 +52,6 @@ public class Conll09Writer extends DependencyWriter {
 	    // 1   杩�  杩�  杩�  DT  DT  _   _   6   4   DMOD    ADV _   _   _   _   _   _
 		
 		for (int i = 1, N = gold.length; i < N; ++i) {
-			if (gold.heads[i] == pred.heads[i] && gold.deprels[i].equals(labels[pred.deplbids[i]]))
-				continue;
-			
 			writer.write(i + "\t");
 			writer.write(forms[i] + "\t");
 			writer.write((lemmas != null && lemmas[i] != "" ? lemmas[i] : "_") + "\t");
@@ -65,13 +60,9 @@ public class Conll09Writer extends DependencyWriter {
             writer.write(pos[i] + "\t");
 			writer.write("_\t");
 			writer.write("_\t");
-			writer.write(heads[i] + "\t");
+			writer.write(predDeps[i] + "\t");
 			writer.write("_\t");
-			writer.write((isLabeled ? labels[labelids[i]] : "_"));
-			
-			writer.write("\t" + gold.heads[i] + "\t");
-			writer.write((isLabeled ? gold.deprels[i] : "_"));
-			
+			writer.write(labels[predLabs[i]]);
 			writer.write("\n");
 		}
 	}

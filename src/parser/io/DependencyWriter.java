@@ -12,7 +12,7 @@ public abstract class DependencyWriter {
 	BufferedWriter writer;
 	Options options;
 	String[] labels;
-	boolean first, isLabeled;
+	boolean first;
 	
 	public static DependencyWriter createDependencyWriter(Options options, DependencyPipe pipe) {
 		String format = options.format;
@@ -28,12 +28,11 @@ public abstract class DependencyWriter {
 		}
 	}
 	
-	public abstract void writeInstance(DependencyInstance gold, DependencyInstance pred) throws IOException;
+	public abstract void writeInstance(DependencyInstance gold, int[] predDeps, int[] predLabs) throws IOException;
 	
 	public void startWriting(String file) throws IOException {
 		writer = new BufferedWriter(new FileWriter(file));
 		first = true;
-		isLabeled = options.learnLabel;
 	}
 	
 	public void close() throws IOException {

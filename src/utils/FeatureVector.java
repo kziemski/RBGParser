@@ -4,8 +4,6 @@ package utils;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-import java.util.HashMap;
-
 public class FeatureVector implements Collector {
 	
 	int nRows = 1;

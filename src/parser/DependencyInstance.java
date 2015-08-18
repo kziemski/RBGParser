@@ -5,16 +5,10 @@ import static utils.DictionarySet.DictionaryTypes.POS;
 import static utils.DictionarySet.DictionaryTypes.WORD;
 import static utils.DictionarySet.DictionaryTypes.WORDVEC;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-import java.io.*;
 
 import parser.Options.PossibleLang;
-import utils.Alphabet;
-import utils.Dictionary;
 import utils.DictionarySet;
 
 public class DependencyInstance implements Serializable {
