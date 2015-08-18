@@ -490,7 +490,7 @@ public class DependencyParser implements Serializable {
     		labelTime += lfd.wordFVTime;
     		    		
             DependencyInstance predInst = decoder.decode(inst, lfd, gfd, false);
-            //predInst.heads = inst.heads;
+            predInst.heads = inst.heads;
             if (options.learnLabel) {
             	long st = System.currentTimeMillis();
             	lfd.predictLabels(predInst.heads, predInst.deplbids, false);
