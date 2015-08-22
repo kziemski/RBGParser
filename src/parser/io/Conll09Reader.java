@@ -71,13 +71,7 @@ public class Conll09Reader extends DependencyReader {
 		    14... APREDn
 	   	*/	    
 	    // 11  points  point   point   NNS NNS _   _   8   8   PMOD    PMOD    Y   point.02    _   _   _   _	    
-	    // 1   这  这  这  DT  DT  _   _   6   4   DMOD    ADV _   _   _   _   _   _
-	    
-	    int numframes = 0, cur = 0;
-	    for (int i = 1; i < length + 1; ++i) {
-	    	String[] parts = lstLines.get(i-1);
-	    	if (!parts[12].equals("_")) ++numframes;
-	    }
+	    // 1   杩�  杩�  杩�  DT  DT  _   _   6   4   DMOD    ADV _   _   _   _   _   _
 	    
 	    for (int i = 1; i < length + 1; ++i) {
 	    	String[] parts = lstLines.get(i-1);
