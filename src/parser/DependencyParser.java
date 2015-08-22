@@ -261,13 +261,15 @@ public class DependencyParser implements Serializable {
     	
 		long start = System.currentTimeMillis();
     	
+		int totalLabs = 0, totalArcs = 0;
     	DependencyInstance inst = pipe.createInstance(reader);    	
     	while (inst != null) {
     		LocalFeatureData lfd = new LocalFeatureData(inst, this);
     		int n = inst.length;
     		int[] predDeps = inst.heads;
 		    int[] predLabs = new int [n];
-            lfd.predictLabels(predDeps, predLabs, false);
+            totalLabs += lfd.predictLabels(predDeps, predLabs, false);
+            totalArcs += n-1;
             
             eval.add(inst, predDeps, predLabs, evalWithPunc);
     		
@@ -283,6 +285,7 @@ public class DependencyParser implements Serializable {
     	
     	System.out.printf("  Tokens: %d%n", eval.tot);
     	System.out.printf("  Sentences: %d%n", eval.nsents);
+    	System.out.printf("  Average labels per arc: %d%n", totalLabs/totalArcs);
     	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs]%n",
     			eval.UAS(), eval.LAS(), eval.CAS(),
     			(System.currentTimeMillis() - start)/1000.0);
