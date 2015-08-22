@@ -23,12 +23,8 @@ public class LocalFeatureData {
 	double[][] wpU, wpV;			// word projections U\phi and V\phi
 	double[][] wpU2, wpV2, wpW2;	// word projections U2\phi, V2\phi and W2\phi
 	
-	int[] numPossibleLabs;
-	int[][] possibleLabs;
-	
 	double[][] f;
-	double[][] labScores1;
-	double[][][] labScores2;
+	double[][][] labScores;
 	
 	public LocalFeatureData(DependencyInstance inst,
 			DependencyParser parser) 
@@ -55,12 +51,8 @@ public class LocalFeatureData {
 			wpW2 = new double[len][rank2];
 		}
 		
-		numPossibleLabs = new int[len];
-		possibleLabs = new int[len][ntypes];
-		
 		f = new double[len][ntypes];
-		labScores1 = new double[len][ntypes];
-		labScores2 = new double[len][ntypes][ntypes];
+		labScores = new double[len][ntypes][ntypes];
 		
 		for (int i = 0; i < len; ++i) {
 			wordFvs[i] = synFactory.createWordFeatures(inst, i);
@@ -88,24 +80,18 @@ public class LocalFeatureData {
 		return col.score;
 	}
 	
-	void treeDP(int i, DependencyArcList arcLis)
+	void treeDP(int i, DependencyArcList arcLis, int lab0)
 	{
+		Arrays.fill(f[i], 0);
 		int st = arcLis.startIndex(i);
 		int ed = arcLis.endIndex(i);
 		for (int l = st; l < ed ; ++l) {
 			int j = arcLis.get(l);
-			treeDP(j, arcLis);
-		}
-		
-		for (int pp = 0; pp < numPossibleLabs[i]; ++pp) {
-			int p = possibleLabs[i][pp];
-			f[i][p] = 0;
-			for (int l = st; l < ed ; ++l) {
-				int j = arcLis.get(l);
+			treeDP(j, arcLis, lab0);
+			for (int p = lab0; p < ntypes; ++p) {
 				double best = Double.NEGATIVE_INFINITY;
-				for (int qq = 0; qq < numPossibleLabs[j]; ++qq) {
-					int q = possibleLabs[j][qq];
-					double s = f[j][q] + labScores2[j][q][p];
+				for (int q = lab0; q < ntypes; ++q) {
+					double s = f[j][q] + labScores[j][q][p];
 					if (s > best)
 						best = s;
 				}
@@ -114,7 +100,7 @@ public class LocalFeatureData {
 		}
 	}
 	
-	void getType(int i, DependencyArcList arcLis, int[] types)
+	void getType(int i, DependencyArcList arcLis, int[] types, int lab0)
 	{
 		int p = types[i];
 		int st = arcLis.startIndex(i);
@@ -123,79 +109,59 @@ public class LocalFeatureData {
 			int j = arcLis.get(l);
 			int bestq = 0;
 			double best = Double.NEGATIVE_INFINITY;
-			for (int qq = 0; qq < numPossibleLabs[j]; ++qq) {
-				int q = possibleLabs[j][qq];
-				double s = f[j][q] + labScores2[j][q][p];
+			for (int q = lab0; q < ntypes; ++q) {
+				double s = f[j][q] + labScores[j][q][p];
 				if (s > best) {
 					best = s;
 					bestq = q;
 				}
 			}
 			types[j] = bestq;
-			getType(j, arcLis, types);
+			getType(j, arcLis, types, lab0);
 		}
 	}
 	
 	public int predictLabels(int[] heads, int[] deplbids, boolean addLoss)
 	{
 		assert(heads == inst.heads);
-		
 		int lab0 = addLoss ? 0 : 1;
-		int total = 0;
-		Arrays.fill(numPossibleLabs, 0);
-		for (int mod = 1; mod < len; ++mod) {
-			int head = heads[mod];
-			for (int p = lab0; p < ntypes; ++p) {
-				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
-					possibleLabs[mod][numPossibleLabs[mod]++] = p;
-					total++;
-				}
-			}
-		}
-		numPossibleLabs[0] = 1;
-		possibleLabs[0][0] = inst.deplbids[0];
 		
-		for (int i = 0; i < len; ++i) {
-			Arrays.fill(f[i], Double.NEGATIVE_INFINITY);
-			Arrays.fill(labScores1[i], Double.NEGATIVE_INFINITY);
-			for (int j = 0; j < ntypes; ++j)
-				Arrays.fill(labScores2[i][j], Double.NEGATIVE_INFINITY);
-		}
 		for (int mod = 1; mod < len; ++mod) {
 			int head = heads[mod];
 			int dir = head > mod ? 1 : 2;
 			int gp = heads[head];
 			int pdir = gp > head ? 1 : 2;
-			for (int pp = 0; pp < numPossibleLabs[mod]; ++pp) {
-				int p = possibleLabs[mod][pp];
-				deplbids[mod] = p;
-				double s1 = 0;
-				if (gammaL > 0)
-					s1 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 1);
-				if (gammaL < 1)
-					s1 += (1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
-				if (options.useGP) {
-					for (int qq = 0; qq < numPossibleLabs[head]; ++qq) {
-						int q = possibleLabs[head][qq];
+			for (int p = lab0; p < ntypes; ++p) {
+				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
+					deplbids[mod] = p;
+					double s1 = 0;
+					if (gammaL > 0)
+						s1 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 1);
+					if (gammaL < 1)
+						s1 += (1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
+					for (int q = lab0; q < ntypes; ++q) {
 						double s2 = 0;
-						if (gp != -1) {
-							deplbids[head] = q;
-							if (gammaL > 0)
-								s2 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 2);
-							if (gammaL < 1)
-								s2 += (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
+						if (options.useGP && gp != -1) {
+							if (pipe.pruneLabel[inst.postagids[gp]][inst.postagids[head]][q]) {
+								deplbids[head] = q;
+								if (gammaL > 0)
+									s2 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 2);
+								if (gammaL < 1)
+									s2 += (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
+							}
+							else s2 = Double.NEGATIVE_INFINITY;
 						}
-						labScores2[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
+						labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
 					}
 				}
-				else labScores1[mod][p] = s1 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
+				else Arrays.fill(labScores[mod][p], Double.NEGATIVE_INFINITY);
 			}
 		}
 		
 		DependencyArcList arcLis = new DependencyArcList(heads);
-		treeDP(0, arcLis);
+		treeDP(0, arcLis, lab0);
 		deplbids[0] = inst.deplbids[0];
-		getType(0, arcLis, deplbids);
+		getType(0, arcLis, deplbids, lab0);
 		
 		
 //		double s = 0;
@@ -206,6 +172,15 @@ public class LocalFeatureData {
 //		if (Math.abs(s-f[0][1]) > 1e-7)
 //			System.out.println(s + " " + f[0][1]);
 		
+		int total = 0;
+		for (int mod = 1; mod < len; ++mod) {
+			int head = heads[mod];
+			for (int p = lab0; p < ntypes; ++p) {
+				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
+					total++;
+				}
+			}
+		}
 		return total;
 	}
 	
