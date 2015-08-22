@@ -17,6 +17,7 @@ public class Options implements Cloneable, Serializable {
 		
 	public String trainFile = null;
 	public String testFile = null;
+	public String predFile = null;
 	public String unimapFile = null;
 	public String outFile = null;
 	public boolean train = false;
@@ -98,6 +99,9 @@ public class Options implements Cloneable, Serializable {
     		else if (arg.startsWith("test-file:")) {
     			testFile = arg.split(":")[1];
     		}
+    		else if (arg.startsWith("pred-file:")) {
+    			predFile = arg.split(":")[1];
+    		}
     		else if (arg.startsWith("unimap-file:")) {
     			unimapFile = arg.split(":")[1];
     		}
@@ -167,6 +171,7 @@ public class Options implements Cloneable, Serializable {
     	System.out.println("------\nFLAGS\n------");
     	System.out.println("train-file: " + trainFile);
     	System.out.println("test-file: " + testFile);
+    	System.out.println("pred-file: " + predFile);
     	System.out.println("model-name: " + modelFile);
         System.out.println("output-file: " + outFile);
     	System.out.println("train: " + train);

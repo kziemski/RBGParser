@@ -216,8 +216,8 @@ public class LocalFeatureData {
 	{
 		DependencyArcList arcLis = new DependencyArcList(heads);
 		
-		//predictLabelsDP(heads, deplbids, addLoss, arcLis);
-		predictLabelsGreedy(0, heads, deplbids, addLoss, arcLis);
+		predictLabelsDP(heads, deplbids, addLoss, arcLis);
+		//predictLabelsGreedy(0, heads, deplbids, addLoss, arcLis);
 		
 		int lab0 = addLoss ? 0 : 1;
 		int total = 0;

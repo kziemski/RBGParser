@@ -248,8 +248,10 @@ public class DependencyParser implements Serializable {
     public void evaluateSet(boolean output, boolean evalWithPunc)
     		throws IOException {
     	
-    	DependencyReader reader = DependencyReader.createDependencyReader(options);
-    	reader.startReading(options.testFile);
+    	DependencyReader testReader = DependencyReader.createDependencyReader(options);
+    	testReader.startReading(options.testFile);
+    	DependencyReader predReader = DependencyReader.createDependencyReader(options);
+    	predReader.startReading(options.predFile);
 
     	DependencyWriter writer = null;
     	if (output && options.outFile != null) {
@@ -262,25 +264,28 @@ public class DependencyParser implements Serializable {
 		long start = System.currentTimeMillis();
     	
 		int totalLabs = 0, totalArcs = 0;
-    	DependencyInstance inst = pipe.createInstance(reader);    	
-    	while (inst != null) {
-    		LocalFeatureData lfd = new LocalFeatureData(inst, this);
-    		int n = inst.length;
-    		int[] predDeps = inst.heads;
+    	DependencyInstance testInst = pipe.createInstance(testReader);
+    	DependencyInstance predInst = pipe.createInstance(predReader);
+    	while (testInst != null) {
+    		LocalFeatureData lfd = new LocalFeatureData(testInst, this);
+    		int n = testInst.length;
+    		int[] predDeps = predInst.heads;
 		    int[] predLabs = new int [n];
             totalLabs += lfd.predictLabels(predDeps, predLabs, false);
             totalArcs += n-1;
             
-            eval.add(inst, predDeps, predLabs, evalWithPunc);
+            eval.add(testInst, predDeps, predLabs, evalWithPunc);
     		
     		if (writer != null) {
-    			writer.writeInstance(inst, predDeps, predLabs);
+    			writer.writeInstance(testInst, predDeps, predLabs);
     		}
     		
-    		inst = pipe.createInstance(reader);
+    		testInst = pipe.createInstance(testReader);
+    		predInst = pipe.createInstance(predReader);
     	}
     	
-    	reader.close();
+    	testReader.close();
+    	predReader.close();
     	if (writer != null) writer.close();
     	
     	System.out.printf("  Tokens: %d%n", eval.tot);
