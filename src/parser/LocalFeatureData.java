@@ -121,9 +121,7 @@ public class LocalFeatureData {
 		}
 	}
 	
-	public int predictLabels(int[] heads, int[] deplbids, boolean addLoss)
-	{
-		assert(heads == inst.heads);
+	public void predictLabelsDP(int[] heads, int[] deplbids, boolean addLoss, DependencyArcList arcLis) {
 		int lab0 = addLoss ? 0 : 1;
 		
 		for (int mod = 1; mod < len; ++mod) {
@@ -158,7 +156,6 @@ public class LocalFeatureData {
 			}
 		}
 		
-		DependencyArcList arcLis = new DependencyArcList(heads);
 		treeDP(0, arcLis, lab0);
 		deplbids[0] = inst.deplbids[0];
 		getType(0, arcLis, deplbids, lab0);
@@ -171,7 +168,58 @@ public class LocalFeatureData {
 //		}
 //		if (Math.abs(s-f[0][1]) > 1e-7)
 //			System.out.println(s + " " + f[0][1]);
+	}
+	
+	void predictLabelsGreedy(int i, int[] heads, int[] types, boolean addLoss, DependencyArcList arcLis)
+	{
+		int st = arcLis.startIndex(i);
+		int ed = arcLis.endIndex(i);
+		for (int l = st; l < ed ; ++l) {
+			int j = arcLis.get(l);
+			predictLabelsGreedy(j, heads, types, addLoss, arcLis);
+		}
 		
+		int k = heads[i];
+		if (k == -1)
+			return;
+		int dir = k > i ? 1 : 2;
+		
+		int lab0 = addLoss ? 0 : 1;
+		int bestp = 0;
+		double best = Double.NEGATIVE_INFINITY;
+		for (int p = lab0; p < ntypes; ++p) {
+			if (pipe.pruneLabel[inst.postagids[k]][inst.postagids[i]][p]) {
+				types[i] = p;
+				double s = 0;
+				if (gammaL > 0)
+					s += gammaL * getLabelScoreTheta(heads, types, i, 1);
+				if (gammaL < 1)
+					s += (1-gammaL) * parameters.dotProductL(wpU[k], wpV[i], p, dir);
+				for (int l = st; l < ed ; ++l) {
+					int j = arcLis.get(l);
+					int cdir = i > j ? 1 : 2;
+					if (gammaL > 0)
+						s += gammaL * getLabelScoreTheta(heads, types, j, 2);
+					if (gammaL < 1)
+						s += (1-gammaL) * parameters.dotProduct2L(wpU2[k], wpV2[i], wpW2[j], p, types[j], dir, cdir);
+				}
+				if (s > best) {
+					best = s;
+					bestp = p;
+				}
+			}
+		}
+		types[i] = bestp;
+	}
+	
+	public int predictLabels(int[] heads, int[] deplbids, boolean addLoss)
+	{
+		DependencyArcList arcLis = new DependencyArcList(heads);
+		
+		//predictLabelsDP(heads, deplbids, addLoss, arcLis);
+		predictLabelsGreedy(0, heads, deplbids, addLoss, arcLis);
+		
+		int lab0 = addLoss ? 0 : 1;
 		int total = 0;
 		for (int mod = 1; mod < len; ++mod) {
 			int head = heads[mod];
