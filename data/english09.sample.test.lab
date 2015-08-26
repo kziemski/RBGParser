@@ -1,0 +1,79 @@
+1	The	the	the	DT	DT	_	_	3	3	NMOD	NMOD	_	_	_	_	_	_	_
+2	consensus	consensus	consensus	NN	NN	_	_	3	3	NMOD	NMOD	_	_	A0	_	_	_	_
+3	view	view	view	NN	NN	_	_	4	4	SBJ	SBJ	Y	view.02	_	A0	_	_	_
+4	expects	expect	expect	VBZ	VBZ	_	_	0	0	ROOT	ROOT	Y	expect.01	_	_	_	_	_
+5	a	a	a	DT	DT	_	_	8	8	NMOD	NMOD	_	_	_	_	_	_	_
+6	0.4	0.4	0.4	CD	CD	_	_	7	7	NMOD	NMOD	_	_	_	_	_	_	_
+7	%	%	%	NN	NN	_	_	8	8	NMOD	NMOD	Y	%.01	_	_	_	A2	_
+8	increase	increase	increase	NN	NN	_	_	4	4	OBJ	OBJ	Y	increase.01	_	A1	_	_	_
+9	in	in	in	IN	IN	_	_	8	8	NMOD	LOC	_	_	_	_	A1	A1	_
+10	the	the	the	DT	DT	_	_	12	12	NMOD	NMOD	_	_	_	_	_	_	_
+11	September	september	september	NNP	NNP	_	_	12	12	NMOD	NAME	_	_	_	_	_	_	_
+12	CPI	cpi	cpi	NNP	NNP	_	_	9	9	PMOD	PMOD	_	_	_	_	_	_	_
+13	after	after	after	IN	IN	_	_	4	8	TMP	TMP	_	_	_	AM-TMP	_	_	_
+14	a	a	a	DT	DT	_	_	16	16	NMOD	NMOD	_	_	_	_	_	_	_
+15	flat	flat	flat	JJ	JJ	_	_	16	16	NMOD	NMOD	_	_	_	_	_	_	AM-MNR
+16	reading	reading	reading	NN	NN	_	_	13	13	PMOD	PMOD	Y	reading.01	_	_	_	_	_
+17	in	in	in	IN	IN	_	_	16	16	TMP	TMP	_	_	_	_	_	_	AM-TMP
+18	August	august	august	NNP	NNP	_	_	17	17	PMOD	PMOD	_	_	_	_	_	_	_
+19	.	.	.	.	.	_	_	4	4	P	P	_	_	_	_	_	_	_
+
+1	Robert	robert	robert	NNP	NNP	_	_	3	3	NAME	NAME	_	_	_	_	_	_	_
+2	H.	h.	h.	NNP	NNP	_	_	3	3	NAME	NAME	_	_	_	_	_	_	_
+3	Chandross	chandross	chandross	NNP	NNP	_	_	15	15	SBJ	SBJ	_	_	_	_	_	_	_
+4	,	,	,	,	,	_	_	3	3	P	P	_	_	_	_	_	_	_
+5	an	an	an	DT	DT	_	_	6	6	NMOD	NMOD	_	_	_	_	_	_	_
+6	economist	economist	economist	NN	NN	_	_	3	3	APPO	APPO	Y	economist.01	A0	_	_	_	_
+7	for	for	for	IN	IN	_	_	6	6	NMOD	NMOD	_	_	A2	_	_	_	_
+8	Lloyd	lloyd	lloyd	NNP	NNP	_	_	10	10	NMOD	NMOD	_	_	_	_	_	_	_
+9	's	's	's	POS	POS	_	_	8	8	SUFFIX	SUFFIX	_	_	_	_	_	_	_
+10	Bank	bank	bank	NNP	NNP	_	_	7	7	PMOD	PMOD	_	_	_	_	_	_	_
+11	in	in	in	IN	IN	_	_	10	10	LOC	LOC	_	_	_	_	_	_	_
+12	New	new	new	NNP	NNP	_	_	13	13	NAME	NAME	_	_	_	_	_	_	_
+13	York	york	york	NNP	NNP	_	_	11	11	PMOD	PMOD	_	_	_	_	_	_	_
+14	,	,	,	,	,	_	_	3	3	P	P	_	_	_	_	_	_	_
+15	is	be	be	VBZ	VBZ	_	_	0	0	ROOT	ROOT	_	_	_	_	_	_	_
+16	among	among	among	IN	IN	_	_	15	15	PRD	LOC-PRD	_	_	_	_	_	_	_
+17	those	those	those	DT	DT	_	_	16	18	PMOD	SBJ	_	_	_	A0	_	_	_
+18	expecting	expect	expect	VBG	VBG	_	_	17	16	APPO	PMOD	Y	expect.01	_	_	_	_	_
+19	a	a	a	DT	DT	_	_	22	22	NMOD	NMOD	_	_	_	_	_	_	_
+20	more	more	more	RBR	RBR	_	_	21	21	AMOD	AMOD	_	_	_	_	_	_	_
+21	moderate	moderate	moderate	JJ	JJ	_	_	22	22	NMOD	NMOD	_	_	_	_	AM-MNR	_	_
+22	gain	gain	gain	NN	NN	_	_	18	18	OBJ	OBJ	Y	gain.01	_	A1	A2	_	_
+23	in	in	in	IN	IN	_	_	22	22	LOC	LOC	_	_	_	_	A1	_	_
+24	the	the	the	DT	DT	_	_	25	25	NMOD	NMOD	_	_	_	_	_	_	_
+25	CPI	cpi	cpi	NNP	NNP	_	_	23	23	PMOD	PMOD	_	_	_	_	_	_	_
+26	than	than	than	IN	IN	_	_	22	22	NMOD	NMOD	_	_	_	_	_	_	_
+27	in	in	in	IN	IN	_	_	26	26	PMOD	LOC	_	_	_	_	_	_	_
+28	prices	price	price	NNS	NNS	_	_	27	27	PMOD	PMOD	Y	price.01	_	_	_	A2	A1
+29	at	at	at	IN	IN	_	_	28	22	LOC	LOC	_	_	_	_	_	AM-LOC	_
+30	the	the	the	DT	DT	_	_	32	32	NMOD	NMOD	_	_	_	_	_	_	_
+31	producer	producer	producer	NN	NN	_	_	32	32	NMOD	NMOD	_	_	_	_	_	_	A2
+32	level	level	level	NN	NN	_	_	29	29	PMOD	PMOD	Y	level.01	_	_	_	_	_
+33	.	.	.	.	.	_	_	15	15	P	P	_	_	_	_	_	_	_
+
+1	``	``	``	``	``	_	_	23	23	P	P	_	_	_	_	_	_
+2	Auto	auto	auto	NN	NN	_	_	3	3	NMOD	NMOD	_	_	A1	_	_	_
+3	prices	price	price	NNS	NNS	_	_	4	4	SBJ	SBJ	Y	price.01	A2	A0	A0	_
+4	had	have	have	VBD	VBD	_	_	23	23	OBJ	OBJ	Y	have.03	_	_	_	A1
+5	a	a	a	DT	DT	_	_	7	7	NMOD	NMOD	_	_	_	_	_	_
+6	big	big	big	JJ	JJ	_	_	7	7	NMOD	NMOD	_	_	_	_	AM-EXT	_
+7	effect	effect	effect	NN	NN	_	_	4	4	OBJ	OBJ	Y	effect.01	_	A1	A1	_
+8	in	in	in	IN	IN	_	_	4	4	LOC	LOC	_	_	_	AM-LOC	A2	_
+9	the	the	the	DT	DT	_	_	10	10	NMOD	NMOD	_	_	_	_	_	_
+10	PPI	ppi	ppi	NNP	NNP	_	_	8	8	PMOD	PMOD	_	_	_	_	_	_
+11	,	,	,	,	,	_	_	4	4	P	P	_	_	_	_	_	_
+12	and	and	and	CC	CC	_	_	4	4	COORD	COORD	_	_	_	_	_	_
+13	at	at	at	IN	IN	_	_	18	18	LOC	ADV	_	_	_	_	_	_
+14	the	the	the	DT	DT	_	_	16	16	NMOD	NMOD	_	_	_	_	_	_
+15	CPI	cpi	cpi	NNP	NNP	_	_	16	16	NMOD	NMOD	_	_	_	_	_	_
+16	level	level	level	NN	NN	_	_	13	13	PMOD	PMOD	_	_	_	_	_	_
+17	they	they	they	PRP	PRP	_	_	18	18	SBJ	SBJ	_	_	_	_	_	_
+18	wo	wo	wo	MD	MD	_	_	12	12	CONJ	CONJ	_	_	_	_	_	_
+19	n't	not	not	RB	RB	_	_	18	18	ADV	ADV	_	_	_	_	_	_
+20	,	,	,	,	,	_	_	23	23	P	P	_	_	_	_	_	_
+21	''	''	''	''	''	_	_	23	23	P	P	_	_	_	_	_	_
+22	he	he	he	PRP	PRP	_	_	23	23	SBJ	SBJ	_	_	_	_	_	A0
+23	said	say	say	VBD	VBD	_	_	0	0	ROOT	ROOT	Y	say.01	_	_	_	_
+24	.	.	.	.	.	_	_	23	23	P	P	_	_	_	_	_	_
+

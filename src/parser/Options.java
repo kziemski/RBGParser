@@ -24,7 +24,7 @@ public class Options implements Cloneable, Serializable {
 	public boolean test = false;
 	public String wordVectorFile = null;
 	public String modelFile = "model.out";
-    public String format = "CONLL-X";
+    public String format = "CONLL-09";
     
 	public int maxNumSent = -1;
     public int numPretrainIters = 1;

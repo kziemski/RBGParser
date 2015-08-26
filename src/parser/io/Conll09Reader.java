@@ -2,6 +2,7 @@ package parser.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import parser.DependencyInstance;
 import parser.Options;
@@ -15,7 +16,7 @@ public class Conll09Reader extends DependencyReader {
 	}
 	
 	@Override
-	public DependencyInstance nextInstance() throws IOException {
+	public DependencyInstance nextInstance(HashMap<String, String> coarseMap) throws IOException {
 		
 	    ArrayList<String[]> lstLines = new ArrayList<String[]>();
 
@@ -40,8 +41,8 @@ public class Conll09Reader extends DependencyReader {
 	    
 	    forms[0] = "<root>";
 	    lemmas[0] = "<root-LEMMA>";
-	    cpos[0] = "<root-CPOS>";
 	    pos[0] = "<root-POS>";
+	    cpos[0] = coarseMap.get(pos[0]);
 	    deprels[0] = "<no-type>";
 	    heads[0] = -1;
 	    for (int i = 0; i < predIndex.length; ++i) {
@@ -82,9 +83,7 @@ public class Conll09Reader extends DependencyReader {
 	    	} //else lemmas[i] = forms[i];
 	    	
 	    	pos[i] = parts[5];
-	    	
-	    	// todo: use coarse map or use first few chars of pos[i]
-	    	cpos[i] = parts[5];	
+	    	cpos[i] = coarseMap.get(pos[i]);	
 	    	
 	    	if (!parts[7].equals("_")) feats[i] = parts[7].split("\\|");
 	    	heads[i] = Integer.parseInt(parts[8]);
