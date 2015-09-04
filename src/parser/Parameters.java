@@ -20,9 +20,9 @@ public class Parameters implements Serializable {
 	public int N, T, DL;
 	
 	public float[] paramsL;
+	public transient float[] totalL;
 	public double[][] U, V, WL;
 	public double[][] U2, V2, W2, X2L, Y2L;
-	public transient float[] totalL;
 	public transient double[][] totalU, totalV, totalWL;
 	public transient double[][] totalU2, totalV2, totalW2, totalX2L, totalY2L;
 	
@@ -44,27 +44,44 @@ public class Parameters implements Serializable {
 		paramsL = new float[sizeL];
 		totalL = new float[sizeL];
 		
-		U = new double[rank][N];		
-		V = new double[rank][N];
-		WL = new double[rank][DL];
-		totalU = new double[rank][N];
-		totalV = new double[rank][N];
-		totalWL = new double[rank][DL];
+//		U = new double[rank][N];		
+//		V = new double[rank][N];
+//		WL = new double[rank][DL];
+//		totalU = new double[rank][N];
+//		totalV = new double[rank][N];
+//		totalWL = new double[rank][DL];
+		
+		U = new double[N][rank];		
+		V = new double[N][rank];
+		WL = new double[DL][rank];
+		totalU = new double[N][rank];
+		totalV = new double[N][rank];
+		totalWL = new double[DL][rank];
 		dU = new FeatureVector[rank];
 		dV = new FeatureVector[rank];
 		dWL = new FeatureVector[rank];
 		
 		if (useGP) {
-			U2 = new double[rank2][N];
-			V2 = new double[rank2][N];
-			W2 = new double[rank2][N];
-			X2L = new double[rank2][DL];
-			Y2L = new double[rank2][DL];
-			totalU2 = new double[rank2][N];
-			totalV2 = new double[rank2][N];
-			totalW2 = new double[rank2][N];
-			totalX2L = new double[rank2][DL];
-			totalY2L = new double[rank2][DL];
+//			U2 = new double[rank2][N];
+//			V2 = new double[rank2][N];
+//			W2 = new double[rank2][N];
+//			X2L = new double[rank2][DL];
+//			Y2L = new double[rank2][DL];
+//			totalU2 = new double[rank2][N];
+//			totalV2 = new double[rank2][N];
+//			totalW2 = new double[rank2][N];
+//			totalX2L = new double[rank2][DL];
+//			totalY2L = new double[rank2][DL];
+			U2 = new double[N][rank2];
+			V2 = new double[N][rank2];
+			W2 = new double[N][rank2];
+			X2L = new double[DL][rank2];
+			Y2L = new double[DL][rank2];
+			totalU2 = new double[N][rank2];
+			totalV2 = new double[N][rank2];
+			totalW2 = new double[N][rank2];
+			totalX2L = new double[DL][rank2];
+			totalY2L = new double[DL][rank2];
 			dU2 = new FeatureVector[rank2];
 			dV2 = new FeatureVector[rank2];
 			dW2 = new FeatureVector[rank2];
@@ -75,36 +92,68 @@ public class Parameters implements Serializable {
 	
 	public void assignTotal()
 	{
-		for (int i = 0; i < rank; ++i) {
+		for (int i = 0; i < N; ++i) {
 			totalU[i] = U[i].clone();
 			totalV[i] = V[i].clone();
-			totalWL[i] = WL[i].clone();
-		}
-		if (useGP) {
-			for (int i = 0; i < rank2; ++i) {
+			if (useGP) {
 				totalU2[i] = U2[i].clone();
 				totalV2[i] = V2[i].clone();
 				totalW2[i] = W2[i].clone();
+			}
+		}
+		for (int i = 0; i < DL; ++i) {
+			totalWL[i] = WL[i].clone();
+			if (useGP) {
 				totalX2L[i] = X2L[i].clone();
 				totalY2L[i] = Y2L[i].clone();
 			}
 		}
+		
+//		for (int i = 0; i < rank; ++i) {
+//			totalU[i] = U[i].clone();
+//			totalV[i] = V[i].clone();
+//			totalWL[i] = WL[i].clone();
+//		}
+//		if (useGP) {
+//			for (int i = 0; i < rank2; ++i) {
+//				totalU2[i] = U2[i].clone();
+//				totalV2[i] = V2[i].clone();
+//				totalW2[i] = W2[i].clone();
+//				totalX2L[i] = X2L[i].clone();
+//				totalY2L[i] = Y2L[i].clone();
+//			}
+//		}
+	}
+	
+	private void assignColumn(double[][] mat, int col, double[] values)
+	{
+		for (int id = 0, tot=values.length; id < tot; ++id)
+			mat[id][col] = values[id];
 	}
 	
 	public void randomlyInit() 
 	{
+		
 		for (int i = 0; i < rank; ++i) {
-			U[i] = Utils.getRandomUnitVector(N);
-			V[i] = Utils.getRandomUnitVector(N);
-			WL[i] = Utils.getRandomUnitVector(DL);
+			//U[i] = Utils.getRandomUnitVector(N);
+			//V[i] = Utils.getRandomUnitVector(N);
+			//WL[i] = Utils.getRandomUnitVector(DL);
+			assignColumn(U, i, Utils.getRandomUnitVector(N));
+			assignColumn(V, i, Utils.getRandomUnitVector(N));
+			assignColumn(WL, i, Utils.getRandomUnitVector(DL));
 		}
 		if (useGP) {
 			for (int i = 0; i < rank2; ++i) {
-				U2[i] = Utils.getRandomUnitVector(N);
-				V2[i] = Utils.getRandomUnitVector(N);
-				W2[i] = Utils.getRandomUnitVector(N);
-				X2L[i] = Utils.getRandomUnitVector(DL);
-				Y2L[i] = Utils.getRandomUnitVector(DL);
+//				U2[i] = Utils.getRandomUnitVector(N);
+//				V2[i] = Utils.getRandomUnitVector(N);
+//				W2[i] = Utils.getRandomUnitVector(N);
+//				X2L[i] = Utils.getRandomUnitVector(DL);
+//				Y2L[i] = Utils.getRandomUnitVector(DL);
+				assignColumn(U2, i, Utils.getRandomUnitVector(N));
+				assignColumn(V2, i, Utils.getRandomUnitVector(N));
+				assignColumn(W2, i, Utils.getRandomUnitVector(N));
+				assignColumn(X2L, i, Utils.getRandomUnitVector(DL));
+				assignColumn(Y2L, i, Utils.getRandomUnitVector(DL));
 			}
 		}
 		assignTotal();
@@ -147,30 +196,54 @@ public class Parameters implements Serializable {
 		}
 	}
 	
+	private void clearMat(double[][] mat)
+	{
+		for (int i = 0, n = mat.length; i < n; ++i)
+			Arrays.fill(mat[i], 0);
+	}
+	
 	public void clearTensor() 
 	{
-		for (int i = 0; i < rank; ++i) {
-			Arrays.fill(U[i], 0);
-			Arrays.fill(V[i], 0);
-			Arrays.fill(WL[i], 0);
-			Arrays.fill(totalU[i], 0);
-			Arrays.fill(totalV[i], 0);
-			Arrays.fill(totalWL[i], 0);
-		}
+		clearMat(U);
+		clearMat(V);
+		clearMat(WL);
+		clearMat(totalU);
+		clearMat(totalV);
+		clearMat(totalWL);
 		if (useGP) {
-			for (int i = 0; i < rank2; ++i) {
-				Arrays.fill(U2[i], 0);
-				Arrays.fill(totalU2[i], 0);
-				Arrays.fill(V2[i], 0);
-				Arrays.fill(totalV2[i], 0);
-				Arrays.fill(W2[i], 0);
-				Arrays.fill(totalW2[i], 0);
-				Arrays.fill(X2L[i], 0);
-				Arrays.fill(totalX2L[i], 0);
-				Arrays.fill(Y2L[i], 0);
-				Arrays.fill(totalY2L[i], 0);
-			}
+			clearMat(U2);
+			clearMat(V2);
+			clearMat(W2);
+			clearMat(X2L);
+			clearMat(Y2L);
+			clearMat(totalU2);
+			clearMat(totalV2);
+			clearMat(totalW2);
+			clearMat(totalX2L);
+			clearMat(totalY2L);
 		}
+//		for (int i = 0; i < rank; ++i) {
+//			Arrays.fill(U[i], 0);
+//			Arrays.fill(V[i], 0);
+//			Arrays.fill(WL[i], 0);
+//			Arrays.fill(totalU[i], 0);
+//			Arrays.fill(totalV[i], 0);
+//			Arrays.fill(totalWL[i], 0);
+//		}
+//		if (useGP) {
+//			for (int i = 0; i < rank2; ++i) {
+//				Arrays.fill(U2[i], 0);
+//				Arrays.fill(totalU2[i], 0);
+//				Arrays.fill(V2[i], 0);
+//				Arrays.fill(totalV2[i], 0);
+//				Arrays.fill(W2[i], 0);
+//				Arrays.fill(totalW2[i], 0);
+//				Arrays.fill(X2L[i], 0);
+//				Arrays.fill(totalX2L[i], 0);
+//				Arrays.fill(Y2L[i], 0);
+//				Arrays.fill(totalY2L[i], 0);
+//			}
+//		}
 	}
 	
 	public void clearTheta() 
@@ -207,34 +280,49 @@ public class Parameters implements Serializable {
 		}
 	}
 	
+	private void projectMat(double[][] mat, FeatureVector fv, double[] proj)
+	{
+		int rank = proj.length;
+		for (int id = 0, n = fv.size(); id < n; ++id) {
+			int i = fv.x(id);
+			for (int j = 0; j < rank; ++j)
+				proj[j] += mat[i][j];
+		}
+	}
+	
 	public void projectU(FeatureVector fv, double[] proj) 
 	{
-		for (int r = 0; r < rank; ++r) 
-			proj[r] = fv.dotProduct(U[r]);
+		projectMat(U, fv, proj);
+		//for (int r = 0; r < rank; ++r) 
+		//	proj[r] = fv.dotProduct(U[r]);
 	}
 	
 	public void projectV(FeatureVector fv, double[] proj) 
 	{
-		for (int r = 0; r < rank; ++r) 
-			proj[r] = fv.dotProduct(V[r]);
+		projectMat(V, fv, proj);
+		//for (int r = 0; r < rank; ++r) 
+		//	proj[r] = fv.dotProduct(V[r]);
 	}
 	
 	public void projectU2(FeatureVector fv, double[] proj)
 	{
-		for (int r = 0; r < rank2; ++r) 
-			proj[r] = fv.dotProduct(U2[r]);
+		projectMat(U2, fv, proj);
+		//for (int r = 0; r < rank2; ++r) 
+		//	proj[r] = fv.dotProduct(U2[r]);
 	}
 	
 	public void projectV2(FeatureVector fv, double[] proj)
 	{
-		for (int r = 0; r < rank2; ++r) 
-			proj[r] = fv.dotProduct(V2[r]);
+		projectMat(V2, fv, proj);
+		//for (int r = 0; r < rank2; ++r) 
+		//	proj[r] = fv.dotProduct(V2[r]);
 	}
 	
 	public void projectW2(FeatureVector fv, double[] proj)
 	{
-		for (int r = 0; r < rank2; ++r) 
-			proj[r] = fv.dotProduct(W2[r]);
+		projectMat(W2, fv, proj);
+		//for (int r = 0; r < rank2; ++r) 
+		//	proj[r] = fv.dotProduct(W2[r]);
 	}
 	
 	public double dotProductL(FeatureVector fv)
@@ -246,7 +334,8 @@ public class Parameters implements Serializable {
 	{
 		double sum = 0;
 		for (int r = 0; r < rank; ++r)
-			sum += proju[r] * projv[r] * (WL[r][lab] + WL[r][dir*T+lab]);
+			//sum += proju[r] * projv[r] * (WL[r][lab] + WL[r][dir*T+lab]);
+			sum += proju[r] * projv[r] * (WL[lab][r] + WL[dir*T+lab][r]);
 		return sum;
 	}
 	
@@ -255,8 +344,10 @@ public class Parameters implements Serializable {
 	{
 		double sum = 0;
 		for (int r = 0; r < rank2; ++r)
-			sum += proju[r] * projv[r] * projw[r] * (X2L[r][plab] + X2L[r][pdir*T+plab])
-					* (Y2L[r][lab] + Y2L[r][dir*T+lab]);
+			//sum += proju[r] * projv[r] * projw[r] * (X2L[r][plab] + X2L[r][pdir*T+plab])
+			//		* (Y2L[r][lab] + Y2L[r][dir*T+lab]);
+			sum += proju[r] * projv[r] * projw[r] * (X2L[plab][r] + X2L[pdir*T+plab][r])
+					* (Y2L[lab][r] + Y2L[dir*T+lab][r]);
 		return sum;
 	}
 	
@@ -276,7 +367,8 @@ public class Parameters implements Serializable {
 	private void addTensor(double[][] a, double[][] totala, FeatureVector[] da,
 			double coeff, double coeff2)
 	{
-		int n = a.length;
+		//int n = a.length;
+		int n = da.length;
 		for (int k = 0; k < n; ++k) {
     		FeatureVector dak = da[k];
     		if (dak == null)
@@ -284,8 +376,10 @@ public class Parameters implements Serializable {
     		for (int i = 0, K = dak.size(); i < K; ++i) {
     			int x = dak.x(i);
     			double z = dak.value(i);
-    			a[k][x] += coeff * z;
-    			totala[k][x] += coeff2 * z;
+    			//a[k][x] += coeff * z;
+    			//totala[k][x] += coeff2 * z;
+    			a[x][k] += coeff * z;
+    			totala[x][k] += coeff2 * z;
     		}
     	}
 	}
@@ -306,7 +400,9 @@ public class Parameters implements Serializable {
     	for (int k = 0; k < rank; ++k) {        		
     		FeatureVector dUk = getdUL(k, lfd, actDeps, actLabs, predDeps, predLabs);
         	l2norm += dUk.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);            	
-        	loss -= dUk.dotProduct(U[k]) * (1-gammaL);
+        	//loss -= dUk.dotProduct(U[k]) * (1-gammaL);
+        	for (int u = 0, n = dUk.size(); u < n; ++u)
+        		loss -= U[dUk.x(u)][k] * dUk.value(u) * (1-gammaL);
         	dU[k] = dUk;
     	}
     	// update V
@@ -327,7 +423,9 @@ public class Parameters implements Serializable {
 	    	for (int k = 0; k < rank2; ++k) {
 	    		FeatureVector dU2k = getdU2L(k, lfd, actDeps, actLabs, predDeps, predLabs);
 	        	l2norm += dU2k.Squaredl2NormUnsafe() * (1-gammaL) * (1-gammaL);            	
-	        	loss -= dU2k.dotProduct(U2[k]) * (1-gammaL);
+	        	//loss -= dU2k.dotProduct(U2[k]) * (1-gammaL);
+	        	for (int u = 0, n = dU2k.size(); u < n; ++u)
+	        		loss -= U2[dU2k.x(u)][k] * dU2k.value(u) * (1-gammaL);
 	        	dU2[k] = dU2k;
 	    	}
 	    	// update V2
@@ -395,8 +493,10 @@ public class Parameters implements Serializable {
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
-    		dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][dir*T+lab])
-    									 - dotv * (WL[k][lab2] + WL[k][dir*T+lab2]));
+    		//dU.addEntries(wordFvs[head], dotv * (WL[k][lab] + WL[k][dir*T+lab])
+    		//							 - dotv * (WL[k][lab2] + WL[k][dir*T+lab2]));
+    		dU.addEntries(wordFvs[head], dotv * (WL[lab][k] + WL[dir*T+lab][k])
+    									 - dotv * (WL[lab2][k] + WL[dir*T+lab2][k]));
     	}
     	return dU;
     }
@@ -415,8 +515,10 @@ public class Parameters implements Serializable {
     		int lab2 = predLabs[mod];
     		if (lab == lab2) continue;
     		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][dir*T+lab])
-    									- dotu * (WL[k][lab2] + WL[k][dir*T+lab2]));    		
+    		//dV.addEntries(wordFvs[mod], dotu  * (WL[k][lab] + WL[k][dir*T+lab])
+    		//							- dotu * (WL[k][lab2] + WL[k][dir*T+lab2]));    		
+    		dV.addEntries(wordFvs[mod], dotu  * (WL[lab][k] + WL[dir*T+lab][k])
+					- dotu * (WL[lab2][k] + WL[dir*T+lab2][k]));    
     	}
     	return dV;
     }
@@ -469,8 +571,10 @@ public class Parameters implements Serializable {
     		if (lab == lab2 && plab == plab2) continue;
     		double dotv2 = wpV2[head][k];
     		double dotw2 = wpW2[mod][k];
-    		dU2.addEntries(wordFvs[gp], dotv2 * dotw2 * (X2L[k][plab] + X2L[k][pdir*T+plab]) * (Y2L[k][lab] + Y2L[k][dir*T+lab])
-    								  - dotv2 * dotw2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]) * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]));
+    		//dU2.addEntries(wordFvs[gp], dotv2 * dotw2 * (X2L[k][plab] + X2L[k][pdir*T+plab]) * (Y2L[k][lab] + Y2L[k][dir*T+lab])
+    		//						  - dotv2 * dotw2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]) * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]));
+    		dU2.addEntries(wordFvs[gp], dotv2 * dotw2 * (X2L[plab][k] + X2L[pdir*T+plab][k]) * (Y2L[lab][k] + Y2L[dir*T+lab][k])
+					  - dotv2 * dotw2 * (X2L[plab2][k] + X2L[pdir*T+plab2][k]) * (Y2L[lab2][k] + Y2L[dir*T+lab2][k]));
     	}
     	return dU2;
     }
@@ -496,8 +600,10 @@ public class Parameters implements Serializable {
     		if (lab == lab2 && plab == plab2) continue;
     		double dotu2 = wpU2[gp][k];
     		double dotw2 = wpW2[mod][k];
-    		dV2.addEntries(wordFvs[head], dotu2 * dotw2 * (X2L[k][plab] + X2L[k][pdir*T+plab]) * (Y2L[k][lab] + Y2L[k][dir*T+lab])
-    								    - dotu2 * dotw2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]) * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]));
+    		//dV2.addEntries(wordFvs[head], dotu2 * dotw2 * (X2L[k][plab] + X2L[k][pdir*T+plab]) * (Y2L[k][lab] + Y2L[k][dir*T+lab])
+    		//						    - dotu2 * dotw2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]) * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]));
+    		dV2.addEntries(wordFvs[head], dotu2 * dotw2 * (X2L[plab][k] + X2L[pdir*T+plab][k]) * (Y2L[lab][k] + Y2L[dir*T+lab][k])
+				    - dotu2 * dotw2 * (X2L[plab2][k] + X2L[pdir*T+plab2][k]) * (Y2L[lab2][k] + Y2L[dir*T+lab2][k]));
     	}
     	return dV2;
     }
@@ -523,8 +629,10 @@ public class Parameters implements Serializable {
     		if (lab == lab2 && plab == plab2) continue;
     		double dotu2 = wpU2[gp][k];
     		double dotv2 = wpV2[head][k];
-    		dW2.addEntries(wordFvs[mod], dotu2 * dotv2 * (X2L[k][plab] + X2L[k][pdir*T+plab]) * (Y2L[k][lab] + Y2L[k][dir*T+lab])
-    								  - dotu2 * dotv2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]) * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]));
+    		//dW2.addEntries(wordFvs[mod], dotu2 * dotv2 * (X2L[k][plab] + X2L[k][pdir*T+plab]) * (Y2L[k][lab] + Y2L[k][dir*T+lab])
+    		//						  - dotu2 * dotv2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]) * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]));
+    		dW2.addEntries(wordFvs[mod], dotu2 * dotv2 * (X2L[plab][k] + X2L[pdir*T+plab][k]) * (Y2L[lab][k] + Y2L[dir*T+lab][k])
+					  - dotu2 * dotv2 * (X2L[plab2][k] + X2L[pdir*T+plab2][k]) * (Y2L[lab2][k] + Y2L[dir*T+lab2][k]));
     	}
     	return dW2;
     }
@@ -550,8 +658,10 @@ public class Parameters implements Serializable {
     		double dotu2 = wpU2[gp][k];
     		double dotv2 = wpV2[head][k];
     		double dotw2 = wpW2[mod][k];
-    		double val = dotu2 * dotv2 * dotw2 * (Y2L[k][lab] + Y2L[k][dir*T+lab]);
-    		double val2 = dotu2 * dotv2 * dotw2 * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]);
+    		//double val = dotu2 * dotv2 * dotw2 * (Y2L[k][lab] + Y2L[k][dir*T+lab]);
+    		//double val2 = dotu2 * dotv2 * dotw2 * (Y2L[k][lab2] + Y2L[k][dir*T+lab2]);
+    		double val = dotu2 * dotv2 * dotw2 * (Y2L[lab][k] + Y2L[dir*T+lab][k]);
+    		double val2 = dotu2 * dotv2 * dotw2 * (Y2L[lab2][k] + Y2L[dir*T+lab2][k]);
     		dX2L[plab] += val;
     		dX2L[pdir*T+plab] += val;
     		dX2L[plab2] -= val2;
@@ -585,8 +695,10 @@ public class Parameters implements Serializable {
     		double dotu2 = wpU2[gp][k];
     		double dotv2 = wpV2[head][k];
     		double dotw2 = wpW2[mod][k];
-    		double val = dotu2 * dotv2 * dotw2 * (X2L[k][plab] + X2L[k][pdir*T+plab]);
-    		double val2 = dotu2 * dotv2 * dotw2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]);
+    		//double val = dotu2 * dotv2 * dotw2 * (X2L[k][plab] + X2L[k][pdir*T+plab]);
+    		//double val2 = dotu2 * dotv2 * dotw2 * (X2L[k][plab2] + X2L[k][pdir*T+plab2]);
+    		double val = dotu2 * dotv2 * dotw2 * (X2L[plab][k] + X2L[pdir*T+plab][k]);
+    		double val2 = dotu2 * dotv2 * dotw2 * (X2L[plab2][k] + X2L[pdir*T+plab2][k]);
     		dY2L[lab] += val;
     		dY2L[dir*T+lab] += val;
     		dY2L[lab2] -= val2;

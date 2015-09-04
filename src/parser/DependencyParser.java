@@ -247,7 +247,12 @@ public class DependencyParser implements Serializable {
     
     public void evaluateSet(boolean output, boolean evalWithPunc)
     		throws IOException {
-    	
+        
+        LocalFeatureData.calcScoreTime = 0;
+        LocalFeatureData.calcDpTime = 0;
+        LocalFeatureData.memAllocTime = 0;
+        LocalFeatureData.projTime = 0;
+
     	DependencyReader testReader = DependencyReader.createDependencyReader(options);
     	testReader.startReading(options.testFile);
     	DependencyReader predReader = DependencyReader.createDependencyReader(options);
@@ -262,12 +267,17 @@ public class DependencyParser implements Serializable {
     	Evaluator eval = new Evaluator(options, pipe);
     	
 		long start = System.currentTimeMillis();
-    	
+        long start2 = 0, total = 0;
+
 		int totalLabs = 0, totalArcs = 0;
     	DependencyInstance testInst = pipe.createInstance(testReader);
     	DependencyInstance predInst = pipe.createInstance(predReader);
     	while (testInst != null) {
+
+            
     		LocalFeatureData lfd = new LocalFeatureData(testInst, this);
+            start2 = System.currentTimeMillis();
+
     		int n = testInst.length;
     		int[] predDeps = predInst.heads;
 		    int[] predLabs = new int [n];
@@ -275,7 +285,9 @@ public class DependencyParser implements Serializable {
             totalArcs += n-1;
             
             eval.add(testInst, predDeps, predLabs, evalWithPunc);
-    		
+    	    
+            total += System.currentTimeMillis()-start2;
+
     		if (writer != null) {
     			writer.writeInstance(testInst, predDeps, predLabs);
     		}
@@ -294,5 +306,13 @@ public class DependencyParser implements Serializable {
     	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs]%n",
     			eval.UAS(), eval.LAS(), eval.CAS(),
     			(System.currentTimeMillis() - start)/1000.0);
+
+        System.out.printf("  Calc score=%.2f\tDp=%.2f\tMem=%.2f\tProj=%.2f\tTotal=%.2f%n",
+                LocalFeatureData.calcScoreTime / 1000.0,
+                LocalFeatureData.calcDpTime / 1000.0,
+                LocalFeatureData.memAllocTime / 1000.0,
+                LocalFeatureData.projTime / 1000.0,
+                total / 1000.0
+            );
     }
 }

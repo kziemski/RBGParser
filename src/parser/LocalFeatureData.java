@@ -6,7 +6,12 @@ import utils.FeatureVector;
 import utils.ScoreCollector;
 
 public class LocalFeatureData {
-	
+    
+    public static double calcScoreTime = 0;
+    public static double calcDpTime = 0;
+    public static double memAllocTime = 0;
+    public static double projTime = 0;
+
 	DependencyInstance inst;
 	DependencyPipe pipe;
 	SyntacticFeatureFactory synFactory;
@@ -29,6 +34,8 @@ public class LocalFeatureData {
 	public LocalFeatureData(DependencyInstance inst,
 			DependencyParser parser) 
 	{
+        long start = System.currentTimeMillis();
+
 		this.inst = inst;
 		pipe = parser.pipe;
 		synFactory = pipe.synFactory;
@@ -53,9 +60,14 @@ public class LocalFeatureData {
 		
 		f = new double[len][ntypes];
 		labScores = new double[len][ntypes][ntypes];
-		
+	    
+        memAllocTime += System.currentTimeMillis()-start;
+        
+
 		for (int i = 0; i < len; ++i) {
 			wordFvs[i] = synFactory.createWordFeatures(inst, i);
+
+            start = System.currentTimeMillis();
 			parameters.projectU(wordFvs[i], wpU[i]);
 			parameters.projectV(wordFvs[i], wpV[i]);
 			if (options.useGP) {
@@ -63,8 +75,10 @@ public class LocalFeatureData {
 				parameters.projectV2(wordFvs[i], wpV2[i]);
 				parameters.projectW2(wordFvs[i], wpW2[i]);
 			}
+            projTime += System.currentTimeMillis()-start;
 		}
-	}
+        
+   	}
 
 	private FeatureVector getLabelFeature(int[] heads, int[] types, int mod, int order)
 	{
@@ -122,6 +136,9 @@ public class LocalFeatureData {
 	}
 	
 	public void predictLabelsDP(int[] heads, int[] deplbids, boolean addLoss, DependencyArcList arcLis) {
+
+        long start = System.currentTimeMillis();
+        
 		int lab0 = addLoss ? 0 : 1;
 		
 		for (int mod = 1; mod < len; ++mod) {
@@ -155,11 +172,16 @@ public class LocalFeatureData {
 				else Arrays.fill(labScores[mod][p], Double.NEGATIVE_INFINITY);
 			}
 		}
+	    
+        calcScoreTime += (System.currentTimeMillis()-start);
+
+        start = System.currentTimeMillis();
 		
-		treeDP(0, arcLis, lab0);
+        treeDP(0, arcLis, lab0);
 		deplbids[0] = inst.deplbids[0];
 		getType(0, arcLis, deplbids, lab0);
-		
+
+	    calcDpTime += (System.currentTimeMillis()-start);
 		
 //		double s = 0;
 //		for (int i = 1; i < len; ++i) {
