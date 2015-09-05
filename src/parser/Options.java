@@ -34,8 +34,8 @@ public class Options implements Cloneable, Serializable {
 	public LearningMode learningMode = LearningMode.Second;
 	
 	public boolean average = true;
-	public double C = 0.01;
-	public double gammaLabel = 0;
+	public float C = 0.01f;
+	public float gammaLabel = 0;
 	public int R = 50, R2 = 30;
 	
 	// feature set
@@ -115,10 +115,10 @@ public class Options implements Cloneable, Serializable {
                 maxNumSent = Integer.parseInt(arg.split(":")[1]);
             }
             else if (arg.startsWith("C:")) {
-            	C = Double.parseDouble(arg.split(":")[1]);
+            	C = Float.parseFloat(arg.split(":")[1]);
             }
             else if (arg.startsWith("gammaLabel:")) {
-            	gammaLabel = Double.parseDouble(arg.split(":")[1]);
+            	gammaLabel = Float.parseFloat(arg.split(":")[1]);
             }
             else if (arg.startsWith("R:")) {
                 R = Integer.parseInt(arg.split(":")[1]);

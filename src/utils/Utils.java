@@ -35,78 +35,68 @@ public final class Utils {
 			return x + Math.log1p(Math.exp(y-x));
 	}
 	
-	public static double[] getRandomUnitVector(int length) 
+//	public static double[] getRandomUnitVector(int length) 
+//	{
+//		double[] vec = new double[length];
+//		double sum = 0;
+//		for (int i = 0; i < length; ++i) {
+//			vec[i] = rnd.nextDouble() - 0.5;
+//			sum += vec[i] * vec[i];
+//		}
+//		double invSqrt = 1.0 / Math.sqrt(sum);
+//		for (int i = 0; i < length; ++i) 
+//			vec[i] *= invSqrt;
+//		return vec;
+//	}
+	
+	public static float[] getRandomUnitVector(int length) 
 	{
-		double[] vec = new double[length];
-		double sum = 0;
+		float[] vec = new float[length];
+		float sum = 0;
 		for (int i = 0; i < length; ++i) {
-			vec[i] = rnd.nextDouble() - 0.5;
+			vec[i] = (float) (rnd.nextFloat() - 0.5);
 			sum += vec[i] * vec[i];
 		}
-		double invSqrt = 1.0 / Math.sqrt(sum);
+		float invSqrt = (float) (1.0 / Math.sqrt(sum));
 		for (int i = 0; i < length; ++i) 
 			vec[i] *= invSqrt;
 		return vec;
 	}
 	
-	public static double squaredSum(float[] vec) 
+	public static float squaredSum(float[] vec) 
 	{
-		double sum = 0;
+		float sum = 0;
 		for (int i = 0, N = vec.length; i < N; ++i)
 			sum += vec[i] * vec[i];
 		return sum;
 	}
 	
-	public static double squaredSum(double[] vec) 
-	{
-		double sum = 0;
-		for (int i = 0, N = vec.length; i < N; ++i)
-			sum += vec[i] * vec[i];
-		return sum;
-	}
-	
-	public static void normalize(double[] vec) 
+	public static void normalize(float[] vec) 
 	{
 		double coeff = 1.0 / Math.sqrt(squaredSum(vec));
 		for (int i = 0, N = vec.length; i < N; ++i)
 			vec[i] *= coeff;
 	}
 	
-	public static double max(float[] vec) 
+	public static float max(float[] vec) 
 	{
-		double max = Double.NEGATIVE_INFINITY;
+		float max = Float.NEGATIVE_INFINITY;
 		for (int i = 0, N = vec.length; i < N; ++i)
 			max = Math.max(max, vec[i]);
 		return max;
 	}
 	
-	public static double min(float[] vec) 
+	public static float min(float[] vec) 
 	{
-		double min = Double.POSITIVE_INFINITY;
+		float min = Float.POSITIVE_INFINITY;
 		for (int i = 0, N = vec.length; i < N; ++i)
 			min = Math.min(min, vec[i]);
 		return min;
 	}
 	
-	public static double max(double[] vec) 
+	public static float dot(float[] u, float[] v)
 	{
-		double max = Double.NEGATIVE_INFINITY;
-		for (int i = 0, N = vec.length; i < N; ++i)
-			max = Math.max(max, vec[i]);
-		return max;
-	}
-	
-	public static double min(double[] vec) 
-	{
-		double min = Double.POSITIVE_INFINITY;
-		for (int i = 0, N = vec.length; i < N; ++i)
-			min = Math.min(min, vec[i]);
-		return min;
-	}
-
-	public static double dot(double[] u, double[] v)
-	{
-		double dot = 0.0;
+		float dot = 0.0f;
 		for (int i = 0, N = u.length; i < N; ++i)
 			dot += u[i]*v[i];
 		return dot;

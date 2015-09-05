@@ -22,12 +22,19 @@ public class LowRankTensor {
 		list.add(new MatEntry(x, val));
 	}
 	
-	public void decompose(ArrayList<double[][]> param)
+	public void decompose(ArrayList<float[][]> param)
 	{	
+		ArrayList<float[][]> param2 = new ArrayList<float[][]>();
+		for (int i = 0; i < param.size(); ++i) {
+			float[][] x = param.get(i);
+			int n = x.length;
+			param2.add(new float[rank][n]);
+		}
+		
 		int MAXITER=1000;
 		double eps = 1e-6;
 		for (int i = 0; i < rank; ++i) {
-			ArrayList<double[]> a = new ArrayList<double[]>();
+			ArrayList<float[]> a = new ArrayList<float[]>();
 			for (int k = 0; k < dim; ++k) {
 				a.add(Utils.getRandomUnitVector(N[k]));
 			}
@@ -36,7 +43,7 @@ public class LowRankTensor {
 			double norm = 0.0, lastnorm = Double.POSITIVE_INFINITY;
 			for (iter = 0; iter < MAXITER; ++iter) {
 				for (int k = 0; k < dim; ++k) {
-					double[] b = a.get(k);
+					float[] b = a.get(k);
 					for (int j = 0; j < N[k]; ++j)
 						b[j] = 0;
 					for (MatEntry e : list) {
@@ -50,9 +57,9 @@ public class LowRankTensor {
 						double dot = 1;
 						for (int l = 0; l < dim; ++l)
 							if (l != k)
-								dot *= Utils.dot(a.get(l), param.get(l)[j]);
+								dot *= Utils.dot(a.get(l), param2.get(l)[j]);
 						for (int p = 0; p < N[k]; ++p)
-							b[p] -= dot*param.get(k)[j][p];
+							b[p] -= dot*param2.get(k)[j][p];
 					}
 					if (k < dim-1)
 						Utils.normalize(b);
@@ -71,10 +78,20 @@ public class LowRankTensor {
 			}
 			System.out.printf("\t%.2f", norm);
 			for (int k = 0; k < dim; ++k)
-				param.get(k)[i] = a.get(k);
+				param2.get(k)[i] = a.get(k);
+		}
+		
+		for (int i = 0; i < param.size(); ++i) {
+			float[][] x = param.get(i);
+			float[][] y = param2.get(i);
+			int n = x.length;
+			for (int u = 0; u < n; ++u)
+				for (int v = 0; v < rank; ++v)
+					x[u][v] = y[v][u];
 		}
 		System.out.println();
 	}
+	
 }
 
 class MatEntry

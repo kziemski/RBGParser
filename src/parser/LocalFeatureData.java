@@ -7,10 +7,10 @@ import utils.ScoreCollector;
 
 public class LocalFeatureData {
     
-    public static double calcScoreTime = 0;
-    public static double calcDpTime = 0;
-    public static double memAllocTime = 0;
-    public static double projTime = 0;
+    public static float calcScoreTime = 0;
+    public static float calcDpTime = 0;
+    public static float memAllocTime = 0;
+    public static float projTime = 0;
 
 	DependencyInstance inst;
 	DependencyPipe pipe;
@@ -22,14 +22,14 @@ public class LocalFeatureData {
 	final int ntypes;				// number of label types
 	final int sizeL;						
 	final int rank, rank2;								
-	final double gammaL;
+	final float gammaL;
 	
 	FeatureVector[] wordFvs;		// word feature vector
-	double[][] wpU, wpV;			// word projections U\phi and V\phi
-	double[][] wpU2, wpV2, wpW2;	// word projections U2\phi, V2\phi and W2\phi
+	float[][] wpU, wpV;			// word projections U\phi and V\phi
+	float[][] wpU2, wpV2, wpW2;	// word projections U2\phi, V2\phi and W2\phi
 	
-	double[][] f;
-	double[][][] labScores;
+	float[][] f;
+	float[][][] labScores;
 	
 	public LocalFeatureData(DependencyInstance inst,
 			DependencyParser parser) 
@@ -50,16 +50,16 @@ public class LocalFeatureData {
 		gammaL = options.gammaLabel;
 		
 		wordFvs = new FeatureVector[len];
-		wpU = new double[len][rank];
-		wpV = new double[len][rank];
+		wpU = new float[len][rank];
+		wpV = new float[len][rank];
 		if (options.useGP) {
-			wpU2 = new double[len][rank2];
-			wpV2 = new double[len][rank2];
-			wpW2 = new double[len][rank2];
+			wpU2 = new float[len][rank2];
+			wpV2 = new float[len][rank2];
+			wpW2 = new float[len][rank2];
 		}
 		
-		f = new double[len][ntypes];
-		labScores = new double[len][ntypes][ntypes];
+		f = new float[len][ntypes];
+		labScores = new float[len][ntypes][ntypes];
 	    
         memAllocTime += System.currentTimeMillis()-start;
         
@@ -87,7 +87,7 @@ public class LocalFeatureData {
 		return fv;
 	}
 	
-	private double getLabelScoreTheta(int[] heads, int[] types, int mod, int order)
+	private float getLabelScoreTheta(int[] heads, int[] types, int mod, int order)
 	{
 		ScoreCollector col = new ScoreCollector(parameters.paramsL);
 		synFactory.createLabelFeatures(col, inst, heads, types, mod, order);
@@ -103,9 +103,9 @@ public class LocalFeatureData {
 			int j = arcLis.get(l);
 			treeDP(j, arcLis, lab0);
 			for (int p = lab0; p < ntypes; ++p) {
-				double best = Double.NEGATIVE_INFINITY;
+				float best = Float.NEGATIVE_INFINITY;
 				for (int q = lab0; q < ntypes; ++q) {
-					double s = f[j][q] + labScores[j][q][p];
+					float s = f[j][q] + labScores[j][q][p];
 					if (s > best)
 						best = s;
 				}
@@ -122,9 +122,9 @@ public class LocalFeatureData {
 		for (int l = st; l < ed ; ++l) {
 			int j = arcLis.get(l);
 			int bestq = 0;
-			double best = Double.NEGATIVE_INFINITY;
+			float best = Float.NEGATIVE_INFINITY;
 			for (int q = lab0; q < ntypes; ++q) {
-				double s = f[j][q] + labScores[j][q][p];
+				float s = f[j][q] + labScores[j][q][p];
 				if (s > best) {
 					best = s;
 					bestq = q;
@@ -149,13 +149,13 @@ public class LocalFeatureData {
 			for (int p = lab0; p < ntypes; ++p) {
 				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
 					deplbids[mod] = p;
-					double s1 = 0;
+					float s1 = 0;
 					if (gammaL > 0)
 						s1 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 1);
 					if (gammaL < 1)
 						s1 += (1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
 					for (int q = lab0; q < ntypes; ++q) {
-						double s2 = 0;
+						float s2 = 0;
 						if (options.useGP && gp != -1) {
 							if (pipe.pruneLabel[inst.postagids[gp]][inst.postagids[head]][q]) {
 								deplbids[head] = q;
@@ -164,12 +164,12 @@ public class LocalFeatureData {
 								if (gammaL < 1)
 									s2 += (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
 							}
-							else s2 = Double.NEGATIVE_INFINITY;
+							else s2 = Float.NEGATIVE_INFINITY;
 						}
-						labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
+						labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0f : 0.0f);
 					}
 				}
-				else Arrays.fill(labScores[mod][p], Double.NEGATIVE_INFINITY);
+				else Arrays.fill(labScores[mod][p], Float.NEGATIVE_INFINITY);
 			}
 		}
 	    
@@ -183,7 +183,7 @@ public class LocalFeatureData {
 
 	    calcDpTime += (System.currentTimeMillis()-start);
 		
-//		double s = 0;
+//		float s = 0;
 //		for (int i = 1; i < len; ++i) {
 //			int h = heads[i];
 //			s += labScores[i][deplbids[i]][deplbids[h]];
@@ -208,11 +208,11 @@ public class LocalFeatureData {
 		
 		int lab0 = addLoss ? 0 : 1;
 		int bestp = 0;
-		double best = Double.NEGATIVE_INFINITY;
+		float best = Float.NEGATIVE_INFINITY;
 		for (int p = lab0; p < ntypes; ++p) {
 			if (pipe.pruneLabel[inst.postagids[k]][inst.postagids[i]][p]) {
 				types[i] = p;
-				double s = 0;
+				float s = 0;
 				if (gammaL > 0)
 					s += gammaL * getLabelScoreTheta(heads, types, i, 1);
 				if (gammaL < 1)
@@ -269,11 +269,11 @@ public class LocalFeatureData {
     		int head = actDeps[mod];
     		if (actLabs[mod] != predLabs[mod]) {
     			dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod, 1));
-        		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 1), -1.0);
+        		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 1), -1.0f);
     		}
     		if (actLabs[mod] != predLabs[mod] || actLabs[head] != predLabs[head]) {
     			dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod, 2));
-    			dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 2), -1.0);
+    			dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 2), -1.0f);
     		}
     	}
 		

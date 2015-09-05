@@ -97,11 +97,11 @@ public class DependencyParser implements Serializable {
         	Options optionsBak = (Options) options.clone();
         	options.R = 0;
         	options.R2 = 0;
-        	options.gammaLabel = 1.0;
+        	options.gammaLabel = 1.0f;
         	options.maxNumIters = options.numPretrainIters;
         	parameters.rank = 0;
         	parameters.rank2 = 0;
-        	parameters.gammaL = 1.0;
+        	parameters.gammaL = 1.0f;
         	
     		System.out.println("=============================================");
     		System.out.printf(" Pre-training:%n");
@@ -125,13 +125,13 @@ public class DependencyParser implements Serializable {
         	LowRankTensor tensor2 = new LowRankTensor(new int[] {n, n, n, d, d}, options.R2);
         	pipe.synFactory.fillParameters(tensor, tensor2, parameters);
         	
-        	ArrayList<double[][]> param = new ArrayList<double[][]>();
+        	ArrayList<float[][]> param = new ArrayList<float[][]>();
         	param.add(parameters.U);
         	param.add(parameters.V);
         	param.add(parameters.WL);
         	tensor.decompose(param);
         	if (options.useGP) {
-        		ArrayList<double[][]> param2 = new ArrayList<double[][]>();
+        		ArrayList<float[][]> param2 = new ArrayList<float[][]>();
         		param2.add(parameters.U2);
         		param2.add(parameters.V2);
         		param2.add(parameters.W2);

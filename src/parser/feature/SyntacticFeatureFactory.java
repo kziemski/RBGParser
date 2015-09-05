@@ -252,7 +252,7 @@ public class SyntacticFeatureFactory implements Serializable {
 		if (v != null) {
 			for (int j = 0; j < v.length; ++j) {
 				long code = createWordCodeW(WORDFV_EMB, j);
-				addWordFeature(code | d, v[j], fv);
+				addWordFeature(code | d, (float) v[j], fv);
 			}
 		}
     }
@@ -461,8 +461,8 @@ public class SyntacticFeatureFactory implements Serializable {
 			if (v != null) {
 				for (int i = 0; i < v.length; ++i) {
 					code = createArcCodeW(HEAD_EMB, i) | tid;
-					addLabeledArcFeature(code, v[i], fv);
-					addLabeledArcFeature(code | attDist, v[i], fv);
+					addLabeledArcFeature(code, (float) v[i], fv);
+					addLabeledArcFeature(code | attDist, (float) v[i], fv);
 				}
 			}
 			
@@ -471,8 +471,8 @@ public class SyntacticFeatureFactory implements Serializable {
 			if (v != null) {
 				for (int i = 0; i < v.length; ++i) {
 					code = createArcCodeW(MOD_EMB, i) | tid;
-					addLabeledArcFeature(code, v[i], fv);
-					addLabeledArcFeature(code | attDist, v[i], fv);
+					addLabeledArcFeature(code, (float) v[i], fv);
+					addLabeledArcFeature(code | attDist, (float) v[i], fv);
 				}
 			}
 		}
@@ -1063,7 +1063,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		featureHashSet.add(code);
     }
     
-    public final void addLabeledArcFeature(long code, double value, Collector mat) {
+    public final void addLabeledArcFeature(long code, float value, Collector mat) {
     	int id = hashcode2int(code) & numLabeledArcFeats; 	
     	mat.addEntry(id, value);
     	if (!stoppedGrowth)
@@ -1078,7 +1078,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	}
     }
     
-    public final void addWordFeature(long code, double value, FeatureVector mat) {
+    public final void addWordFeature(long code, float value, FeatureVector mat) {
     	int id = wordAlphabet.lookupIndex(code, numWordFeats);
     	if (id >= 0) {
     		mat.addEntry(id, value);
@@ -1976,7 +1976,7 @@ class LazyCollector implements Collector
 	}
 
 	@Override
-	public void addEntry(int x, double va) {
+	public void addEntry(int x, float va) {
 
 	}
 	
