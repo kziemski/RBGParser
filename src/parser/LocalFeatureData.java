@@ -7,10 +7,10 @@ import utils.ScoreCollector;
 
 public class LocalFeatureData {
     
-    public static float calcScoreTime = 0;
-    public static float calcDpTime = 0;
-    public static float memAllocTime = 0;
-    public static float projTime = 0;
+    public static long calcScoreTime = 0;
+    public static long calcDpTime = 0;
+    public static long memAllocTime = 0;
+    public static long projTime = 0;
 
 	DependencyInstance inst;
 	DependencyPipe pipe;

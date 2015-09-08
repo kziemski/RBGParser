@@ -274,10 +274,9 @@ public class DependencyParser implements Serializable {
     	DependencyInstance predInst = pipe.createInstance(predReader);
     	while (testInst != null) {
 
-            
+    		start2 = System.currentTimeMillis();
     		LocalFeatureData lfd = new LocalFeatureData(testInst, this);
-            start2 = System.currentTimeMillis();
-
+            
     		int n = testInst.length;
     		int[] predDeps = predInst.heads;
 		    int[] predLabs = new int [n];
@@ -306,12 +305,15 @@ public class DependencyParser implements Serializable {
     	System.out.printf("  UAS=%.6f\tLAS=%.6f\tCAS=%.6f\t[%.2fs]%n",
     			eval.UAS(), eval.LAS(), eval.CAS(),
     			(System.currentTimeMillis() - start)/1000.0);
-
-        System.out.printf("  Calc score=%.2f\tDp=%.2f\tMem=%.2f\tProj=%.2f\tTotal=%.2f%n",
+    	
+    	long otherTime = total - LocalFeatureData.calcDpTime - LocalFeatureData.calcScoreTime
+    						   - LocalFeatureData.memAllocTime - LocalFeatureData.projTime;
+        System.out.printf("  Calc score=%.2f\tDp=%.2f\tMem=%.2f\tProj=%.2f\tOther=%.2f\tTotal=%.2f%n",
                 LocalFeatureData.calcScoreTime / 1000.0,
                 LocalFeatureData.calcDpTime / 1000.0,
                 LocalFeatureData.memAllocTime / 1000.0,
                 LocalFeatureData.projTime / 1000.0,
+                otherTime / 1000.0,
                 total / 1000.0
             );
     }

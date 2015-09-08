@@ -287,8 +287,9 @@ public class Parameters implements Serializable {
 		int rank = proj.length;
 		for (int id = 0, n = fv.size(); id < n; ++id) {
 			int i = fv.x(id);
+			float w = fv.value(id);
 			for (int j = 0; j < rank; ++j)
-				proj[j] += mat[i][j];
+				proj[j] += mat[i][j] * w;
 		}
 	}
 	

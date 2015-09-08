@@ -17,7 +17,7 @@ public class LowRankTensor {
 		list = new ArrayList<MatEntry>();
 	}
 	
-	public void add(int[] x, double val)
+	public void add(int[] x, float val)
 	{
 		list.add(new MatEntry(x, val));
 	}

@@ -1951,7 +1951,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		if (headId >= 0 && modId >= 0 && gpId >= 0) {
 				int id = hashcode2int(code) & numLabeledArcFeats;
 				if (id < 0) continue;
-				double value = params.paramsL[id];
+				float value = params.paramsL[id];
 				if (gp == -1) {
 					int[] y = {headId, modId, dist*params.T+label};
 					tensor.add(y, value);
