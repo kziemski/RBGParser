@@ -10,3 +10,4 @@ jni_include
 *.model
 *.test
 *.train
+/bin/

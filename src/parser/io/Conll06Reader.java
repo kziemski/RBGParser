@@ -38,8 +38,8 @@ public class Conll06Reader extends DependencyReader {
 	    
 	    forms[0] = "<root>";
 	    lemmas[0] = "<root-LEMMA>";
-	    cpos[0] = "<root-CPOS>";
 	    pos[0] = "<root-POS>";
+	    cpos[0] = coarseMap.get(pos[0]);
 	    deprels[0] = "<no-type>";
 	    heads[0] = -1;
 	    
@@ -54,8 +54,8 @@ public class Conll06Reader extends DependencyReader {
 	    		lemmas[i] = parts[2];
 	    		hasLemma = true;
 	    	} //else lemmas[i] = forms[i];
-	    	cpos[i] = parts[3];
 	    	pos[i] = parts[4];
+	    	cpos[i] = coarseMap.get(pos[i]);
 	    	if (!parts[5].equals("_")) feats[i] = parts[5].split("\\|");
 	    	heads[i] = Integer.parseInt(parts[6]);
 	    	deprels[i] = (/*options.learnLabel &&*/ isLabeled) ? parts[7] : "<no-type>";
