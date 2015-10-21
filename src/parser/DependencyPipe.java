@@ -493,8 +493,8 @@ public class DependencyPipe implements Serializable {
 				for (int mod = 1; mod < n; ++mod) {
 					int head = inst.heads[mod];
 					int lab = inst.deplbids[mod];
-					if (pruneLabel[inst.postagids[head]][inst.postagids[mod]][lab] == false) {
-						pruneLabel[inst.postagids[head]][inst.postagids[mod]][lab] = true;
+					if (pruneLabel[inst.cpostagids[head]][inst.cpostagids[mod]][lab] == false) {
+						pruneLabel[inst.cpostagids[head]][inst.cpostagids[mod]][lab] = true;
 						num++;
 					}
 				}
