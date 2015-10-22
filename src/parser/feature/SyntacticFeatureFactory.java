@@ -194,11 +194,29 @@ public class SyntacticFeatureFactory implements Serializable {
     	code = createWordCodeWP(WORDFV_W0P0, w0, p0);
 		addWordFeature(code, fv);
 		
+		code = createWordCodeWP(WORDFV_W0Pp, w0, pp);
+		addWordFeature(code, fv);
+		
+		code = createWordCodeWP(WORDFV_W0Pn, w0, pn);
+		addWordFeature(code, fv);
+		
 		code = createWordCodeWP(WORDFV_W0P0, w0, c0);
+		addWordFeature(code, fv);
+		
+		code = createWordCodeWP(WORDFV_W0Pp, w0, cp);
+		addWordFeature(code, fv);
+		
+		code = createWordCodeWP(WORDFV_W0Pn, w0, cn);
 		addWordFeature(code, fv);
 		
 		if (l0 != 0) {
 			code = createWordCodeWP(WORDFV_W0P0, l0, p0);
+			addWordFeature(code, fv);
+			
+			code = createWordCodeWP(WORDFV_W0Pp, l0, pp);
+			addWordFeature(code, fv);
+			
+			code = createWordCodeWP(WORDFV_W0Pn, l0, pn);
 			addWordFeature(code, fv);
 			
 			code = createWordCodeWP(WORDFV_W0P0, l0, c0);
@@ -764,9 +782,9 @@ public class SyntacticFeatureFactory implements Serializable {
         addLabeledArcFeature(code, fv);
         addLabeledArcFeature(code | flag, fv);
 
-//        code = createArcCodeWWW(GL_HL_ML, GL, HL, ML) | tid;
-//        addLabeledArcFeature(code, fv);
-//        addLabeledArcFeature(code | flag, fv);
+        code = createArcCodeWWW(GL_HL_ML, GL, HL, ML) | tid;
+        addLabeledArcFeature(code, fv);
+        addLabeledArcFeature(code | flag, fv);
 
         code = createArcCodeWP(GL_HC, GL, HC) | tid;
         addLabeledArcFeature(code, fv);
@@ -1215,6 +1233,15 @@ public class SyntacticFeatureFactory implements Serializable {
 	    x[0] = (int) (code & ((1 << wordNumBits)-1));
     }
     
+    private final void extractArcCodeWWW(long code, int[] x) {
+    	code = (code >> flagBits) >> numArcFeatBits;
+	    x[2] = (int) (code & ((1 << wordNumBits)-1));
+	    code = code >> wordNumBits;
+	    x[1] = (int) (code & ((1 << wordNumBits)-1));
+	    code = code >> wordNumBits;
+	    x[0] = (int) (code & ((1 << wordNumBits)-1));
+    }
+    
     private final void extractArcCodeWWPP(long code, int[] x) {
     	code = (code >> flagBits) >> numArcFeatBits;
 	    x[3] = (int) (code & ((1 << tagNumBits)-1));
@@ -1595,12 +1622,12 @@ public class SyntacticFeatureFactory implements Serializable {
     			mod = createWordCodeW(WORDFV_W0, x[1]);
     		}
     		
-//    		else if (temp == GL_HL_ML.ordinal()) {
-//    			extractArcCodeWWW(code, x);
-//    			gp = createWordCodeW(WORDFV_W0, x[0]);
-//    			head = createWordCodeW(WORDFV_W0, x[1]);
-//    			mod = createWordCodeW(WORDFV_W0, x[2]);
-//    		}
+    		else if (temp == GL_HL_ML.ordinal()) {
+    			extractArcCodeWWW(code, x);
+    			gp = createWordCodeW(WORDFV_W0, x[0]);
+    			head = createWordCodeW(WORDFV_W0, x[1]);
+    			mod = createWordCodeW(WORDFV_W0, x[2]);
+    		}
 
     		else if (temp == GC_HC.ordinal()) {
     			extractArcCodePP(code, x);
