@@ -247,8 +247,8 @@ public class SyntacticFeatureFactory implements Serializable {
     		    
     	if (wordVectors != null) {
     		addWordVectorFeatures(inst, i, 0, fv);
-    		addWordVectorFeatures(inst, i, -1, fv);
-    		addWordVectorFeatures(inst, i, 1, fv);	
+    		//addWordVectorFeatures(inst, i, -1, fv);
+    		//addWordVectorFeatures(inst, i, 1, fv);	
     	}
     	
     	return fv;
