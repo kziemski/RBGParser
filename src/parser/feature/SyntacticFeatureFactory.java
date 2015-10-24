@@ -117,7 +117,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	
     	int[] pos = inst.postagids;
         int[] posA = inst.cpostagids;
-        int[] toks = inst.formids;
+//        int[] toks = inst.formids;
     	int[] lemma = inst.lemmaids;
         
     	int p0 = pos[i];
@@ -128,9 +128,9 @@ public class SyntacticFeatureFactory implements Serializable {
     	int cp = i > 0 ? posA[i-1] : TOKEN_START;
     	int cn = i < posA.length-1 ? posA[i+1] : TOKEN_END;
     	
-        int w0 = toks[i];
-        int wp = i == 0 ? TOKEN_START : toks[i-1];
-    	int wn = i == inst.length - 1 ? TOKEN_END : toks[i+1];
+//        int w0 = toks[i];
+//        int wp = i == 0 ? TOKEN_START : toks[i-1];
+//    	int wn = i == inst.length - 1 ? TOKEN_END : toks[i+1];
     	
         int l0 = 0, lp = 0, ln = 0;
         if (lemma != null) {
@@ -146,12 +146,12 @@ public class SyntacticFeatureFactory implements Serializable {
     	code = createWordCodeP(WORDFV_BIAS, 0);
     	addWordFeature(code, fv);
 
-    	code = createWordCodeW(WORDFV_W0, w0);
-    	addWordFeature(code, fv);
-    	code = createWordCodeW(WORDFV_Wp, wp);
-    	addWordFeature(code, fv);
-    	code = createWordCodeW(WORDFV_Wn, wn);
-    	addWordFeature(code, fv);
+//    	code = createWordCodeW(WORDFV_W0, w0);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodeW(WORDFV_Wp, wp);
+//    	addWordFeature(code, fv);
+//    	code = createWordCodeW(WORDFV_Wn, wn);
+//    	addWordFeature(code, fv);
 
     	
 		if (l0 != 0) {
@@ -191,8 +191,8 @@ public class SyntacticFeatureFactory implements Serializable {
     	code = createWordCodePPP(WORDFV_PpP0Pn, cp, c0, cn);
     	addWordFeature(code, fv);
 		
-    	code = createWordCodeWP(WORDFV_W0P0, w0, p0);
-		addWordFeature(code, fv);
+//    	code = createWordCodeWP(WORDFV_W0P0, w0, p0);
+//		addWordFeature(code, fv);
 		
 //		code = createWordCodeWP(WORDFV_W0Pp, w0, pp);
 //		addWordFeature(code, fv);
@@ -200,8 +200,8 @@ public class SyntacticFeatureFactory implements Serializable {
 //		code = createWordCodeWP(WORDFV_W0Pn, w0, pn);
 //		addWordFeature(code, fv);
 		
-		code = createWordCodeWP(WORDFV_W0P0, w0, c0);
-		addWordFeature(code, fv);
+//		code = createWordCodeWP(WORDFV_W0P0, w0, c0);
+//		addWordFeature(code, fv);
 		
 //		code = createWordCodeWP(WORDFV_W0Pp, w0, cp);
 //		addWordFeature(code, fv);
@@ -213,11 +213,11 @@ public class SyntacticFeatureFactory implements Serializable {
 			code = createWordCodeWP(WORDFV_W0P0, l0, p0);
 			addWordFeature(code, fv);
 			
-//			code = createWordCodeWP(WORDFV_W0Pp, l0, pp);
-//			addWordFeature(code, fv);
-//			
-//			code = createWordCodeWP(WORDFV_W0Pn, l0, pn);
-//			addWordFeature(code, fv);
+			code = createWordCodeWP(WORDFV_W0Pp, l0, pp);
+			addWordFeature(code, fv);
+			
+			code = createWordCodeWP(WORDFV_W0Pn, l0, pn);
+			addWordFeature(code, fv);
 			
 			code = createWordCodeWP(WORDFV_W0P0, l0, c0);
 			addWordFeature(code, fv);
@@ -314,15 +314,15 @@ public class SyntacticFeatureFactory implements Serializable {
     	
     	addCore1OPosFeatures(fv, inst, h, c, attDist, type);
     		    		
-    	addCore1OBigramFeatures(fv, inst.formids[h], inst.postagids[h], 
-    			inst.formids[c], inst.postagids[c], attDist, type);
+//    	addCore1OBigramFeatures(fv, inst.formids[h], inst.postagids[h], 
+//    			inst.formids[c], inst.postagids[c], attDist, type);
     	    		
 		if (inst.lemmaids != null)
 			addCore1OBigramFeatures(fv, inst.lemmaids[h], inst.postagids[h], 
 					inst.lemmaids[c], inst.postagids[c], attDist, type);
 		
-		addCore1OBigramFeatures(fv, inst.formids[h], inst.cpostagids[h], 
-    			inst.formids[c], inst.cpostagids[c], attDist, type);
+//		addCore1OBigramFeatures(fv, inst.formids[h], inst.cpostagids[h], 
+//    			inst.formids[c], inst.cpostagids[c], attDist, type);
 		
 		if (inst.lemmaids != null)
 			addCore1OBigramFeatures(fv, inst.lemmaids[h], inst.cpostagids[h], 
@@ -332,8 +332,8 @@ public class SyntacticFeatureFactory implements Serializable {
     		for (int i = 0, N = inst.featids[h].length; i < N; ++i)
     			for (int j = 0, M = inst.featids[c].length; j < M; ++j) {
     				
-    				addCore1OBigramFeatures(fv, inst.formids[h], inst.featids[h][i], 
-    						inst.formids[c], inst.featids[c][j], attDist, type);
+//    				addCore1OBigramFeatures(fv, inst.formids[h], inst.featids[h][i], 
+//    						inst.formids[c], inst.featids[c][j], attDist, type);
     				
     				if (inst.lemmas != null)
     					addCore1OBigramFeatures(fv, inst.lemmaids[h], inst.featids[h][i], 
@@ -349,44 +349,44 @@ public class SyntacticFeatureFactory implements Serializable {
     	
     	long code = 0; 			// feature code
     	
-    	int[] forms = inst.formids, lemmas = inst.lemmaids, postags = inst.postagids;
+    	int[] /*forms = inst.formids,*/ lemmas = inst.lemmaids, postags = inst.postagids;
     	int[] cpostags = inst.cpostagids;
     	int[][] feats = inst.featids;
     	
     	int tid = type << 4;
 
-    	code = createArcCodeW(CORE_HEAD_WORD, forms[h]) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
-    	    	    	
-    	code = createArcCodeW(CORE_MOD_WORD, forms[m]) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
+//    	code = createArcCodeW(CORE_HEAD_WORD, forms[h]) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
+//    	    	    	
+//    	code = createArcCodeW(CORE_MOD_WORD, forms[m]) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
+//    	
+//    	code = createArcCodeWW(HW_MW, forms[h], forms[m]) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
     	
-    	code = createArcCodeWW(HW_MW, forms[h], forms[m]) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
+//    	int pHF = h == 0 ? TOKEN_START : (h == m+1 ? TOKEN_MID : forms[h-1]);
+//    	int nHF = h == inst.length - 1 ? TOKEN_END : (h+1 == m ? TOKEN_MID : forms[h+1]);
+//    	int pMF = m == 0 ? TOKEN_START : (m == h+1 ? TOKEN_MID : forms[m-1]);
+//    	int nMF = m == inst.length - 1 ? TOKEN_END : (m+1 == h ? TOKEN_MID : forms[m+1]);
     	
-    	int pHF = h == 0 ? TOKEN_START : (h == m+1 ? TOKEN_MID : forms[h-1]);
-    	int nHF = h == inst.length - 1 ? TOKEN_END : (h+1 == m ? TOKEN_MID : forms[h+1]);
-    	int pMF = m == 0 ? TOKEN_START : (m == h+1 ? TOKEN_MID : forms[m-1]);
-    	int nMF = m == inst.length - 1 ? TOKEN_END : (m+1 == h ? TOKEN_MID : forms[m+1]);
-    	
-    	code = createArcCodeW(CORE_HEAD_pWORD, pHF) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
-    	
-    	code = createArcCodeW(CORE_HEAD_nWORD, nHF) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
-    	
-    	code = createArcCodeW(CORE_MOD_pWORD, pMF) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
-    	
-    	code = createArcCodeW(CORE_MOD_nWORD, nMF) | tid;
-    	addLabeledArcFeature(code, fv);
-    	addLabeledArcFeature(code | attDist, fv);
+//    	code = createArcCodeW(CORE_HEAD_pWORD, pHF) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
+//    	
+//    	code = createArcCodeW(CORE_HEAD_nWORD, nHF) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
+//    	
+//    	code = createArcCodeW(CORE_MOD_pWORD, pMF) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
+//    	
+//    	code = createArcCodeW(CORE_MOD_nWORD, nMF) | tid;
+//    	addLabeledArcFeature(code, fv);
+//    	addLabeledArcFeature(code | attDist, fv);
 	
 		
     	code = createArcCodeP(CORE_HEAD_POS, postags[h]) | tid;
