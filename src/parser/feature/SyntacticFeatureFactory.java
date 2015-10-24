@@ -227,6 +227,12 @@ public class SyntacticFeatureFactory implements Serializable {
 			
 			code = createWordCodeWP(WORDFV_W0Pn, l0, cn);
 			addWordFeature(code, fv);
+			
+			code = createWordCodeWP(WORDFV_WpPp, lp, cp);
+			addWordFeature(code, fv);
+			
+			code = createWordCodeWP(WORDFV_WnPn, ln, cn);
+			addWordFeature(code, fv);
 		}
     	
 		int[][] feats = inst.featids;

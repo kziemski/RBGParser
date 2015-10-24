@@ -173,6 +173,8 @@ public class FeatureTemplate {
 	    WORDFV_W0P0,
 	    WORDFV_W0Pp,
 	    WORDFV_W0Pn,
+	    WORDFV_WpPp,
+	    WORDFV_WnPn,
 	    
 //	    WORDFV_F,
 //	    WORDFV_L0F,
