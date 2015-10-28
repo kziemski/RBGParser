@@ -392,7 +392,6 @@ public class SyntacticFeatureFactory implements Serializable {
     							inst.lemmaids[c], inst.featids[c][j], attDist);
     			}
     	}
-
     }
     
     public void addBasic1OFeatures(Collector fv, DependencyInstance inst, 
@@ -620,6 +619,30 @@ public class SyntacticFeatureFactory implements Serializable {
 		addArcFeature(code, fv);
 		addArcFeature(code | attDist, fv);
     	
+		
+		code = createArcCodePP(HPp_HP, pHeadLeft, pHead);
+		addArcFeature(code, fv);
+		addArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(HP_HPn, pHead, pHeadRight);
+		addArcFeature(code, fv);
+		addArcFeature(code | attDist, fv);
+		
+		code = createArcCodePPP(HPp_HP_HPn, pHeadLeft, pHead, pHeadRight);
+		addArcFeature(code, fv);
+		addArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(MPp_MP, pModLeft, pMod);
+		addArcFeature(code, fv);
+		addArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(MP_MPn, pMod, pModRight);
+		addArcFeature(code, fv);
+		addArcFeature(code | attDist, fv);
+		
+		code = createArcCodePPP(MPp_MP_MPn, pModLeft, pMod, pModRight);
+		addArcFeature(code, fv);
+		addArcFeature(code | attDist, fv);
 		
     	// feature posL-1 posL posR posR+1
     	code = createArcCodePPPP(HPp_HP_MP_MPn, pHeadLeft, pHead, pMod, pModRight);
