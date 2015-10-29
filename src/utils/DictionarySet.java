@@ -125,8 +125,6 @@ public class DictionarySet implements Serializable {
 		int n = values.length;
 		
 		Arrays.sort(values);
-		for (int i = n-1; i >= 0; --i)
-			System.out.println(values[i]);
 		
 		float sum = 0.0f;
 		for (int i = 0; i < n; ++i) sum += values[i];
@@ -136,7 +134,7 @@ public class DictionarySet implements Serializable {
 		for (int i = n-1; i >= 0; --i) {
 			//System.out.println(values[i]);
 			cur += values[i];
-			if (cur > sum * percent) {
+			if (cur >= sum * percent) {
 				cut = values[i];
 				break;
 			}
