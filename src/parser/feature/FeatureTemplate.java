@@ -190,6 +190,7 @@ public class FeatureTemplate {
 	    WORDFV_Pn,
 	    WORDFV_PpP0,
 	    WORDFV_P0Pn,
+	    WORDFV_PpPn,
 	    WORDFV_PpP0Pn,
 	    
 	    WORDFV_EMB,

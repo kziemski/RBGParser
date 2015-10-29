@@ -181,12 +181,16 @@ public class SyntacticFeatureFactory implements Serializable {
     	addWordFeature(code, fv);
     	code = createWordCodePP(WORDFV_P0Pn, p0, pn);
     	addWordFeature(code, fv);
+    	code = createWordCodePP(WORDFV_PpPn, pp, pn);
+    	addWordFeature(code, fv);
     	code = createWordCodePPP(WORDFV_PpP0Pn, pp, p0, pn);
     	addWordFeature(code, fv);
     	
 		code = createWordCodePP(WORDFV_PpP0, cp, c0);
     	addWordFeature(code, fv);
     	code = createWordCodePP(WORDFV_P0Pn, c0, cn);
+    	addWordFeature(code, fv);
+    	code = createWordCodePP(WORDFV_PpPn, cp, cn);
     	addWordFeature(code, fv);
     	code = createWordCodePPP(WORDFV_PpP0Pn, cp, c0, cn);
     	addWordFeature(code, fv);
