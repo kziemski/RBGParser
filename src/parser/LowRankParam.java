@@ -32,7 +32,7 @@ public class LowRankParam implements Comparator<Integer> {
 		values = new TDoubleArrayList();
 	}
 	
-	public void putEntry(int x, int y , int z, float value) {
+	public void putEntry(int x, int y , int z, double value) {
 		Utils.Assert(x >= 0 && x < N);
 		Utils.Assert(y >= 0 && y < M);
 		xlis.add(x);
@@ -54,21 +54,21 @@ public class LowRankParam implements Comparator<Integer> {
 		Arrays.sort(lis, this);
 		
 		int[] x = new int[K], y = new int[K];
-		float[] z = new float[K];
+		double[] z = new double[K];
 		for (int i = 0; i < K; ++i) {
 			int j = lis[i];
 			x[i] = xlis.get(j);
 			y[i] = ylis.get(j)*D + zlis.get(j);
-			z[i] = (float) values.get(j);
+			z[i] = values.get(j);
 		}
 		
-		float ratio = (K+0.0f)/nRows/nCols;
+		double ratio = (K+0.0)/nRows/nCols;
 		System.out.printf("  Unfolding matrix: %d / (%d*%d)  %.2f%% entries.%n",
 				K, nRows, nCols, ratio*100);
 		
-		float[] S = new float[maxRank];
-		float[] Ut = new float[maxRank*nRows];
-		float[] Vt = new float[maxRank*nCols];
+		double[] S = new double[maxRank];
+		double[] Ut = new double[maxRank*nRows];
+		double[] Vt = new double[maxRank*nCols];
 		int rank = SVD.svd(nRows, nCols, maxRank, x, y, z, S, Ut, Vt);
 		System.out.printf("  Rank: %d (max:%d)  Sigma: max=%f cut=%f%n",
 				rank, maxRank, S[0], S[rank-1]);
@@ -76,25 +76,25 @@ public class LowRankParam implements Comparator<Integer> {
 		for (int i = 0; i < rank; ++i) {
 			params.U[i] = new float[N];
 			
-//			float invSqrtU = 1.0/Math.sqrt(N) * 0.01;
-//			float invSqrtV = 1.0/Math.sqrt(M) * 0.01;
-//			float invSqrtW = 1.0/Math.sqrt(D) * 0.01;
-			float invSqrtU = 0;
-			float invSqrtV = 0;
-			float invSqrtW = 0;
+//			double invSqrtU = 1.0/Math.sqrt(N) * 0.01;
+//			double invSqrtV = 1.0/Math.sqrt(M) * 0.01;
+//			double invSqrtW = 1.0/Math.sqrt(D) * 0.01;
+			double invSqrtU = 0;
+			double invSqrtV = 0;
+			double invSqrtW = 0;
 			
 			for (int j = 0; j < N; ++j)
 				params.U[i][j] = (float) (Ut[i*N+j] + rnd.nextGaussian() * invSqrtU);
 
 			
-			float[] A2 = new float[nCols];
+			double[] A2 = new double[nCols];
 			for (int j = 0; j < nCols; ++j)
 				A2[j] = Vt[i*nCols+j];
 			Utils.Assert(nCols == M * D);
 			
-			float[] S2 = new float[1];
-			float[] Ut2 = new float[M];
-			float[] Vt2 = new float[D];
+			double[] S2 = new double[1];
+			double[] Ut2 = new double[M];
+			double[] Vt2 = new double[D];
 			int rank2 = SVD.svd(A2, M, D, S2, Ut2, Vt2);
 			//System.out.println(rank2);
 			//Utils.Assert(rank2 == 1);
@@ -110,7 +110,7 @@ public class LowRankParam implements Comparator<Integer> {
 				for (int j = 0; j < D; ++j)
 					params.W[i][j] *= S[i] * S2[0];				
 			} else {
-		        float coeff = (float) Math.pow(S[i]*S2[0], 1.0/3);
+		        double coeff = Math.pow(S[i]*S2[0], 1.0/3);
 		        for (int j = 0; j < N; ++j)
 		            params.U[i][j] *= coeff;
 		        for (int j = 0; j < M; ++j)
