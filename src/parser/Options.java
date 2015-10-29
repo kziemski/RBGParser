@@ -46,7 +46,7 @@ public class Options implements Cloneable, Serializable {
 	// Training requires more restarts because of cost-augmented decoding
 	// Testing is easier therefore needs less restarts
 	public int numTrainConverge = 300;	
-	public int numTestConverge = 100;	
+	public int numTestConverge = 300;	
 	
 	public boolean average = true;
 	public float C = 0.01f;

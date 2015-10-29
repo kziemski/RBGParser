@@ -111,7 +111,7 @@ public class DependencyParser implements Serializable {
 			}
 			
 			System.out.printf(" Evaluating: %s%n", options.testFile);
-			parser.evaluateSet(true, false);
+			parser.evaluateSet(true, true);
 		}
 		
 	}
@@ -336,7 +336,7 @@ public class DependencyParser implements Serializable {
                 	parameters.averageParameters((iIter+1)*N);
                 int cnvg = options.numTestConverge;
                 options.numTestConverge = options.numTrainConverge;
-	  			float res = evaluateSet(false, false);
+	  			float res = evaluateSet(false, true);
                 options.numTestConverge = cnvg;
                 System.out.println();
 	  			System.out.println("_____________________________________________");
