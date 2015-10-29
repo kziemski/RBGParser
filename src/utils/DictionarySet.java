@@ -125,6 +125,8 @@ public class DictionarySet implements Serializable {
 		int n = values.length;
 		
 		Arrays.sort(values);
+		for (int i = n-1; i >= 0; --i)
+			System.out.println(values[i]);
 		
 		float sum = 0.0f;
 		for (int i = 0; i < n; ++i) sum += values[i];
