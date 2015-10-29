@@ -52,7 +52,7 @@ public class BasicArcPruner extends DependencyParser {
 		for (int iIter = 0; iIter < options.maxNumIters; ++iIter) {
 			
 			long start = 0;
-			double loss = 0;
+			float loss = 0;
 			int uas = 0, tot = 0;
 			start = System.currentTimeMillis();
 			
@@ -66,17 +66,17 @@ public class BasicArcPruner extends DependencyParser {
     		    	
     		    	int goldhead = inst.heads[m];
     		    	FeatureVector goldfv = lfd.getArcFeatureVector(goldhead, m);
-    		    	double goldscore = parameters.dotProduct(goldfv);
+    		    	float goldscore = parameters.dotProduct(goldfv);
     		    	
     		    	int predhead = -1;
     		    	FeatureVector predfv = null;
-    		    	double best = Double.NEGATIVE_INFINITY;
+    		    	float best = Float.NEGATIVE_INFINITY;
     		    	
     		    	for (int h = 0; h < n; ++h)
     		    		if (h != m) {
     		    			FeatureVector fv = lfd.getArcFeatureVector(h, m);
-    		    			double va = parameters.dotProduct(fv)
-    		    					+ (h != goldhead ? 1.0 : 0.0);
+    		    			float va = parameters.dotProduct(fv)
+    		    					+ (h != goldhead ? 1.0f : 0.0f);
     		    			if (va > best) {
     		    				best = va;
     		    				predhead = h;

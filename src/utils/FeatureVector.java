@@ -14,7 +14,7 @@ public class FeatureVector implements Collector {
 	
 	int capacity;
 	int[] x;
-	double[] va;
+	float[] va;
 		
 	public FeatureVector() { grow(); };
 	
@@ -36,7 +36,7 @@ public class FeatureVector implements Collector {
 	private void initCapacity(int capacity) {
 		this.capacity = capacity;
 		x = new int[capacity];
-		va = new double[capacity];
+		va = new float[capacity];
 	}
 	
 	private void grow() {
@@ -44,7 +44,7 @@ public class FeatureVector implements Collector {
 		int cap = 5 > capacity ? 10 : capacity * 2;
 		
 		int[] x2 = new int[cap];
-		double[] va2 = new double[cap];
+		float[] va2 = new float[cap];
 		
 		if (capacity > 0) {
 			System.arraycopy(x, 0, x2, 0, capacity);
@@ -60,12 +60,12 @@ public class FeatureVector implements Collector {
 	public void addEntry(int _x) {
 		if (size == capacity) grow();
 		x[size] = _x;
-		va[size] = 1.0;
+		va[size] = 1.0f;
 		++size;
 	}
 	
 	@Override
-	public void addEntry(int _x, double _value) {
+	public void addEntry(int _x, float _value) {
 		if (_value == 0) return;
 		
 		if (size == capacity) grow();
@@ -75,10 +75,10 @@ public class FeatureVector implements Collector {
 	}
 		
 	public void addEntries(FeatureVector m) {
-		addEntries(m, 1.0);
+		addEntries(m, 1.0f);
 	}
 	
-	public void addEntries(FeatureVector m, double coeff) {
+	public void addEntries(FeatureVector m, float coeff) {
 		
 		assert(m != null && m.nRows == nRows);
 		if (coeff == 0 || m.size == 0) return;
@@ -88,10 +88,10 @@ public class FeatureVector implements Collector {
 	}
 	
 	public void addEntriesOffset(FeatureVector m, int offset) {
-		addEntriesOffset(m, offset, 1.0);
+		addEntriesOffset(m, offset, 1.0f);
 	}
 	
-	public void addEntriesOffset(FeatureVector m, int offset, double coeff) {
+	public void addEntriesOffset(FeatureVector m, int offset, float coeff) {
 		
 		if (coeff == 0 || m.size == 0) return;
 		
@@ -99,26 +99,26 @@ public class FeatureVector implements Collector {
 			addEntry(m.x[i] + offset, m.va[i]*coeff);
 	}
 	
-	public void rescale(double coeff) {
+	public void rescale(float coeff) {
 		for (int i = 0; i < size; ++i)
 			va[i] *= coeff;
 	}
 	
-	public double l2Norm() {
-		double sum = 0;
+	public float l2Norm() {
+		float sum = 0;
 		for (int i = 0; i < size; ++i)
 			sum += va[i]*va[i];
-		return Math.sqrt(sum);
+		return (float) Math.sqrt(sum);
 	}
 	
 //	private static float[] l2Vec;
-//	public double Squaredl2NormUnsafe() {
+//	public float Squaredl2NormUnsafe() {
 //
 //		if (l2Vec == null || l2Vec.length < nRows) {
 //            l2Vec = new float[nRows];
 //        }
 //		
-//		double sum = 0;
+//		float sum = 0;
 //		for (int i = 0; i < size; ++i) l2Vec[x[i]] += va[i];
 //		for (int i = 0; i < size; ++i) {
 //			sum += l2Vec[x[i]] * l2Vec[x[i]];
@@ -128,26 +128,26 @@ public class FeatureVector implements Collector {
 //		
 //	}
 	
-	public double Squaredl2NormUnsafe()
+	public float Squaredl2NormUnsafe()
 	{
 		TIntDoubleHashMap vec = new TIntDoubleHashMap(size<<1);
 		for (int i = 0; i < size; ++i)
 			vec.adjustOrPutValue(x[i], va[i], va[i]);
-		double sum = 0;
+		float sum = 0;
 		for (double v : vec.values())
 			sum += v*v;
 		return sum;
 	}
 	
-    public double min() {
-        double m = Double.POSITIVE_INFINITY;
+    public float min() {
+        float m = Float.POSITIVE_INFINITY;
         for (int i = 0; i < size; ++i)
             if (m > va[i]) m = va[i];
         return m;
     }
     
-    public double max() {
-        double m = Double.NEGATIVE_INFINITY;
+    public float max() {
+        float m = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < size; ++i)
             if (m < va[i]) m = va[i];
         return m;
@@ -167,16 +167,16 @@ public class FeatureVector implements Collector {
 		return xx;
 	}
 	
-	public double[] z() {
-		double[] va2 = new double[size];
+	public float[] z() {
+		float[] va2 = new float[size];
 		if (size > 0)
 			System.arraycopy(va, 0, va2, 0, size);
 		return va2;
 	}
 
-    public void setValue(int i, double v) { va[i] = v; }
+    public void setValue(int i, float v) { va[i] = v; }
 	public int x(int i) { return x[i]; }
-	public double value(int i) { return va[i]; }
+	public float value(int i) { return va[i]; }
 	
 	public boolean aggregate() {
 		
@@ -210,28 +210,20 @@ public class FeatureVector implements Collector {
 		return true;
 	}
 	
-//    public double dotProduct(FeatureVector _y) {
+//    public float dotProduct(FeatureVector _y) {
 //        return dotProduct(this, _y);
 //    }
         
-	public double dotProduct(float[] _y) {
+	public float dotProduct(float[] _y) {
 		return dotProduct(this, _y);
 	}
 	
-	public double dotProduct(float[] _y, int offset) {
-		return dotProduct(this, _y, offset);
-	}
-	
-	public double dotProduct(double[] _y) {
-		return dotProduct(this, _y);
-	}
-	
-	public double dotProduct(double[] _y, int offset) {
+	public float dotProduct(float[] _y, int offset) {
 		return dotProduct(this, _y, offset);
 	}
 	
 //	private static float[] dpVec;			 //non-sparse vector repr for vector dot product
-//	public static double dotProduct(FeatureVector _x, FeatureVector _y) {
+//	public static float dotProduct(FeatureVector _x, FeatureVector _y) {
 //		
 //		assert(_x.nRows == _y.nRows);		
 //		
@@ -240,7 +232,7 @@ public class FeatureVector implements Collector {
 //		for (int i = 0; i < _y.size; ++i)
 //			dpVec[_y.x[i]] += _y.va[i];
 //		
-//		double sum = 0;
+//		float sum = 0;
 //		for (int i = 0; i < _x.size; ++i)
 //			sum += _x.va[i] * dpVec[_x.x[i]];
 //
@@ -250,33 +242,17 @@ public class FeatureVector implements Collector {
 //		return sum;
 //	}
 	
-	public static double dotProduct(FeatureVector _x, float[] _y) {
+	public static float dotProduct(FeatureVector _x, float[] _y) {
 		
-		double sum = 0;
+		float sum = 0;
 		for (int i = 0; i < _x.size; ++i)
 			sum += _x.va[i] * _y[_x.x[i]];
 		return sum;
 	}
 	
-	public static double dotProduct(FeatureVector _x, float[] _y, int offset) {
+	public static float dotProduct(FeatureVector _x, float[] _y, int offset) {
 		
-		double sum = 0;
-		for (int i = 0; i < _x.size; ++i)
-			sum += _x.va[i] * _y[offset + _x.x[i]];
-		return sum;
-	}
-	
-	public static double dotProduct(FeatureVector _x, double[] _y) {
-		
-		double sum = 0;
-		for (int i = 0; i < _x.size; ++i)
-			sum += _x.va[i] * _y[_x.x[i]];
-		return sum;
-	}
-	
-	public static double dotProduct(FeatureVector _x, double[] _y, int offset) {
-		
-		double sum = 0;
+		float sum = 0;
 		for (int i = 0; i < _x.size; ++i)
 			sum += _x.va[i] * _y[offset + _x.x[i]];
 		return sum;
@@ -286,9 +262,9 @@ public class FeatureVector implements Collector {
 
 class Entry {
 	int x;
-	double value;
+	float value;
 	
-	public Entry(int x, double value) 
+	public Entry(int x, float value) 
 	{
 		this.x = x;
 		this.value = value;

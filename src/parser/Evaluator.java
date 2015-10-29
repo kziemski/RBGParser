@@ -29,19 +29,19 @@ public class Evaluator
 	}
 	
 	
-	public double UAS()
+	public float UAS()
 	{
-		return uas/(tot+1e-20);
+		return uas/(tot+1e-20f);
 	}
 	
-	public double LAS()
+	public float LAS()
 	{
-		return las/(tot+1e-20);
+		return las/(tot+1e-20f);
 	}
 	
-	public double CAS()
+	public float CAS()
 	{
-		return whole/(nsents+1e-20);
+		return whole/(nsents+1e-20f);
 	}
 	
 	

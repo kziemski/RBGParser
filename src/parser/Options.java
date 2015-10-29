@@ -37,7 +37,7 @@ public class Options implements Cloneable, Serializable {
 	public boolean projective = false;
 	public boolean learnLabel = false;
 	public boolean pruning = true;
-	public double pruningCoeff = 0.2;
+	public float pruningCoeff = 0.2f;
 	public int labelLossType = 0;
 	
 	public int numHcThreads = 4;		// hill climbing: number of threads
@@ -49,8 +49,8 @@ public class Options implements Cloneable, Serializable {
 	public int numTestConverge = 100;	
 	
 	public boolean average = true;
-	public double C = 0.01;
-	public double gamma = 0.3, gammaLabel = 1;
+	public float C = 0.01f;
+	public float gamma = 0.3f, gammaLabel = 1;
 	public int R = 50;
 	
 	// feature set
@@ -144,10 +144,10 @@ public class Options implements Cloneable, Serializable {
                 maxNumSent = Integer.parseInt(arg.split(":")[1]);
             }
             else if (arg.startsWith("C:")) {
-            	C = Double.parseDouble(arg.split(":")[1]);
+            	C = Float.parseFloat(arg.split(":")[1]);
             }
             else if (arg.startsWith("gamma:")) {
-            	gamma = Double.parseDouble(arg.split(":")[1]);
+            	gamma = Float.parseFloat(arg.split(":")[1]);
             	//gammaLabel = gamma;
             }
             else if (arg.startsWith("R:")) {
@@ -166,7 +166,7 @@ public class Options implements Cloneable, Serializable {
                 pruning = Boolean.parseBoolean(arg.split(":")[1]);
             }
             else if (arg.startsWith("pruning-weight:")) {
-            	pruningCoeff = Double.parseDouble(arg.split(":")[1]);
+            	pruningCoeff = Float.parseFloat(arg.split(":")[1]);
             }
             else if (arg.startsWith("thread:")) {
             	numHcThreads = Integer.parseInt(arg.split(":")[1]);

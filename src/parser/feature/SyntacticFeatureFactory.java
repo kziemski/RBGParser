@@ -41,8 +41,8 @@ public class SyntacticFeatureFactory implements Serializable {
 	
 	public Options options;
 	
-	public double[][] wordVectors = null;
-	public double[] unknownWv = null;
+	public float[][] wordVectors = null;
+	public float[] unknownWv = null;
 	
 	public int tagNumBits, wordNumBits, depNumBits, disNumBits = 4;
 	public int labelNumBits, flagBits;
@@ -275,7 +275,7 @@ public class SyntacticFeatureFactory implements Serializable {
 				int rb = getMSTRightBranch(specialPos, arcLis, 0, 0);
 				
 				code = createArcCodeP(Arc.RB, 0x0);
-				addArcFeature(code, (double)rb / n, fv);
+				addArcFeature(code, (float)rb / n, fv);
 				
 				for (int m = 1; m < n; ++m) {
 
@@ -525,7 +525,7 @@ public class SyntacticFeatureFactory implements Serializable {
 		if (wordVectors != null) {
 			
 			int wvid = inst.wordVecIds[h];
-			double [] v = wvid > 0 ? wordVectors[wvid] : unknownWv;
+			float [] v = wvid > 0 ? wordVectors[wvid] : unknownWv;
 			if (v != null) {
 				for (int i = 0; i < v.length; ++i) {
 					code = createArcCodeW(HEAD_EMB, i);
@@ -892,7 +892,7 @@ public class SyntacticFeatureFactory implements Serializable {
     public void addWordVectorFeatures(DependencyInstance inst, int i, int dis, FeatureVector fv) {
     	
     	int d = getBinnedDistance(dis);
-    	double [] v = unknownWv;
+    	float [] v = unknownWv;
     	int pos = i + dis;
     	
     	if (pos >= 0 && pos < inst.length) {
@@ -1112,7 +1112,7 @@ public class SyntacticFeatureFactory implements Serializable {
 		if (wordVectors != null) {
 			
 			int wvid = inst.wordVecIds[h];
-			double [] v = wvid > 0 ? wordVectors[wvid] : unknownWv;
+			float [] v = wvid > 0 ? wordVectors[wvid] : unknownWv;
 			if (v != null) {
 				for (int i = 0; i < v.length; ++i) {
 					code = createArcCodeW(HEAD_EMB, i) | tid;
@@ -3100,7 +3100,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		featureHashSet.add(code);
     }
     
-    public final void addArcFeature(long code, double value, Collector mat) {
+    public final void addArcFeature(long code, float value, Collector mat) {
     	int id = hashcode2int(code) & numArcFeats;	
     	mat.addEntry(id, value);
     	if (!stoppedGrowth)
@@ -3114,7 +3114,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	//	featureHashSet.add(code);
     }
     
-    public final void addLabeledArcFeature(long code, double value, Collector mat) {
+    public final void addLabeledArcFeature(long code, float value, Collector mat) {
     	int id = hashcode2int(code) & numLabeledArcFeats; 	
     	mat.addEntry(id, value);
     	//if (!stoppedGrowth)
@@ -3129,7 +3129,7 @@ public class SyntacticFeatureFactory implements Serializable {
     	}
     }
     
-    public final void addWordFeature(long code, double value, FeatureVector mat) {
+    public final void addWordFeature(long code, float value, FeatureVector mat) {
     	int id = wordAlphabet.lookupIndex(code, numWordFeats);
     	if (id >= 0) {
     		mat.addEntry(id, value);
@@ -3577,7 +3577,7 @@ public class SyntacticFeatureFactory implements Serializable {
     		int headId = wordAlphabet.lookupIndex(head);
     		int modId = wordAlphabet.lookupIndex(mod);
     		if (headId >= 0 && modId >= 0) {
-    			double value = params.params[id];
+    			float value = params.params[id];
     			tensor.putEntry(headId, modId, dist, value);
             }
     	}
@@ -3595,7 +3595,7 @@ class LazyCollector implements Collector
 	}
 
 	@Override
-	public void addEntry(int x, double va) {
+	public void addEntry(int x, float va) {
 
 	}
 	

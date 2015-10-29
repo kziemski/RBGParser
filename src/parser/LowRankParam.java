@@ -32,7 +32,7 @@ public class LowRankParam implements Comparator<Integer> {
 		values = new TDoubleArrayList();
 	}
 	
-	public void putEntry(int x, int y , int z, double value) {
+	public void putEntry(int x, int y , int z, float value) {
 		Utils.Assert(x >= 0 && x < N);
 		Utils.Assert(y >= 0 && y < M);
 		xlis.add(x);
@@ -54,63 +54,63 @@ public class LowRankParam implements Comparator<Integer> {
 		Arrays.sort(lis, this);
 		
 		int[] x = new int[K], y = new int[K];
-		double[] z = new double[K];
+		float[] z = new float[K];
 		for (int i = 0; i < K; ++i) {
 			int j = lis[i];
 			x[i] = xlis.get(j);
 			y[i] = ylis.get(j)*D + zlis.get(j);
-			z[i] = values.get(j);
+			z[i] = (float) values.get(j);
 		}
 		
-		double ratio = (K+0.0)/nRows/nCols;
+		float ratio = (K+0.0f)/nRows/nCols;
 		System.out.printf("  Unfolding matrix: %d / (%d*%d)  %.2f%% entries.%n",
 				K, nRows, nCols, ratio*100);
 		
-		double[] S = new double[maxRank];
-		double[] Ut = new double[maxRank*nRows];
-		double[] Vt = new double[maxRank*nCols];
+		float[] S = new float[maxRank];
+		float[] Ut = new float[maxRank*nRows];
+		float[] Vt = new float[maxRank*nCols];
 		int rank = SVD.svd(nRows, nCols, maxRank, x, y, z, S, Ut, Vt);
 		System.out.printf("  Rank: %d (max:%d)  Sigma: max=%f cut=%f%n",
 				rank, maxRank, S[0], S[rank-1]);
 		
 		for (int i = 0; i < rank; ++i) {
-			params.U[i] = new double[N];
+			params.U[i] = new float[N];
 			
-//			double invSqrtU = 1.0/Math.sqrt(N) * 0.01;
-//			double invSqrtV = 1.0/Math.sqrt(M) * 0.01;
-//			double invSqrtW = 1.0/Math.sqrt(D) * 0.01;
-			double invSqrtU = 0;
-			double invSqrtV = 0;
-			double invSqrtW = 0;
+//			float invSqrtU = 1.0/Math.sqrt(N) * 0.01;
+//			float invSqrtV = 1.0/Math.sqrt(M) * 0.01;
+//			float invSqrtW = 1.0/Math.sqrt(D) * 0.01;
+			float invSqrtU = 0;
+			float invSqrtV = 0;
+			float invSqrtW = 0;
 			
 			for (int j = 0; j < N; ++j)
-				params.U[i][j] = (Ut[i*N+j] + rnd.nextGaussian() * invSqrtU);
+				params.U[i][j] = (float) (Ut[i*N+j] + rnd.nextGaussian() * invSqrtU);
 
 			
-			double[] A2 = new double[nCols];
+			float[] A2 = new float[nCols];
 			for (int j = 0; j < nCols; ++j)
 				A2[j] = Vt[i*nCols+j];
 			Utils.Assert(nCols == M * D);
 			
-			double[] S2 = new double[1];
-			double[] Ut2 = new double[M];
-			double[] Vt2 = new double[D];
+			float[] S2 = new float[1];
+			float[] Ut2 = new float[M];
+			float[] Vt2 = new float[D];
 			int rank2 = SVD.svd(A2, M, D, S2, Ut2, Vt2);
 			//System.out.println(rank2);
 			//Utils.Assert(rank2 == 1);
 
 			for (int j = 0; j < M; ++j)
-				params.V[i][j] = (Ut2[j] + invSqrtV * rnd.nextGaussian());
+				params.V[i][j] = (float) (Ut2[j] + invSqrtV * rnd.nextGaussian());
 			
 			for (int j = 0; j < D; ++j)
-				params.W[i][j] = (Vt2[j] + invSqrtW * rnd.nextGaussian());		    
+				params.W[i][j] = (float) (Vt2[j] + invSqrtW * rnd.nextGaussian());		    
 			
 			if (!averageNorm) {				
 				// in order to reproduce results on 1st order parsing shown in the paper
 				for (int j = 0; j < D; ++j)
 					params.W[i][j] *= S[i] * S2[0];				
 			} else {
-		        double coeff = Math.pow(S[i]*S2[0], 1.0/3);
+		        float coeff = (float) Math.pow(S[i]*S2[0], 1.0/3);
 		        for (int j = 0; j < N; ++j)
 		            params.U[i][j] *= coeff;
 		        for (int j = 0; j < M; ++j)

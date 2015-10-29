@@ -25,25 +25,25 @@ public class GlobalFeatureData {
 	SyntacticFeatureFactory synFactory;
 	DependencyInstance inst;
 	
-	double gamma;
+	float gamma;
 
 	//FeatureDataItem[] cn;	// [len][leftNum][rightNum]
-	double[] cn;		// [len][leftNum][rightNum]
+	float[] cn;		// [len][leftNum][rightNum]
 
 	//FeatureDataItem[] span;	// [len][end][punc][bin]
-	double[] span;	// [len][end][punc][bin]
+	float[] span;	// [len][end][punc][bin]
 
 	//FeatureDataItem[] nb;		// [maxid][cpos][cpos]
-	double[] nb;		// [maxid][cpos][cpos]
+	float[] nb;		// [maxid][cpos][cpos]
 
 	//FeatureDataItem[] ppcc1;	// pp attachment, punc head and part of conjunction
-	double[] ppcc1;	// pp attachment, punc head and part of conjunction
+	float[] ppcc1;	// pp attachment, punc head and part of conjunction
 
 	//FeatureDataItem[] cc2;		// [arg][head][left/right]
-	double[] cc2;		// [arg][head][left/right]
+	float[] cc2;		// [arg][head][left/right]
 
 	//FeatureDataItem[] nonproj;	// nonproj arc, [dep id][nonproj binned num]
-	double[] nonproj;	// nonproj arc, [dep id][nonproj binned num]
+	float[] nonproj;	// nonproj arc, [dep id][nonproj binned num]
 
 	public GlobalFeatureData(LocalFeatureData lfd) 
 	{
@@ -58,23 +58,23 @@ public class GlobalFeatureData {
 		// init array
 		if (lfd.options.useHO) {
 			//cn = new FeatureDataItem[lfd.len * (MAX_CHILD_NUM + 1) * (MAX_CHILD_NUM + 1)];
-			cn = new double[lfd.len * (MAX_CHILD_NUM + 1) * (MAX_CHILD_NUM + 1)];
+			cn = new float[lfd.len * (MAX_CHILD_NUM + 1) * (MAX_CHILD_NUM + 1)];
 			Arrays.fill(cn, NULL);
 			
 			//span = new FeatureDataItem[lfd.len * 2 * 2 * (MAX_SPAN_LENGTH + 1)];
-			span = new double[lfd.len * 2 * 2 * (MAX_SPAN_LENGTH + 1)];
+			span = new float[lfd.len * 2 * 2 * (MAX_SPAN_LENGTH + 1)];
 			Arrays.fill(span, NULL);
 
 			//nb = new FeatureDataItem[lfd.nuparcs * pipe.dictionaries.size(POS) * pipe.dictionaries.size(POS)];
-			nb = new double[lfd.numarcs * (pipe.dictionaries.size(POS)+1) * (pipe.dictionaries.size(POS)+1)];
+			nb = new float[lfd.numarcs * (pipe.dictionaries.size(POS)+1) * (pipe.dictionaries.size(POS)+1)];
 			Arrays.fill(nb, NULL);
 
 			//ppcc1 = new FeatureDataItem[lfd.len * lfd.len * lfd.len];	// pp attachment, punc head and part of conjunction
-			ppcc1 = new double[lfd.len * lfd.len * lfd.len];	// pp attachment, punc head and part of conjunction
+			ppcc1 = new float[lfd.len * lfd.len * lfd.len];	// pp attachment, punc head and part of conjunction
 			Arrays.fill(ppcc1, NULL);
 
 			//cc2 = new FeatureDataItem[lfd.len * lfd.len * lfd.len];		// arg, head, left/right
-			cc2 = new double[lfd.len * lfd.len * lfd.len];
+			cc2 = new float[lfd.len * lfd.len * lfd.len];
 			Arrays.fill(cc2, NULL);
 
 			//nonproj = new FeatureDataItem[lfd.nuparcs * BINNED_BUCKET];	// nonproj arc, [dep id][nonproj binned num]
@@ -169,7 +169,7 @@ public class GlobalFeatureData {
 		return fv;
 	}
 	
-	public double getPPScore(int gp, int h, int m) {
+	public float getPPScore(int gp, int h, int m) {
 		// (h,m) may not be an arc
 		
 		Utils.Assert(lfd.arc2id[h * lfd.len + gp] >= 0);
@@ -185,7 +185,7 @@ public class GlobalFeatureData {
 		return ppcc1[pos];
 	}
 	
-	public double getCC1Score(int left, int arg, int right) {
+	public float getCC1Score(int left, int arg, int right) {
 		// dependency relation is not known, cannot check
 		
 		int pos = (arg * lfd.len + left) * lfd.len + right;		// arg is conj, different from prep/punc
@@ -198,7 +198,7 @@ public class GlobalFeatureData {
 		return ppcc1[pos];
 	}
 	
-	public double getCC2Score(int arg, int head, int child) {
+	public float getCC2Score(int arg, int head, int child) {
 		// dependency relation is not known, cannot check
 		
 		int pos = (arg * lfd.len + head) * lfd.len + child;	
@@ -212,7 +212,7 @@ public class GlobalFeatureData {
 		return cc2[pos];
 	}
 	
-	public double getPNXScore(int head, int arg, int pair) {
+	public float getPNXScore(int head, int arg, int pair) {
 		// dependency relation is not known, cannot check
 		
 		int pos = (arg * lfd.len + head) * lfd.len + pair;		// arg is punc, different from prep/conj
@@ -226,7 +226,7 @@ public class GlobalFeatureData {
 		return ppcc1[pos];
 	}
 	
-	public double getSpanScore(int h, int end, int punc, int bin) {
+	public float getSpanScore(int h, int end, int punc, int bin) {
 		Utils.Assert(bin <= MAX_SPAN_LENGTH);
 		
 		int pos = ((h * 2 + end) * 2 + punc) * (MAX_SPAN_LENGTH + 1) + bin;	
@@ -239,7 +239,7 @@ public class GlobalFeatureData {
 		return span[pos];
 	}
 	
-	public double getNeighborScore(int par, int h, int left, int right) {
+	public float getNeighborScore(int par, int h, int left, int right) {
 		int id = lfd.arc2id[h * lfd.len + par];
 		int size = pipe.dictionaries.size(POS)+1;
 		
@@ -256,7 +256,7 @@ public class GlobalFeatureData {
 		return nb[pos];
 	}
 	
-	public double getChildNumScore(int h, int leftNum, int rightNum) {
+	public float getChildNumScore(int h, int leftNum, int rightNum) {
 		Utils.Assert(leftNum <= MAX_CHILD_NUM && rightNum <= MAX_CHILD_NUM);
 		
 		int pos = (h * (MAX_CHILD_NUM + 1) + leftNum) * (MAX_CHILD_NUM + 1) + rightNum;		
@@ -269,7 +269,7 @@ public class GlobalFeatureData {
 		return cn[pos];
 	}
 	
-	public double getNonprojScore(DependencyArcList arclis, int h, int m) {
+	public float getNonprojScore(DependencyArcList arclis, int h, int m) {
 		int id = lfd.arc2id[m * lfd.len + h];
 		int num = synFactory.getBinnedDistance(arclis.nonproj[m]);
 		
@@ -350,7 +350,7 @@ public class GlobalFeatureData {
 		int rb = synFactory.getMSTRightBranch(specialPos, arcLis, 0, 0);
 		
 		code = synFactory.createArcCodeP(Arc.RB, 0x0);
-		synFactory.addArcFeature(code, (double)rb / len, fv);
+		synFactory.addArcFeature(code, (float)rb / len, fv);
 
 		for (int m = 1; m < len; ++m) {
 
@@ -404,17 +404,17 @@ public class GlobalFeatureData {
 		return fv;
 	}
 	
-	public double getScore(DependencyInstance now, DependencyArcList arcLis) {
+	public float getScore(DependencyInstance now, DependencyArcList arcLis) {
 		return getScore(now.heads, arcLis);
 	}
 	
-	public double getScore(int[] heads, DependencyArcList arcLis) {
+	public float getScore(int[] heads, DependencyArcList arcLis) {
 		
 		DependencyInstance now = lfd.inst;
 		
 		//FeatureVector tmpFv = new FeatureVector(lfd.size);
 		ScoreCollector tmpFv = new ScoreCollector(parameters);
-		double score = 0.0;	
+		float score = 0.0f;	
 		
 		if (!lfd.options.useHO)
 			return score;
@@ -476,7 +476,7 @@ public class GlobalFeatureData {
 		int rb = synFactory.getMSTRightBranch(specialPos, arcLis, 0, 0);
 		
 		code = synFactory.createArcCodeP(Arc.RB, 0x0);
-		synFactory.addArcFeature(code, (double)rb / len, tmpFv);
+		synFactory.addArcFeature(code, (float)rb / len, tmpFv);
 
 		for (int m = 1; m < len; ++m) {
 
@@ -536,7 +536,7 @@ public class GlobalFeatureData {
 			DependencyInstance pred)
 	{
 		FeatureVector dfv = getFeatureVector(gold);
-		dfv.addEntries(getFeatureVector(pred), -1.0);
+		dfv.addEntries(getFeatureVector(pred), -1.0f);
 
 		return dfv;
 	}

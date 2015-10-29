@@ -39,7 +39,7 @@ public class RandomWalkSampler {
 		predInst.heads = new int[len];
 		predInst.deplbids = new int[len];
         
-        //double[] score = new double[len];
+        //float[] score = new float[len];
         //int[] depList = new int[len];
         //int size = 0;
 
@@ -59,7 +59,7 @@ public class RandomWalkSampler {
     			//	if (candH == curr || lfd.isPruned(candH, curr))
     			//		continue;
     			//	
-    			//	//double s = lfd.getArcScore(candH, curr);
+    			//	//float s = lfd.getArcScore(candH, curr);
     			//	
     			//	//if (addLoss) {
     			//	//	  if (candH != inst.heads[curr])
@@ -98,7 +98,7 @@ public class RandomWalkSampler {
 		predInst.heads = new int[len];
 		predInst.deplbids = new int[len];
         
-        double[] score = new double[len];
+        float[] score = new float[len];
         int[] depList = new int[len];
         int size = 0;
 
@@ -118,7 +118,7 @@ public class RandomWalkSampler {
     				if (candH == curr || lfd.isPruned(candH, curr))
     					continue;
     				
-    				double s = lfd.getArcScore(candH, curr);
+    				float s = lfd.getArcScore(candH, curr);
     				
     				if (addLoss) {
     					  if (candH != inst.heads[curr])
@@ -143,13 +143,13 @@ public class RandomWalkSampler {
     	return predInst;
     }
     
-    private int samplePoint(double[] score, int N, Random r) {
-    	double sumScore = Double.NEGATIVE_INFINITY;
+    private int samplePoint(float[] score, int N, Random r) {
+    	float sumScore = Float.NEGATIVE_INFINITY;
     	for (int i = 0; i < N; i++) {
     		sumScore = Utils.logSumExp(sumScore, score[i]);
     	}
-    	double logp = Math.log(r.nextDouble() + 1e-60);
-    	double cur = Double.NEGATIVE_INFINITY;
+    	float logp = (float) Math.log(r.nextDouble() + 1e-60);
+    	float cur = Float.NEGATIVE_INFINITY;
     	int ret = 0;
     	for (; ret < N; ret++) {
     		cur = Utils.logSumExp(cur, score[ret]);
@@ -167,7 +167,7 @@ public class RandomWalkSampler {
 //                if (v == 0 || u == v || lfd.isPruned(u, v))
 //                    System.out.print("0.00\t");
 //                else {
-//                    double s = lfd.getArcScore(u, v);
+//                    float s = lfd.getArcScore(u, v);
 //                    //int l = options.learnLabel ? staticTypes[u][v] : 0;
 //                    //s += options.learnLabel ? lfd.getLabeledArcScore(u, v, l) : 0.0;
 //                    if (addLoss) {

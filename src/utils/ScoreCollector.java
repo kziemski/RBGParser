@@ -5,7 +5,7 @@ import parser.Parameters;
 public class ScoreCollector implements Collector {
 	
 	float[] weights;
-	public double score;
+	public float score;
 	
 	public ScoreCollector(Parameters params) {
 		weights = params.params;
@@ -23,7 +23,7 @@ public class ScoreCollector implements Collector {
 	}
 
 	@Override
-	public void addEntry(int x, double va) {
+	public void addEntry(int x, float va) {
 		score += weights[x]*va;
 	}
 	

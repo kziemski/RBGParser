@@ -2,33 +2,33 @@ package utils;
 
 public class SVD {
 
-    public static native double powerMethod(int[] x, int[] y, double[] z,
-                double[] u, double[] v);
+    public static native float powerMethod(int[] x, int[] y, float[] z,
+                float[] u, float[] v);
     
-    public static native int lowRankSvd(double[] At, double[] Bt,
-    	int n, int m, int r, double[] S, double[] Ut, double[] Vt);
+    public static native int lowRankSvd(float[] At, float[] Bt,
+    	int n, int m, int r, float[] S, float[] Ut, float[] Vt);
     
-    public static native int svd(double[] A, int n, int m, 
-    		double[] S, double[] Ut, double[] Vt);
+    public static native int svd(float[] A, int n, int m, 
+    		float[] S, float[] Ut, float[] Vt);
     
-    public static native int svd(int n, int m, int r, int[] x, int [] y, double[] z,
-    		double[] S, double[] Ut, double[] Vt);
+    public static native int svd(int n, int m, int r, int[] x, int [] y, float[] z,
+    		float[] S, float[] Ut, float[] Vt);
     
     static {
         System.loadLibrary("SVDImp");
     }
     
-//	public static double epsilon = 1e-8;
+//	public static float epsilon = 1e-8;
 //	public static int maxNumIters = 1000;
 //	public static Random rnd = new Random(System.currentTimeMillis());
 //	
-//	public static double runIterations(SparseMatrix M, double[] u, double[] v) {
+//	public static float runIterations(SparseMatrix M, float[] u, float[] v) {
 //        
 //        System.out.println("N=" + v.length);
 //        System.out.println("M=" + M.size);
 //
 //		int N = v.length, iter;
-//		double sigma = 0, prevSigma = -1;
+//		float sigma = 0, prevSigma = -1;
 //		
 //		for (int i = 0; i < N; ++i) v[i] = rnd.nextDouble() - 0.5;
 //		norm(v);
@@ -56,8 +56,8 @@ public class SVD {
 //		return sigma;
 //	}
 //	
-//	private static double norm(double[] x) {
-//		double s = 0;		
+//	private static float norm(float[] x) {
+//		float s = 0;		
 //		for (int N = x.length, i = 0; i < N; ++i)
 //			s += x[i]*x[i];
 //		s = Math.sqrt(s);

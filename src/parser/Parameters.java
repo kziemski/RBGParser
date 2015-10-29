@@ -17,15 +17,15 @@ public class Parameters implements Serializable {
 	
 	public transient Options options;
 	public final int labelLossType;
-	public double C, gamma, gammaLabel;
+	public float C, gamma, gammaLabel;
 	public int size, sizeL;
 	public int rank;
 	public int N, M, T, D;
 	
 	public float[] params, paramsL;
-	public double[][] U, V, W;
+	public float[][] U, V, W;
 	public transient float[] total, totalL;
-	public transient double[][] totalU, totalV, totalW;
+	public transient float[][] totalU, totalV, totalW;
 	
 	public transient FeatureVector[] dU, dV, dW;
 	
@@ -52,12 +52,12 @@ public class Parameters implements Serializable {
 		
 		N = pipe.synFactory.numWordFeats;
 		M = N;
-		U = new double[rank][N];		
-		V = new double[rank][M];
-		W = new double[rank][D];
-		totalU = new double[rank][N];
-		totalV = new double[rank][M];
-		totalW = new double[rank][D];
+		U = new float[rank][N];		
+		V = new float[rank][M];
+		W = new float[rank][D];
+		totalU = new float[rank][N];
+		totalV = new float[rank][M];
+		totalW = new float[rank][D];
 		dU = new FeatureVector[rank];
 		dV = new FeatureVector[rank];
 		dW = new FeatureVector[rank];
@@ -155,8 +155,8 @@ public class Parameters implements Serializable {
 	
 	public void printUStat() 
 	{
-		double sum = 0;
-		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		float sum = 0;
+		float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
 			sum += Utils.squaredSum(U[i]);
 			min = Math.min(min, Utils.min(U[i]));
@@ -167,8 +167,8 @@ public class Parameters implements Serializable {
 	
 	public void printVStat() 
 	{
-		double sum = 0;
-		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		float sum = 0;
+		float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
 			sum += Utils.squaredSum(V[i]);
 			min = Math.min(min, Utils.min(V[i]));
@@ -179,8 +179,8 @@ public class Parameters implements Serializable {
 	
 	public void printWStat() 
 	{
-		double sum = 0;
-		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		float sum = 0;
+		float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
 		for (int i = 0; i < rank; ++i) {
 			sum += Utils.squaredSum(W[i]);
 			min = Math.min(min, Utils.min(W[i]));
@@ -191,44 +191,44 @@ public class Parameters implements Serializable {
 	
 	public void printThetaStat() 
 	{
-		double sum = Utils.squaredSum(params);
-		double min = Utils.min(params);
-		double max = Utils.max(params);		
+		float sum = Utils.squaredSum(params);
+		float min = Utils.min(params);
+		float max = Utils.max(params);		
 		System.out.printf(" |\u03b8|^2: %f min: %f\tmax: %f%n", sum, min, max);
 	}
 	
-	public void projectU(FeatureVector fv, double[] proj) 
+	public void projectU(FeatureVector fv, float[] proj) 
 	{
 		for (int r = 0; r < rank; ++r) 
 			proj[r] = fv.dotProduct(U[r]);
 	}
 	
-	public void projectV(FeatureVector fv, double[] proj) 
+	public void projectV(FeatureVector fv, float[] proj) 
 	{
 		for (int r = 0; r < rank; ++r) 
 			proj[r] = fv.dotProduct(V[r]);
 	}
 	
-	public double dotProduct(FeatureVector fv)
+	public float dotProduct(FeatureVector fv)
 	{
 		return fv.dotProduct(params);
 	}
 	
-	public double dotProductL(FeatureVector fv)
+	public float dotProductL(FeatureVector fv)
 	{
 		return fv.dotProduct(paramsL);
 	}
 	
-	public double dotProduct(double[] proju, double[] projv, int dist)
+	public float dotProduct(float[] proju, float[] projv, int dist)
 	{
-		double sum = 0;
+		float sum = 0;
 		int binDist = getBinnedDistance(dist);
 		for (int r = 0; r < rank; ++r)
 			sum += proju[r] * projv[r] * (W[r][binDist] + W[r][0]);
 		return sum;
 	}
 	
-	public double updateLabel(DependencyInstance gold, DependencyInstance pred,
+	public float updateLabel(DependencyInstance gold, DependencyInstance pred,
 			LocalFeatureData lfd, GlobalFeatureData gfd,
 			int updCnt, int offset)
 	{
@@ -238,20 +238,20 @@ public class Parameters implements Serializable {
     	int[] predDeps = pred.heads;
     	int[] predLabs = pred.deplbids;
     	
-    	double Fi = getLabelDis(actDeps, actLabs, predDeps, predLabs);
+    	float Fi = getLabelDis(actDeps, actLabs, predDeps, predLabs);
         	
     	FeatureVector dtl = lfd.getLabeledFeatureDifference(gold, pred);
-    	double loss = - dtl.dotProduct(paramsL) + Fi;
-        double l2norm = dtl.Squaredl2NormUnsafe();
+    	float loss = - dtl.dotProduct(paramsL) + Fi;
+        float l2norm = dtl.Squaredl2NormUnsafe();
     	
-        double alpha = loss/l2norm;
+        float alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
-    		double coeff = alpha;
-    		double coeff2 = coeff * (1-updCnt);
+    		float coeff = alpha;
+    		float coeff2 = coeff * (1-updCnt);
     		for (int i = 0, K = dtl.size(); i < K; ++i) {
 	    		int x = dtl.x(i);
-	    		double z = dtl.value(i);
+	    		float z = dtl.value(i);
 	    		paramsL[x] += coeff * z;
 	    		totalL[x] += coeff2 * z;
     		}
@@ -261,7 +261,7 @@ public class Parameters implements Serializable {
 	}
 	
 	
-	public double update(DependencyInstance gold, DependencyInstance pred,
+	public float update(DependencyInstance gold, DependencyInstance pred,
 			LocalFeatureData lfd, GlobalFeatureData gfd,
 			int updCnt, int offset)
 	{
@@ -271,13 +271,13 @@ public class Parameters implements Serializable {
     	int[] predDeps = pred.heads;
     	int[] predLabs = pred.deplbids;
     	
-    	double Fi = getHammingDis(actDeps, actLabs, predDeps, predLabs);
+    	float Fi = getHammingDis(actDeps, actLabs, predDeps, predLabs);
     	
     	FeatureVector dt = lfd.getFeatureDifference(gold, pred);
     	dt.addEntries(gfd.getFeatureDifference(gold, pred));
     	    	
-        double loss = - dt.dotProduct(params)*gamma + Fi;
-        double l2norm = dt.Squaredl2NormUnsafe() * gamma * gamma;
+        float loss = - dt.dotProduct(params)*gamma + Fi;
+        float l2norm = dt.Squaredl2NormUnsafe() * gamma * gamma;
     	
         int updId = (updCnt + offset) % 3;
         //if ( updId == 1 ) {
@@ -306,17 +306,17 @@ public class Parameters implements Serializable {
         	}   
         //}
         
-        double alpha = loss/l2norm;
+        float alpha = loss/l2norm;
     	alpha = Math.min(C, alpha);
     	if (alpha > 0) {
     		
     		{
     			// update theta
-	    		double coeff = alpha * gamma;
-	    		double coeff2 = coeff * (1-updCnt);
+	    		float coeff = alpha * gamma;
+	    		float coeff2 = coeff * (1-updCnt);
 	    		for (int i = 0, K = dt.size(); i < K; ++i) {
 		    		int x = dt.x(i);
-		    		double z = dt.value(i);
+		    		float z = dt.value(i);
 		    		params[x] += coeff * z;
 		    		total[x] += coeff2 * z;
 	    		}
@@ -325,13 +325,13 @@ public class Parameters implements Serializable {
     		//if ( updId == 1 ) 
     		{
     			// update U
-    			double coeff = alpha * (1-gamma);
-    			double coeff2 = coeff * (1-updCnt);
+    			float coeff = alpha * (1-gamma);
+    			float coeff2 = coeff * (1-updCnt);
             	for (int k = 0; k < rank; ++k) {
             		FeatureVector dUk = dU[k];
             		for (int i = 0, K = dUk.size(); i < K; ++i) {
             			int x = dUk.x(i);
-            			double z = dUk.value(i);
+            			float z = dUk.value(i);
             			U[k][x] += coeff * z;
             			totalU[k][x] += coeff2 * z;
             		}
@@ -340,13 +340,13 @@ public class Parameters implements Serializable {
     		//else if ( updId == 2 ) 
     		{
     			// update V
-    			double coeff = alpha * (1-gamma);
-    			double coeff2 = coeff * (1-updCnt);
+    			float coeff = alpha * (1-gamma);
+    			float coeff2 = coeff * (1-updCnt);
             	for (int k = 0; k < rank; ++k) {
             		FeatureVector dVk = dV[k];
             		for (int i = 0, K = dVk.size(); i < K; ++i) {
             			int x = dVk.x(i);
-            			double z = dVk.value(i);
+            			float z = dVk.value(i);
             			V[k][x] += coeff * z;
             			totalV[k][x] += coeff2 * z;
             		}
@@ -355,13 +355,13 @@ public class Parameters implements Serializable {
             //else 
     		{
     			// update W
-    			double coeff = alpha * (1-gamma);
-    			double coeff2 = coeff * (1-updCnt);
+    			float coeff = alpha * (1-gamma);
+    			float coeff2 = coeff * (1-updCnt);
             	for (int k = 0; k < rank; ++k) {
             		FeatureVector dWk = dW[k];
             		for (int i = 0, K = dWk.size(); i < K; ++i) {
             			int x = dWk.x(i);
-            			double z = dWk.value(i);
+            			float z = dWk.value(i);
             			W[k][x] += coeff * z;
             			totalW[k][x] += coeff2 * z;
             		}
@@ -372,23 +372,23 @@ public class Parameters implements Serializable {
         return loss;
 	}
 	
-	public void updateTheta(FeatureVector gold, FeatureVector pred, double loss,
+	public void updateTheta(FeatureVector gold, FeatureVector pred, float loss,
 			int updCnt) 
 	{
 		FeatureVector fv = new FeatureVector(size);
 		fv.addEntries(gold);
-		fv.addEntries(pred, -1.0);
+		fv.addEntries(pred, -1.0f);
 		
-		double l2norm = fv.Squaredl2NormUnsafe();
-		double alpha = loss/l2norm;
+		float l2norm = fv.Squaredl2NormUnsafe();
+		float alpha = loss/l2norm;
 	    alpha = Math.min(C, alpha);
 	    if (alpha > 0) {
 			// update theta
-    		double coeff = alpha;
-    		double coeff2 = coeff * (1-updCnt);
+    		float coeff = alpha;
+    		float coeff2 = coeff * (1-updCnt);
     		for (int i = 0, K = fv.size(); i < K; ++i) {
 	    		int x = fv.x(i);
-	    		double z = fv.value(i);
+	    		float z = fv.value(i);
 	    		params[x] += coeff * z;
 	    		total[x] += coeff2 * z;
     		}
@@ -397,7 +397,7 @@ public class Parameters implements Serializable {
 	
     private FeatureVector getdU(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) 
     {
-    	double[][] wpV = lfd.wpV;
+    	float[][] wpV = lfd.wpV;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
     	FeatureVector dU = new FeatureVector(N);
@@ -407,7 +407,7 @@ public class Parameters implements Serializable {
     		if (head == head2) continue;
     		int d = getBinnedDistance(head-mod);
     		int d2 = getBinnedDistance(head2-mod);
-    		double dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
+    		float dotv = wpV[mod][k]; //wordFvs[mod].dotProduct(V[k]);    		
     		dU.addEntries(wordFvs[head], dotv * (W[k][0] + W[k][d]));
     		dU.addEntries(wordFvs[head2], - dotv * (W[k][0] + W[k][d2]));
     	}
@@ -415,7 +415,7 @@ public class Parameters implements Serializable {
     }
     
     private FeatureVector getdV(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) {
-    	double[][] wpU = lfd.wpU;
+    	float[][] wpU = lfd.wpU;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
     	FeatureVector dV = new FeatureVector(M);
@@ -425,8 +425,8 @@ public class Parameters implements Serializable {
     		if (head == head2) continue;
     		int d = getBinnedDistance(head-mod);
     		int d2 = getBinnedDistance(head2-mod);
-    		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
+    		float dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
+    		float dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
     		dV.addEntries(wordFvs[mod], dotu  * (W[k][0] + W[k][d])
     									- dotu2 * (W[k][0] + W[k][d2]));    		
     	}
@@ -434,19 +434,19 @@ public class Parameters implements Serializable {
     }
     
     private FeatureVector getdW(int k, LocalFeatureData lfd, int[] actDeps, int[] predDeps) {
-    	double[][] wpU = lfd.wpU, wpV = lfd.wpV;
+    	float[][] wpU = lfd.wpU, wpV = lfd.wpV;
     	FeatureVector[] wordFvs = lfd.wordFvs;
     	int L = wordFvs.length;
-    	double[] dW = new double[D];
+    	float[] dW = new float[D];
     	for (int mod = 1; mod < L; ++mod) {
     		int head  = actDeps[mod];
     		int head2 = predDeps[mod];
     		if (head == head2) continue;
     		int d = getBinnedDistance(head-mod);
     		int d2 = getBinnedDistance(head2-mod);
-    		double dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
-    		double dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
-    		double dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
+    		float dotu = wpU[head][k];   //wordFvs[head].dotProduct(U[k]);
+    		float dotu2 = wpU[head2][k]; //wordFvs[head2].dotProduct(U[k]);
+    		float dotv = wpV[mod][k];  //wordFvs[mod].dotProduct(V[k]);
     		dW[0] += (dotu - dotu2) * dotv;
     		dW[d] += dotu * dotv;
     		dW[d2] -= dotu2 * dotv;
@@ -458,10 +458,10 @@ public class Parameters implements Serializable {
     	return dW2;
     }
     
-	public double getHammingDis(int[] actDeps, int[] actLabs,
+	public float getHammingDis(int[] actDeps, int[] actLabs,
 			int[] predDeps, int[] predLabs) 
 	{
-		double dis = 0;
+		float dis = 0;
 		for (int i = 1; i < actDeps.length; ++i)
 			//if (options.learnLabel) {
 			//	if (labelLossType == 0) {
@@ -474,10 +474,10 @@ public class Parameters implements Serializable {
 		return dis;
     }
 	
-	public double getLabelDis(int[] actDeps, int[] actLabs,
+	public float getLabelDis(int[] actDeps, int[] actLabs,
 			int[] predDeps, int[] predLabs) 
 	{
-		double dis = 0;
+		float dis = 0;
 		for (int i = 1; i < actLabs.length; ++i) {
 			assert(actDeps[i] == predDeps[i]);
 			if (actLabs[i] != predLabs[i]) dis += 1;
