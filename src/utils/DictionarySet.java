@@ -136,7 +136,7 @@ public class DictionarySet implements Serializable {
 		for (int i = n-1; i >= 0; --i) {
 			//System.out.println(values[i]);
 			cur += values[i];
-			if (cur >= sum * percent) {
+			if (cur > sum * percent) {
 				cut = values[i];
 				break;
 			}
