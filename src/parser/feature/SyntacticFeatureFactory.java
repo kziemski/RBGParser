@@ -571,6 +571,30 @@ public class SyntacticFeatureFactory implements Serializable {
 		addLabeledArcFeature(code, fv);
 		addLabeledArcFeature(code | attDist, fv);
 		
+		code = createArcCodePP(HPp_HP, pHeadLeft, pHead) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(HP_HPn, pHead, pHeadRight) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePPP(HPp_HP_HPn, pHeadLeft, pHead, pHeadRight) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(MPp_MP, pModLeft, pMod) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(MP_MPn, pMod, pModRight) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePPP(MPp_MP_MPn, pModLeft, pMod, pModRight) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
     	
     	// feature posL-1 posL posR posR+1
     	code = createArcCodePPPP(HPp_HP_MP_MPn, pHeadLeft, pHead, pMod, pModRight) | tid;
