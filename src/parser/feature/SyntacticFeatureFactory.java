@@ -595,6 +595,30 @@ public class SyntacticFeatureFactory implements Serializable {
 		addLabeledArcFeature(code, fv);
 		addLabeledArcFeature(code | attDist, fv);
 		
+		code = createArcCodePP(HPp_HP, pHeadLeftA, pHeadA) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(HP_HPn, pHeadA, pHeadRightA) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePPP(HPp_HP_HPn, pHeadLeftA, pHeadA, pHeadRightA) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(MPp_MP, pModLeftA, pModA) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePP(MP_MPn, pModA, pModRightA) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
+		code = createArcCodePPP(MPp_MP_MPn, pModLeftA, pModA, pModRightA) | tid;
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
+		
     	
     	// feature posL-1 posL posR posR+1
     	code = createArcCodePPPP(HPp_HP_MP_MPn, pHeadLeft, pHead, pMod, pModRight) | tid;
@@ -1381,7 +1405,49 @@ public class SyntacticFeatureFactory implements Serializable {
     		int plabel = (int) extractPLabelCode(code);
     		
     		long head = -1, mod = -1, gp = -1;
-
+    		
+    		//code = createArcCodePP(HPp_HP, pHeadLeft, pHead) | tid;
+    		if (temp == HPp_HP.ordinal()) {
+    			extractArcCodePP(code, x);
+    			head = createWordCodePP(WORDFV_PpP0, x[0], x[1]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+    		
+    		//code = createArcCodePP(HP_HPn, pHead, pHeadRight) | tid;
+    		if (temp == HP_HPn.ordinal()) {
+    			extractArcCodePP(code, x);
+    			head = createWordCodePP(WORDFV_P0Pn, x[0], x[1]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+    		
+    		//code = createArcCodePPP(HPp_HP_HPn, pHeadLeft, pHead, pHeadRight) | tid;
+    		if (temp == HPp_HP_HPn.ordinal()) {
+    			extractArcCodePPP(code, x);
+    			head = createWordCodePPP(WORDFV_PpP0Pn, x[0], x[1], x[2]);
+    			mod = createWordCodeP(WORDFV_BIAS, 0);
+    		}
+    		
+    		//code = createArcCodePP(MPp_MP, pModLeft, pMod) | tid;
+    		if (temp == MPp_MP.ordinal()) {
+    			extractArcCodePP(code, x);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodePP(WORDFV_PpP0, x[0], x[1]);
+    		}
+    		
+    		//code = createArcCodePP(MP_MPn, pMod, pModRight) | tid;
+    		if (temp == MP_MPn.ordinal()) {
+    			extractArcCodePP(code, x);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodePP(WORDFV_P0Pn, x[0], x[1]);
+    		}
+    		
+    		//code = createArcCodePPP(MPp_MP_MPn, pModLeft, pMod, pModRight) | tid;
+    		if (temp == MPp_MP_MPn.ordinal()) {
+    			extractArcCodePPP(code, x);
+    			head = createWordCodeP(WORDFV_BIAS, 0);
+    			mod = createWordCodePPP(WORDFV_PpP0Pn, x[0], x[1], x[2]);
+    		}
+    		
         	//code = createArcCodePPPP(CORE_POS_PT0, pHeadLeft, pHead, pMod, pModRight);
     		if (temp == HPp_HP_MP_MPn.ordinal()) {
     			extractArcCodePPPP(code, x);
