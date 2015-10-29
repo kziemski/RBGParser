@@ -40,12 +40,12 @@ public class FeatureTemplate {
 	    HPp_MP_MPn,			//CORE_POS_PT3,
 	    HPp_HP_MPn,			//CORE_POS_PT4,
 	    
-	    HPp_HP,
-	    HP_HPn,
-	    HPp_HP_HPn,
-	    MPp_MP,
-	    MP_MPn,
-	    MPp_MP_MPn,
+//	    HPp_HP,
+//	    HP_HPn,
+//	    HPp_HP_HPn,
+//	    MPp_MP,
+//	    MP_MPn,
+//	    MPp_MP_MPn,
     
 	    // posL posL+1 posR-1 posR
 	    HP_HPn_MPp_MP,		//CORE_POS_APT0,
