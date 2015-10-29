@@ -147,7 +147,7 @@ public class LocalFeatureData {
 			int gp = heads[head];
 			int pdir = gp > head ? 1 : 2;
 			for (int p = lab0; p < ntypes; ++p) {
-				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
+				if (pipe.pruneLabel[inst.cpostagids[head]][inst.cpostagids[mod]][p]) {
 					deplbids[mod] = p;
 					float s1 = 0;
 					if (gammaL > 0)
@@ -157,7 +157,7 @@ public class LocalFeatureData {
 					for (int q = lab0; q < ntypes; ++q) {
 						float s2 = 0;
 						if (options.useGP && gp != -1) {
-							if (pipe.pruneLabel[inst.postagids[gp]][inst.postagids[head]][q]) {
+							if (pipe.pruneLabel[inst.cpostagids[gp]][inst.cpostagids[head]][q]) {
 								deplbids[head] = q;
 								if (gammaL > 0)
 									s2 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 2);
@@ -210,7 +210,7 @@ public class LocalFeatureData {
 		int bestp = 0;
 		float best = Float.NEGATIVE_INFINITY;
 		for (int p = lab0; p < ntypes; ++p) {
-			if (pipe.pruneLabel[inst.postagids[k]][inst.postagids[i]][p]) {
+			if (pipe.pruneLabel[inst.cpostagids[k]][inst.cpostagids[i]][p]) {
 				types[i] = p;
 				float s = 0;
 				if (gammaL > 0)
@@ -246,7 +246,7 @@ public class LocalFeatureData {
 		for (int mod = 1; mod < len; ++mod) {
 			int head = heads[mod];
 			for (int p = lab0; p < ntypes; ++p) {
-				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
+				if (pipe.pruneLabel[inst.cpostagids[head]][inst.cpostagids[mod]][p]) {
 					total++;
 				}
 			}
