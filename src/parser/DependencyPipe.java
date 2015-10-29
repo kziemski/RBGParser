@@ -486,7 +486,7 @@ public class DependencyPipe implements Serializable {
 		pruneLabel = new boolean [numPOS][numPOS][numLab];
 		int num = 0;
 		
-		if (numLab > 20) {
+//		if (numLab > 20) {
 			for (int i = 0; i < lstTrain.length; i++) {
 				DependencyInstance inst = lstTrain[i];
 				int n = inst.length;
@@ -499,13 +499,13 @@ public class DependencyPipe implements Serializable {
 					}
 				}
 			}
-		}
-		else {
-			for (int i = 0; i < numPOS; i++)
-				for (int j = 0; j < numPOS; j++)
-						Arrays.fill(pruneLabel[i][j], true);
-			num = numPOS*numPOS*numLab;
-		}
+//		}
+//		else {
+//			for (int i = 0; i < numPOS; i++)
+//				for (int j = 0; j < numPOS; j++)
+//						Arrays.fill(pruneLabel[i][j], true);
+//			num = numPOS*numPOS*numLab;
+//		}
 		
 		System.out.println("Prune label: " + num + "/" + numPOS*numPOS*numLab);
     }
