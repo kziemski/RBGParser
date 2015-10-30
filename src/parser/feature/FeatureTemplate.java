@@ -27,11 +27,18 @@ public class FeatureTemplate {
 		 * ***********************************************/
 		
 	    // posL posIn posR
-	    HP_BP_MP,			//CORE_POS_PC,	    
-	    					//CORE_POS_XPC,
-	    HP_BCC_MP,
-	    HP_BPN_MP,
-	    HP_BVB_MP,
+//	    HP_BP_MP,			//CORE_POS_PC,	    
+//	    					//CORE_POS_XPC,
+//	    HP_BCC_MP,
+//	    HP_BPN_MP,
+//	    HP_BVB_MP,
+	    
+		HPp_HP,
+	    HP_HPn,
+	    HPp_HP_HPn,
+	    MPp_MP,
+	    MP_MPn,
+	    MPp_MP_MPn,
 	    
 	    // posL-1 posL posR posR+1
 	    HPp_HP_MP_MPn,		//CORE_POS_PT0,
@@ -39,13 +46,6 @@ public class FeatureTemplate {
 	    HPp_HP_MP,			//CORE_POS_PT2,
 	    HPp_MP_MPn,			//CORE_POS_PT3,
 	    HPp_HP_MPn,			//CORE_POS_PT4,
-	    
-//	    HPp_HP,
-//	    HP_HPn,
-//	    HPp_HP_HPn,
-//	    MPp_MP,
-//	    MP_MPn,
-//	    MPp_MP_MPn,
     
 	    // posL posL+1 posR-1 posR
 	    HP_HPn_MPp_MP,		//CORE_POS_APT0,
