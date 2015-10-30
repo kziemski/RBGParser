@@ -204,26 +204,26 @@ public class SyntacticFeatureFactory implements Serializable {
 //		code = createWordCodeWP(WORDFV_W0Pn, w0, pn);
 //		addWordFeature(code, fv);
 		
-		code = createWordCodeWP(WORDFV_WpPp, wp, pp);
-		addWordFeature(code, fv);
-		
-		code = createWordCodeWP(WORDFV_WnPn, wn, pn);
-		addWordFeature(code, fv);
+//		code = createWordCodeWP(WORDFV_WpPp, wp, pp);
+//		addWordFeature(code, fv);
+//		
+//		code = createWordCodeWP(WORDFV_WnPn, wn, pn);
+//		addWordFeature(code, fv);
 		
 		code = createWordCodeWP(WORDFV_W0P0, w0, c0);
 		addWordFeature(code, fv);
 		
-		code = createWordCodeWP(WORDFV_W0Pp, w0, cp);
-		addWordFeature(code, fv);
+//		code = createWordCodeWP(WORDFV_W0Pp, w0, cp);
+//		addWordFeature(code, fv);
+//		
+//		code = createWordCodeWP(WORDFV_W0Pn, w0, cn);
+//		addWordFeature(code, fv);
 		
-		code = createWordCodeWP(WORDFV_W0Pn, w0, cn);
-		addWordFeature(code, fv);
-		
-		code = createWordCodeWP(WORDFV_WpPp, wp, cp);
-		addWordFeature(code, fv);
-		
-		code = createWordCodeWP(WORDFV_WnPn, wn, cn);
-		addWordFeature(code, fv);
+//		code = createWordCodeWP(WORDFV_WpPp, wp, cp);
+//		addWordFeature(code, fv);
+//		
+//		code = createWordCodeWP(WORDFV_WnPn, wn, cn);
+//		addWordFeature(code, fv);
 		
 		if (l0 != 0) {
 			code = createWordCodeWP(WORDFV_W0P0, l0, p0);
@@ -235,11 +235,11 @@ public class SyntacticFeatureFactory implements Serializable {
 //			code = createWordCodeWP(WORDFV_W0Pn, l0, pn);
 //			addWordFeature(code, fv);
 			
-			code = createWordCodeWP(WORDFV_WpPp, lp, pp);
-			addWordFeature(code, fv);
-			
-			code = createWordCodeWP(WORDFV_WnPn, ln, pn);
-			addWordFeature(code, fv);
+//			code = createWordCodeWP(WORDFV_WpPp, lp, pp);
+//			addWordFeature(code, fv);
+//			
+//			code = createWordCodeWP(WORDFV_WnPn, ln, pn);
+//			addWordFeature(code, fv);
 			
 			code = createWordCodeWP(WORDFV_W0P0, l0, c0);
 			addWordFeature(code, fv);
