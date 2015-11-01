@@ -43,6 +43,8 @@ public class Conll09Reader extends DependencyReader {
 	    lemmas[0] = "<root-LEMMA>";
 	    pos[0] = "<root-POS>";
 	    cpos[0] = coarseMap.get(pos[0]);
+	    if (cpos[0] == null)
+	    	cpos[0] = pos[0];
 	    deprels[0] = "<no-type>";
 	    heads[0] = -1;
 	    for (int i = 0; i < predIndex.length; ++i) {
@@ -83,7 +85,9 @@ public class Conll09Reader extends DependencyReader {
 	    	} //else lemmas[i] = forms[i];
 	    	
 	    	pos[i] = parts[5];
-	    	cpos[i] = coarseMap.get(pos[i]);	
+	    	cpos[i] = coarseMap.get(pos[i]);
+	    	if (cpos[i] == null)
+		    	cpos[i] = pos[i];
 	    	
 	    	if (!parts[7].equals("_")) feats[i] = parts[7].split("\\|");
 	    	heads[i] = Integer.parseInt(parts[8]);

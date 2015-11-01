@@ -69,6 +69,7 @@ public class DependencyPipe implements Serializable {
 	
 	// headPOS x modPOS x Label
 	public boolean[][][] pruneLabel;
+	int numCPOS;
 	
 	public DependencyPipe(Options options) throws IOException 
 	{
@@ -330,7 +331,7 @@ public class DependencyPipe implements Serializable {
 		System.out.printf("Num of labels: %d%n", types.length);
 		System.out.printf("Num of Syntactic Features: %d %d%n", 
 				synFactory.numWordFeats, synFactory.numLabeledArcFeats);
-		
+		numCPOS = cposTagSet.size();
 //	    if (wordVectors != null)
 //	    	System.out.printf("WV unseen rate: %f%n", 
 //	    			(wvMiss + 1e-8)/(wvMiss + wvHit + 1e-8));
@@ -507,7 +508,7 @@ public class DependencyPipe implements Serializable {
 //			num = numPOS*numPOS*numLab;
 //		}
 		
-		System.out.println("Prune label: " + num + "/" + numPOS*numPOS*numLab);
+		System.out.println("Prune label: " + num + "/" + numCPOS*numCPOS*numLab);
     }
     
 	
