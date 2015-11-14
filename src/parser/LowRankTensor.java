@@ -18,37 +18,37 @@ public class LowRankTensor {
 		list = new ArrayList<MatEntry>();
 	}
 	
-	public void add(int[] x, double val)
+	public void add(int[] x, float val)
 	{
 		list.add(new MatEntry(x, val));
 	}
 	
-	public void decompose(ArrayList<double[][]> param)
+	public void decompose(ArrayList<float[][]> param)
 	{	
 		int MAXITER=1000;
-		double eps = 1e-6;
+		float eps = 1e-6f;
 		for (int i = 0; i < rank; ++i) {
-			ArrayList<double[]> a = new ArrayList<double[]>();
+			ArrayList<float[]> a = new ArrayList<float[]>();
 			for (int k = 0; k < dim; ++k) {
 				a.add(Utils.getRandomUnitVector(N[k]));
 			}
 			
 			int iter = 0;
-			double norm = 0.0, lastnorm = Double.POSITIVE_INFINITY;
+			float norm = 0.0f, lastnorm = Float.POSITIVE_INFINITY;
 			for (iter = 0; iter < MAXITER; ++iter) {
 				for (int k = 0; k < dim; ++k) {
-					double[] b = a.get(k);
+					float[] b = a.get(k);
 					for (int j = 0; j < N[k]; ++j)
 						b[j] = 0;
 					for (MatEntry e : list) {
-						double s = e.val;
+						float s = e.val;
 						for (int l = 0; l < dim; ++l)
 							if (l != k)
 								s *= a.get(l)[e.x[l]];
 						b[e.x[k]] += s;
 					}
 					for (int j = 0; j < i; ++j) {
-						double dot = 1;
+						float dot = 1;
 						for (int l = 0; l < dim; ++l)
 							if (l != k)
 								dot *= Utils.dot(a.get(l), param.get(l)[j]);
@@ -57,9 +57,9 @@ public class LowRankTensor {
 					}
 					if (k < dim-1)
 						Utils.normalize(b);
-					else norm = Math.sqrt(Utils.squaredSum(b));
+					else norm = (float)Math.sqrt(Utils.squaredSum(b));
 				}
-				if (lastnorm != Double.POSITIVE_INFINITY && Math.abs(norm-lastnorm) < eps)
+				if (lastnorm != Float.POSITIVE_INFINITY && Math.abs(norm-lastnorm) < eps)
 					break;
 				lastnorm = norm;
 			}
@@ -81,9 +81,9 @@ public class LowRankTensor {
 class MatEntry
 {
 	public int[] x;
-	public double val;
+	public float val;
 	
-	public MatEntry(int[] _x, double _val)
+	public MatEntry(int[] _x, float _val)
 	{
 		x = _x.clone();
 		val = _val;

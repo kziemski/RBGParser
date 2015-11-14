@@ -37,10 +37,10 @@ public class DependencyParser implements Serializable {
 	
 	DependencyParser pruner;
 	
-	double pruningGoldHits = 0;
-	double pruningTotGold = 1e-30;
-	double pruningTotUparcs = 0;
-	double pruningTotArcs = 1e-30;
+	float pruningGoldHits = 0;
+	float pruningTotGold = 1e-30f;
+	float pruningTotUparcs = 0;
+	float pruningTotArcs = 1e-30f;
 	
 	public static void main(String[] args) 
 		throws IOException, ClassNotFoundException, CloneNotSupportedException
@@ -59,8 +59,8 @@ public class DependencyParser implements Serializable {
 			prunerOptions.pruning = false;
 			prunerOptions.test = false;
 			prunerOptions.learnLabel = false;
-			prunerOptions.gamma = 1.0;
-			prunerOptions.gammaLabel = 1.0;
+			prunerOptions.gamma = 1.0f;
+			prunerOptions.gammaLabel = 1.0f;
 			prunerOptions.R = 0;
 			prunerOptions.bits = options.bits - 2;
 			
@@ -131,13 +131,13 @@ public class DependencyParser implements Serializable {
 	{
 		if (options.numTestConverge < 10) return;
 		System.out.println(" Tuning hill-climbing converge number on eval set...");
-		double maxUAS = evaluateWithConvergeNum(options.numTrainConverge);
+		float maxUAS = evaluateWithConvergeNum(options.numTrainConverge);
 		System.out.printf("\tconverge=%d\tUAS=%f%n", options.numTrainConverge, maxUAS);
 		int max = options.numTrainConverge / 5;
 		int min = 2;
 		while (min < max) {
 			int mid = (min+max)/2;
-			double uas = evaluateWithConvergeNum(mid*5);
+			float uas = evaluateWithConvergeNum(mid*5);
 			System.out.printf("\tconverge=%d\tUAS=%f%n", mid*5, uas);
 			if (uas + 0.001 < maxUAS)
 				min = mid+1;
@@ -183,7 +183,7 @@ public class DependencyParser implements Serializable {
 				pruningTotUparcs / pruningTotArcs);
 	}
 	
-	public double pruningRecall()
+	public float pruningRecall()
 	{
 		return pruningGoldHits / pruningTotGold;
 	}
@@ -191,9 +191,9 @@ public class DependencyParser implements Serializable {
 	public void resetPruningStats()
 	{
 		pruningGoldHits = 0;
-		pruningTotGold = 1e-30;
+		pruningTotGold = 1e-30f;
 		pruningTotUparcs = 0;
-		pruningTotArcs = 1e-30;
+		pruningTotArcs = 1e-30f;
 	}
 	
     public void train(DependencyInstance[] lstTrain) 
@@ -216,13 +216,13 @@ public class DependencyParser implements Serializable {
         	options.useHO = false;
         	options.R = 0;
         	options.R2 = 0;
-        	options.gamma = 1.0;
-        	options.gammaLabel = 1.0;
+        	options.gamma = 1.0f;
+        	options.gammaLabel = 1.0f;
         	options.maxNumIters = options.numPretrainIters;
         	parameters.rank = 0;
         	parameters.rank2 = 0;
-        	parameters.gamma = 1.0;
-        	parameters.gammaL = 1.0;
+        	parameters.gamma = 1.0f;
+        	parameters.gammaL = 1.0f;
         	
     		System.out.println("=============================================");
     		System.out.printf(" Pre-training:%n");
@@ -248,10 +248,10 @@ public class DependencyParser implements Serializable {
         	LowRankTensor tensor2 = new LowRankTensor(new int[] {n, n, n, d2, d2}, options.R2);
         	pipe.synFactory.fillParameters(tensor, tensor2, parameters);
         	
-        	ArrayList<double[][]> param = new ArrayList<double[][]>();
+        	ArrayList<float[][]> param = new ArrayList<float[][]>();
         	param.add(parameters.U);
         	param.add(parameters.V);
-        	double[][] W = new double[options.R][d];
+        	float[][] W = new float[options.R][d];
         	param.add(W);
         	tensor.decompose(param);
         	for (int i = 0; i < options.R; ++i) {
@@ -262,13 +262,13 @@ public class DependencyParser implements Serializable {
     		}
         	
         	if (options.useGP) {
-        		ArrayList<double[][]> param2 = new ArrayList<double[][]>();
+        		ArrayList<float[][]> param2 = new ArrayList<float[][]>();
         		param2.add(parameters.U2);
         		param2.add(parameters.V2);
         		param2.add(parameters.W2);
-        		double[][] X2 = new double[options.R2][d2];
+        		float[][] X2 = new float[options.R2][d2];
             	param2.add(X2);
-            	double[][] Y2 = new double[options.R2][d2];
+            	float[][] Y2 = new float[options.R2][d2];
             	param2.add(Y2);
             	tensor2.decompose(param2);
             	for (int i = 0; i < options.R2; ++i) {
@@ -332,7 +332,7 @@ public class DependencyParser implements Serializable {
             int offset = (N % 3 == 0) ? iIter : 0;
 
     		long start = 0;
-    		double loss = 0;
+    		float loss = 0;
     		int uas = 0, las = 0, tot = 0;
     		start = System.currentTimeMillis();	
     		
@@ -396,7 +396,7 @@ public class DependencyParser implements Serializable {
                 	parameters.averageParameters((iIter+1)*N, 1);
                 int cnvg = options.numTestConverge;
                 options.numTestConverge = options.numTrainConverge;
-	  			double res = evaluateSet(false, false);
+	  			float res = evaluateSet(false, false);
                 options.numTestConverge = cnvg;
                 System.out.println();
 	  			System.out.println("_____________________________________________");
@@ -461,7 +461,7 @@ public class DependencyParser implements Serializable {
     	return nCorrect;
     }
     
-    public double evaluateSet(boolean output, boolean evalWithPunc)
+    public float evaluateSet(boolean output, boolean evalWithPunc)
     		throws IOException {
     	
     	if (pruner != null) pruner.resetPruningStats();
@@ -530,7 +530,7 @@ public class DependencyParser implements Serializable {
         return eval.UAS();
     }
     
-    public double evaluateWithConvergeNum(int converge) throws IOException, CloneNotSupportedException 
+    public float evaluateWithConvergeNum(int converge) throws IOException, CloneNotSupportedException 
     {
     	
     	if (pruner != null) pruner.resetPruningStats();

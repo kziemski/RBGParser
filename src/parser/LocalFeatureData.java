@@ -13,7 +13,7 @@ import utils.Utils;
 
 public class LocalFeatureData {
 	
-	static double NULL = Double.NEGATIVE_INFINITY;
+	static float NULL = Float.NEGATIVE_INFINITY;
 	
 	DependencyInstance inst;
 	DependencyPipe pipe;
@@ -29,7 +29,7 @@ public class LocalFeatureData {
 	final int ntypes;				// number of label types
 	final int size, sizeL;						
 	final int rank, rank2;								
-	final double gamma, gammaL;
+	final float gamma, gammaL;
 	
 	int numarcs;					// number of un-pruned arcs and gold arcs (if indexGoldArcs == true)
 	int[] arc2id;					// map (h->m) arc to an id in [0, numarcs-1]
@@ -38,23 +38,23 @@ public class LocalFeatureData {
 	int numedges;						// number of un-pruned arcs
 	
 	FeatureVector[] wordFvs;		// word feature vectors
-	double[][] wpU, wpV;			// word projections U\phi and V\phi
-	double[][] wpU2, wpV2, wpW2;	// word projections U2\phi, V2\phi and W2\phi
+	float[][] wpU, wpV;			// word projections U\phi and V\phi
+	float[][] wpU2, wpV2, wpW2;	// word projections U2\phi, V2\phi and W2\phi
 	
 	FeatureVector[] arcFvs;			// 1st order arc feature vectors
-	double[] arcScores;				// 1st order arc scores (including tensor)
+	float[] arcScores;				// 1st order arc scores (including tensor)
 	
-	double[][] f;
-	double[][][] labScores;
+	float[][] f;
+	float[][][] labScores;
 	
-	double[] trips;			// [dep id][sib]
-	double[] sib;			// [mod][sib]
-	double[] gpc;			// [dep id][child]
-	double[] headbi;		// [dep id][head2]
-	double[] gpsib;			// grandparent-parent-child-sibling, gp-p is mapped to id [dep id][sib][mod]
-	double[] trisib;		// parent-sibling-child-sibling [dep id][in sib][out sib]
-	double[] ggpc;			// [dep id (ggp, gp)][dep id (p, mod)]
-	double[] psc;			// parent-sib-mod-child, [dep id (p, sib)][dep id (mod, child)]
+	float[] trips;			// [dep id][sib]
+	float[] sib;			// [mod][sib]
+	float[] gpc;			// [dep id][child]
+	float[] headbi;		// [dep id][head2]
+	float[] gpsib;			// grandparent-parent-child-sibling, gp-p is mapped to id [dep id][sib][mod]
+	float[] trisib;		// parent-sibling-child-sibling [dep id][in sib][out sib]
+	float[] ggpc;			// [dep id (ggp, gp)][dep id (p, mod)]
+	float[] psc;			// parent-sib-mod-child, [dep id (p, sib)][dep id (mod, child)]
 	
 	public long wordFVTime;
 	
@@ -83,19 +83,19 @@ public class LocalFeatureData {
 		gammaL = options.gammaLabel;
 		
 		wordFvs = new FeatureVector[len];
-		wpU = new double[len][rank];
-		wpV = new double[len][rank];
+		wpU = new float[len][rank];
+		wpV = new float[len][rank];
 		if (options.useGP) {
-			wpU2 = new double[len][rank2];
-			wpV2 = new double[len][rank2];
-			wpW2 = new double[len][rank2];
+			wpU2 = new float[len][rank2];
+			wpV2 = new float[len][rank2];
+			wpW2 = new float[len][rank2];
 		}
 		
 		if (isTrain) arcFvs = new FeatureVector[len*len];
-		arcScores = new double[len*len];
+		arcScores = new float[len*len];
 		
-		f = new double[len][ntypes];
-		labScores = new double[len][ntypes][ntypes];
+		f = new float[len][ntypes];
+		labScores = new float[len][ntypes][ntypes];
 		
 		initWordFV();
 		if (options.learningMode != LearningMode.Basic) {
@@ -172,54 +172,54 @@ public class LocalFeatureData {
 		if (options.useCS) {
 			// 2nd order (head, mod, mod_sib) features
 			//trips = new FeatureDataItem[nuparcs*len];
-			trips = new double[numarcs*len];
+			trips = new float[numarcs*len];
 			Arrays.fill(trips, NULL);
 			
 			// 2nd order (mod, mod_sib) features
 			//sib = new FeatureDataItem[len*len];
-			sib = new double[len*len];
+			sib = new float[len*len];
 			Arrays.fill(sib, NULL);
 		}
 		
 		if (options.useGP) {
 			// 2nd order (head, mod, child) features
 			//gpc = new FeatureDataItem[nuparcs*len];
-			gpc = new double[numarcs*len];
+			gpc = new float[numarcs*len];
 			Arrays.fill(gpc, NULL);
 		}
 		
 		if (options.useHB) {
 			// 2nd order (head, mod, head2) features
 			//headbi = new FeatureDataItem[nuparcs*len];
-			headbi = new double[numarcs*len];
+			headbi = new float[numarcs*len];
 			Arrays.fill(headbi, NULL);
 		}
 		
 		if (options.useGS) {
 			// 3rd order (grand, head, sib, mod) features
 			//gpsib = new FeatureDataItem[nuparcs*len*len];
-			gpsib = new double[numarcs*len*len];
+			gpsib = new float[numarcs*len*len];
 			Arrays.fill(gpsib, NULL);
 		}
 		
 		if (options.useTS) {
 			// 3rd order (head, sib1, mod, sib2) features
 			//trisib = new FeatureDataItem[nuparcs*len*len];
-			trisib = new double[numarcs*len*len];
+			trisib = new float[numarcs*len*len];
 			Arrays.fill(trisib, NULL);
 		}
 		
 		if (options.useGGP) {
 			// 3rd order (great-grand, grand, head, mod) features
 			//ggpc = new FeatureDataItem[nuparcs*nuparcs];
-			ggpc = new double[numarcs*numarcs];
+			ggpc = new float[numarcs*numarcs];
 			Arrays.fill(ggpc, NULL);
 		}
 
 		if (options.usePSC) {
 			// 3rd order (head, mod, sib, child) features
 			//psc = new FeatureDataItem[nuparcs*nuparcs];
-			psc = new double[numarcs*numarcs];
+			psc = new float[numarcs*numarcs];
 			Arrays.fill(psc, NULL);
 		}
 	}
@@ -256,7 +256,7 @@ public class LocalFeatureData {
 			pruner.pruningTotArcs += (len-1)*(len-1);
 			
 			// Use the threshold to prune arcs. 
-			double threshold = Math.log(options.pruningCoeff);
+			float threshold = (float)Math.log(options.pruningCoeff);
 			LocalFeatureData lfd2 = new LocalFeatureData(inst, pruner, false, false);
 			GlobalFeatureData gfd2 = null;
 			DependencyInstance pred = prunerDecoder.decode(inst, lfd2, gfd2, false);
@@ -266,16 +266,16 @@ public class LocalFeatureData {
 			st[0] = 0;
 			for (int m = 1; m < len; ++m) {
 				st[m] = numedges;
-				double maxv = Double.NEGATIVE_INFINITY;
+				float maxv = Float.NEGATIVE_INFINITY;
 				for (int h = 0; h < len; ++h)
 					if (h != m) {
-						double v = lfd2.getArcScore(h, m);
+						float v = lfd2.getArcScore(h, m);
 						maxv = Math.max(maxv, v);;
 					}
 
 				for (int h = 0; h < len; ++h)
 					if (h != m) {
-						double v = lfd2.getArcScore(h, m);
+						float v = lfd2.getArcScore(h, m);
 						boolean keep = (v >= maxv + threshold || h == pred.heads[m]);
 						if ((includeGoldArcs && h == inst.heads[m]) || keep) {
 							isPruned[m*len+h] = !keep;
@@ -321,17 +321,17 @@ public class LocalFeatureData {
 		return isPruned[m*len+h];
 	}
 	
-	public double getArcScore(int h, int m)
+	public float getArcScore(int h, int m)
 	{
 		return arcScores[h*len+m];
 	}
 
-    //public double getArcNoTensorScore(int h, int m)
+    //public float getArcNoTensorScore(int h, int m)
     //{
     //    return arcNtScores[h*len+m];
     //}
 	
-	private final double getTripsScore(int h, int m, int s) 
+	private final float getTripsScore(int h, int m, int s) 
 	{
 		int id = arc2id[m*len+h];
 		
@@ -348,7 +348,7 @@ public class LocalFeatureData {
 		return trips[pos];
 	}
 	
-	private final double getSibScore(int m, int s)
+	private final float getSibScore(int m, int s)
 	{
 		int pos = m*len+s;
 		if (sib[pos] == NULL) {
@@ -362,7 +362,7 @@ public class LocalFeatureData {
 	}
 	
 	
-	private final double getGPCScore(int gp, int h, int m) {
+	private final float getGPCScore(int gp, int h, int m) {
 		int id = arc2id[h*len+gp];
 		
 		Utils.Assert(id >= 0 && arc2id[m*len+h] >= 0);
@@ -380,7 +380,7 @@ public class LocalFeatureData {
 		return gpc[pos];
 	}
 	
-	private final double getHeadBiScore(int h, int m, int h2) {
+	private final float getHeadBiScore(int h, int m, int h2) {
 		int id = arc2id[m*len+h];
 		
 		Utils.Assert(id >= 0 && m + 1 < len 
@@ -397,7 +397,7 @@ public class LocalFeatureData {
 		return headbi[pos];
 	}
 	
-	private final double getGPSibScore(int gp, int h, int m, int s) {
+	private final float getGPSibScore(int gp, int h, int m, int s) {
 		// m < s
 		int id = arc2id[h*len+gp];
 		
@@ -414,7 +414,7 @@ public class LocalFeatureData {
 		return gpsib[pos];
 	}
 	
-	private final double getTriSibScore(int h, int s1, int m, int s2) {
+	private final float getTriSibScore(int h, int s1, int m, int s2) {
 		// s1 < m < s2
 		int id = arc2id[m*len+h];
 		
@@ -431,7 +431,7 @@ public class LocalFeatureData {
 		return trisib[pos];
 	}
 	
-	private final double getGGPCScore(int ggp, int gp, int h, int m) {
+	private final float getGGPCScore(int ggp, int gp, int h, int m) {
 		int id1 = arc2id[gp * len + ggp];
 		int id2 = arc2id[m * len + h];
 		
@@ -448,7 +448,7 @@ public class LocalFeatureData {
 		return ggpc[pos];
 	}
 	
-	private final double getPSCScore(int h, int m, int c, int sib) {
+	private final float getPSCScore(int h, int m, int c, int sib) {
 		int id1 = arc2id[sib * len + h];
 		int id2 = arc2id[c * len + m];
 		
@@ -465,10 +465,10 @@ public class LocalFeatureData {
 		return psc[pos];
 	}
 	
-	public double getPartialScore2(int[] heads, int x, DependencyArcList arcLis)
+	public float getPartialScore2(int[] heads, int x, DependencyArcList arcLis)
 	{
 		// 1st order arc
-		double score = arcScores[heads[x]*len+x];
+		float score = arcScores[heads[x]*len+x];
 		
 		if (options.learningMode != LearningMode.Basic) {
 			
@@ -604,10 +604,10 @@ public class LocalFeatureData {
 		return score;
 	}
 	
-	public double getPartialScore(int[] heads, int x, DependencyArcList arcLis)
+	public float getPartialScore(int[] heads, int x, DependencyArcList arcLis)
 	{
 		// 1st order arc
-		double score = arcScores[heads[x]*len+x];
+		float score = arcScores[heads[x]*len+x];
 		
 		if (options.learningMode != LearningMode.Basic) {
 			
@@ -718,9 +718,9 @@ public class LocalFeatureData {
 		return score;
 	}
 	
-	public double getScore(DependencyInstance now, DependencyArcList arcLis)
+	public float getScore(DependencyInstance now, DependencyArcList arcLis)
 	{
-		double score = 0;		
+		float score = 0;		
 		int[] heads = now.heads;
 		
 		// 1st order arc
@@ -1036,7 +1036,7 @@ public class LocalFeatureData {
 //    	//TODO: handle high order features
 		
 		FeatureVector dfv = getFeatureVector(gold);
-		dfv.addEntries(getFeatureVector(pred), -1.0);
+		dfv.addEntries(getFeatureVector(pred), -1.0f);
     	
     	return dfv;
 	}
@@ -1048,7 +1048,7 @@ public class LocalFeatureData {
 		return fv;
 	}
 	
-	private double getLabelScoreTheta(int[] heads, int[] types, int mod, int order)
+	private float getLabelScoreTheta(int[] heads, int[] types, int mod, int order)
 	{
 		ScoreCollector col = new ScoreCollector(parameters, true);
 		synFactory.createLabelFeatures(col, inst, heads, types, mod, order);
@@ -1064,9 +1064,9 @@ public class LocalFeatureData {
 			int j = arcLis.get(l);
 			treeDP(j, arcLis, lab0);
 			for (int p = lab0; p < ntypes; ++p) {
-				double best = Double.NEGATIVE_INFINITY;
+				float best = Float.NEGATIVE_INFINITY;
 				for (int q = lab0; q < ntypes; ++q) {
-					double s = f[j][q] + labScores[j][q][p];
+					float s = f[j][q] + labScores[j][q][p];
 					if (s > best)
 						best = s;
 				}
@@ -1083,9 +1083,9 @@ public class LocalFeatureData {
 		for (int l = st; l < ed ; ++l) {
 			int j = arcLis.get(l);
 			int bestq = 0;
-			double best = Double.NEGATIVE_INFINITY;
+			float best = Float.NEGATIVE_INFINITY;
 			for (int q = lab0; q < ntypes; ++q) {
-				double s = f[j][q] + labScores[j][q][p];
+				float s = f[j][q] + labScores[j][q][p];
 				if (s > best) {
 					best = s;
 					bestq = q;
@@ -1109,13 +1109,13 @@ public class LocalFeatureData {
 			for (int p = lab0; p < ntypes; ++p) {
 				if (pipe.pruneLabel[inst.postagids[head]][inst.postagids[mod]][p]) {
 					deplbids[mod] = p;
-					double s1 = 0;
+					float s1 = 0;
 					if (gammaL > 0)
 						s1 += gammaL * getLabelScoreTheta(heads, deplbids, mod, 1);
 					if (gammaL < 1)
 						s1 += (1-gammaL) * parameters.dotProductL(wpU[head], wpV[mod], p, dir);
 					for (int q = lab0; q < ntypes; ++q) {
-						double s2 = 0;
+						float s2 = 0;
 						if (options.useGP && gp != -1) {
 							if (pipe.pruneLabel[inst.postagids[gp]][inst.postagids[head]][q]) {
 								deplbids[head] = q;
@@ -1124,12 +1124,12 @@ public class LocalFeatureData {
 								if (gammaL < 1)
 									s2 += (1-gammaL) * parameters.dotProduct2L(wpU2[gp], wpV2[head], wpW2[mod], q, p, pdir, dir);
 							}
-							else s2 = Double.NEGATIVE_INFINITY;
+							else s2 = Float.NEGATIVE_INFINITY;
 						}
-						labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0 : 0.0);
+						labScores[mod][p][q] = s1 + s2 + (addLoss && inst.deplbids[mod] != p ? 1.0f : 0.0f);
 					}
 				}
-				else Arrays.fill(labScores[mod][p], Double.NEGATIVE_INFINITY);
+				else Arrays.fill(labScores[mod][p], Float.NEGATIVE_INFINITY);
 			}
 		}
 		
@@ -1139,7 +1139,7 @@ public class LocalFeatureData {
 		getType(0, arcLis, deplbids, lab0);
 		
 		
-//		double s = 0;
+//		float s = 0;
 //		for (int i = 1; i < len; ++i) {
 //			int h = heads[i];
 //			s += labScores[i][deplbids[i]][deplbids[h]];
@@ -1167,11 +1167,11 @@ public class LocalFeatureData {
     		int head = actDeps[mod];
     		if (actLabs[mod] != predLabs[mod]) {
     			dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod, 1));
-        		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 1), -1.0);
+        		dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 1), -1.0f);
     		}
     		if (actLabs[mod] != predLabs[mod] || actLabs[head] != predLabs[head]) {
     			dlfv.addEntries(getLabelFeature(actDeps, actLabs, mod, 2));
-    			dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 2), -1.0);
+    			dlfv.addEntries(getLabelFeature(predDeps, predLabs, mod, 2), -1.0f);
     		}
     	}
 		
@@ -1182,9 +1182,9 @@ public class LocalFeatureData {
 
 //class FeatureDataItem {
 //	final FeatureVector fv;
-//	final double score;
+//	final float score;
 //	
-//	public FeatureDataItem(FeatureVector fv, double score)
+//	public FeatureDataItem(FeatureVector fv, float score)
 //	{
 //		this.fv = fv;
 //		this.score = score;

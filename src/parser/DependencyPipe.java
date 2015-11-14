@@ -57,8 +57,8 @@ public class DependencyPipe implements Serializable {
     public SyntacticFeatureFactory synFactory;
         
 	public static String unknowWord = "*UNKNOWN*";	
-	public double[][] wordVectors = null;
-	public double[] unknownWv = null;
+	public float[][] wordVectors = null;
+	public float[] unknownWv = null;
 		
     public String[] types;					// array that maps label index to label string
     public String[] args;
@@ -369,10 +369,10 @@ public class DependencyPipe implements Serializable {
 		
 		in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(file),"UTF8"));
-		wordVectors = new double[dictionaries.size(WORDVEC)+1][];
+		wordVectors = new float[dictionaries.size(WORDVEC)+1][];
 		int upperCases = 0;
         int cnt = 0;
-        double sumL2 = 0, minL2 = Double.POSITIVE_INFINITY, maxL2 = 0;
+        float sumL2 = 0, minL2 = Float.POSITIVE_INFINITY, maxL2 = 0;
 		line = in.readLine();
 		while (line != null) {
 			line = line.trim();
@@ -382,13 +382,13 @@ public class DependencyPipe implements Serializable {
 			upperCases += Character.isUpperCase(word.charAt(0)) ? 1 : 0;
             ++cnt;
             
-            double s = 0;
-			double [] v = new double[parts.length - 1];
+            float s = 0;
+			float [] v = new float[parts.length - 1];
 			for (int i = 0; i < v.length; ++i) {
-				v[i] = Double.parseDouble(parts[i+1]);
+				v[i] = Float.parseFloat(parts[i+1]);
                 s += v[i]*v[i];
             }
-			s = Math.sqrt(s);
+			s = (float)Math.sqrt(s);
             sumL2 += s;
             minL2 = Math.min(minL2, s);
             maxL2 = Math.max(maxL2, s);

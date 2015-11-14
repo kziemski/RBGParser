@@ -22,7 +22,7 @@ public class HillClimbingDecoder extends DependencyDecoder {
 	
 	//int[][] staticTypes;
 	
-	double bestScore;	
+	float bestScore;	
 	int unchangedRuns, totRuns;
 	volatile boolean stopped;
     
@@ -56,7 +56,7 @@ public class HillClimbingDecoder extends DependencyDecoder {
 		this.lfd = lfd;
 		this.gfd = gfd;
 		this.addLoss = addLoss;
-		bestScore = Double.NEGATIVE_INFINITY;
+		bestScore = Float.NEGATIVE_INFINITY;
 		pred = new DependencyInstance(inst);
 		pred.heads = null;
 		totRuns = 0;
@@ -186,7 +186,7 @@ public class HillClimbingDecoder extends DependencyDecoder {
 						int m = dfslis[i];
 						
 						int bestHead = heads[m];                        
-						double maxScore = calcScore(heads, m, arcLis);
+						float maxScore = calcScore(heads, m, arcLis);
 						
 						int lastHead = heads[m];
 						int hst = lfd.startIndex(m), hed = lfd.endIndex(m);
@@ -199,7 +199,7 @@ public class HillClimbingDecoder extends DependencyDecoder {
 								arcLis.update(m, lastHead, h, heads);
 								//checkUpdateCorrect(heads, arcLis);
 								lastHead = h;
-								double score = calcScore(heads, m, arcLis);
+								float score = calcScore(heads, m, arcLis);
 								if (score > maxScore) {
 									more = true;
 									bestHead = h;
@@ -225,7 +225,7 @@ public class HillClimbingDecoder extends DependencyDecoder {
 				//		deplbids[m] = staticTypes[heads[m]][m];
 				//}
 				
-				double score = calcScore(now);
+				float score = calcScore(now);
 				synchronized (pred) {
 					++totRuns;
 					if (score > bestScore) {
@@ -260,9 +260,9 @@ public class HillClimbingDecoder extends DependencyDecoder {
 			return false;
 		}
 		
-		private double calcScore(int[] heads, int m, DependencyArcList arcLis)
+		private float calcScore(int[] heads, int m, DependencyArcList arcLis)
 		{
-			double score = lfd.getPartialScore2(heads, m, arcLis)
+			float score = lfd.getPartialScore2(heads, m, arcLis)
 						 + gfd.getScore(heads, arcLis);
 //			if (options.learnLabel) {
 //				int t = staticTypes[heads[m]][m];
@@ -282,9 +282,9 @@ public class HillClimbingDecoder extends DependencyDecoder {
 			return score;
 		}
 		
-		private double calcScore(DependencyInstance now) 
+		private float calcScore(DependencyInstance now) 
 		{
-			double score = 0;
+			float score = 0;
 			int[] heads = now.heads;
 			int[] deplbids = now.deplbids;
 			for (int m = 1; m < n; ++m)

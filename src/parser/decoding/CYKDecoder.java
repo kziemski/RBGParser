@@ -19,7 +19,7 @@ public class CYKDecoder extends DependencyDecoder {
 		ParseForest pf = new ParseForest(N);
 		for (int i = 0; i < N; ++i) {
 			//pf.addItem(i, i, 0, i, -1, 0.0, null, null);
-			pf.addItem(i, i, 1, i, -1, 0.0, null, null);
+			pf.addItem(i, i, 1, i, -1, 0.0f, null, null);
 		}
 		
 		int[][] staticTypes = null;
@@ -34,8 +34,8 @@ public class CYKDecoder extends DependencyDecoder {
 				
 				int t = s + l;
 				
-				double arcST = lfd.getArcScore(s, t); // arcScores[s][t];
-				double arcTS = lfd.getArcScore(t, s); // arcScores[t][s];
+				float arcST = lfd.getArcScore(s, t); // arcScores[s][t];
+				float arcTS = lfd.getArcScore(t, s); // arcScores[t][s];
 				int typeST = 0, typeTS = 0;
 				//if (options.learnLabel) {
 				//	typeST = staticTypes[s][t];
@@ -107,7 +107,7 @@ class ParseForest {
 	}
 	
 	public void addItem(int s, int t, int comp, int r, int type, 
-			double value, ParseForestItem left, ParseForestItem right) {
+			float value, ParseForestItem left, ParseForestItem right) {
 		
 		if (chart[s][t][comp][K-1] == null || value > chart[s][t][comp][K-1].score) {
 			ParseForestItem item = new ParseForestItem(s, t, comp, r, type, value, left, right);
@@ -146,11 +146,11 @@ class ParseForest {
 class ParseForestItem {
 	
 	int s, t, comp, r, type;
-	double score;
+	float score;
 	ParseForestItem left, right;
 	
 	public ParseForestItem(int s, int t, int comp, int r, int type,
-			double value, ParseForestItem left, ParseForestItem right) {
+			float value, ParseForestItem left, ParseForestItem right) {
 		this.s = s;
 		this.t = t;
 		this.comp = comp;

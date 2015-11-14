@@ -27,7 +27,7 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
 		//if (options.learnLabel)
 		//    staticTypes = lfd.getStaticTypes();
         
-        double[][] scores = new double[M][M];
+        float[][] scores = new float[M][M];
         int[][] oldI = new int[M][M];
         int[][] oldO = new int[M][M];
         for (int i = 0; i < N; ++i)
@@ -35,7 +35,7 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
                 if (i != j) {
                     oldI[i][j] = i;
                     oldO[i][j] = j;
-                    double va = lfd.getArcScore(i,j);
+                    float va = lfd.getArcScore(i,j);
                     //if (options.learnLabel) {
                     //    int t = staticTypes[i][j];
                     //    va += lfd.getLabeledArcScore(i,j,t);
@@ -78,7 +78,7 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
         return predInst;
 	}
 	
-	public void chuLiuEdmond(int N, double[][] scores, boolean[] ok, boolean[] vis,
+	public void chuLiuEdmond(int N, float[][] scores, boolean[] ok, boolean[] vis,
             boolean[] stack, int[][] oldI, int[][] oldO, int[] final_par) {
 
         // find best graph
@@ -87,7 +87,7 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
         for (int i = 0; i < N; ++i) par[i] = -1;
         for (int i = 1; i < N; ++i) if (ok[i]) {
             par[i] = 0;
-            double max = scores[0][i];
+            float max = scores[0][i];
             for (int j = 1; j < N; ++j) 
                 if (i != j && ok[j] && max < scores[j][i]) {
                     par[i] = j;
@@ -159,7 +159,7 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
         // and add a virtual node v_N
          
         // get circle cost and mark all nodes on the circle
-        double circleCost = scores[par[start]][start];
+        float circleCost = scores[par[start]][start];
         stack[start] = true;
         ok[start] = false;
         for (int i = par[start]; i != start; i = par[i]) {
@@ -171,8 +171,8 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
         for (int i = 0; i < N; ++i) {
             if (stack[i] || !ok[i]) continue;
             
-            double maxToCircle = Double.NEGATIVE_INFINITY;
-            double maxFromCircle = Double.NEGATIVE_INFINITY;
+            float maxToCircle = Float.NEGATIVE_INFINITY;
+            float maxFromCircle = Float.NEGATIVE_INFINITY;
             int toCircle = -1;
             int fromCircle = -1;
 
@@ -181,7 +181,7 @@ public class ChuLiuEdmondDecoder extends DependencyDecoder {
                     maxFromCircle = scores[j][i];
                     fromCircle = j;
                 }
-                double newScore = circleCost + scores[i][j] - scores[par[j]][j];
+                float newScore = circleCost + scores[i][j] - scores[par[j]][j];
                 if (newScore > maxToCircle) {
                     maxToCircle = newScore;
                     toCircle = j;
