@@ -2,6 +2,7 @@ package parser.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import parser.DependencyInstance;
 import parser.Options;
@@ -14,7 +15,7 @@ public class Conll06Reader extends DependencyReader {
 	}
 	
 	@Override
-	public DependencyInstance nextInstance() throws IOException {
+	public DependencyInstance nextInstance(HashMap<String, String> coarseMap) throws IOException {
 		
 	    ArrayList<String[]> lstLines = new ArrayList<String[]>();
 

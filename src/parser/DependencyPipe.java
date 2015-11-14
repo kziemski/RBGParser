@@ -214,13 +214,13 @@ public class DependencyPipe implements Serializable {
         
 		DependencyReader reader = DependencyReader.createDependencyReader(options);
 		reader.startReading(file);
-		DependencyInstance inst = reader.nextInstance();
+		DependencyInstance inst = reader.nextInstance(coarseMap);
 		
 		int cnt = 0;
 		while (inst != null) {
 			inst.setInstIds(dictionaries, coarseMap, conjWord, options.lang);
 			
-			inst = reader.nextInstance();	
+			inst = reader.nextInstance(coarseMap);	
 			++cnt;
 			if (options.maxNumSent != -1 && cnt >= options.maxNumSent) break;
 		}
@@ -301,7 +301,7 @@ public class DependencyPipe implements Serializable {
 		DependencyReader reader = DependencyReader.createDependencyReader(options);
 		reader.startReading(file);
 		
-		DependencyInstance inst = reader.nextInstance();
+		DependencyInstance inst = reader.nextInstance(coarseMap);
 		int cnt = 0;
 		Evaluator eval = new Evaluator(options, this);
 		
@@ -317,7 +317,7 @@ public class DependencyPipe implements Serializable {
 			eval.add(inst, inst, false);
 		    synFactory.initFeatureAlphabets(inst);
 				
-		    inst = reader.nextInstance();
+		    inst = reader.nextInstance(coarseMap);
 		    cnt++;
 	        if (options.maxNumSent != -1 && cnt >= options.maxNumSent) break;
 		}
@@ -437,7 +437,7 @@ public class DependencyPipe implements Serializable {
 		reader.startReading(file);
 
 		LinkedList<DependencyInstance> lt = new LinkedList<DependencyInstance>();
-		DependencyInstance inst = reader.nextInstance();
+		DependencyInstance inst = reader.nextInstance(coarseMap);
 						
 		int cnt = 0;
 		while(inst != null) {
@@ -447,7 +447,7 @@ public class DependencyPipe implements Serializable {
 		    //createFeatures(inst);
 			lt.add(new DependencyInstance(inst));		    
 			
-			inst = reader.nextInstance();
+			inst = reader.nextInstance(coarseMap);
 			cnt++;
 			if (options.maxNumSent != -1 && cnt >= options.maxNumSent) break;
 			if (cnt % 1000 == 0)
@@ -471,7 +471,7 @@ public class DependencyPipe implements Serializable {
     public DependencyInstance createInstance(DependencyReader reader) throws IOException 
     {
     	
-    	DependencyInstance inst = reader.nextInstance();
+    	DependencyInstance inst = reader.nextInstance(coarseMap);
     	if (inst == null) return null;
     	
     	inst.setInstIds(dictionaries, coarseMap, conjWord, options.lang);

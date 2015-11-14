@@ -33,6 +33,13 @@ public class FeatureTemplate {
 	    HP_BPN_MP,
 	    HP_BVB_MP,
 	    
+	    HPp_HP,
+	    HP_HPn,
+	    HPp_HP_HPn,
+	    MPp_MP,
+	    MP_MPn,
+	    MPp_MP_MPn,
+	    
 	    // posL-1 posL posR posR+1
 	    HPp_HP_MP_MPn,		//CORE_POS_PT0,
 	    HP_MP_MPn,			//CORE_POS_PT1,
