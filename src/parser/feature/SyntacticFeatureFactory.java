@@ -1262,52 +1262,52 @@ public class SyntacticFeatureFactory implements Serializable {
 		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(HPp_HP, pHeadLeft, pHead) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(HP_HPn, pHead, pHeadRight) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePPP(HPp_HP_HPn, pHeadLeft, pHead, pHeadRight) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(MPp_MP, pModLeft, pMod) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(MP_MPn, pMod, pModRight) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePPP(MPp_MP_MPn, pModLeft, pMod, pModRight) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(HPp_HP, pHeadLeftA, pHeadA) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(HP_HPn, pHeadA, pHeadRightA) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePPP(HPp_HP_HPn, pHeadLeftA, pHeadA, pHeadRightA) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(MPp_MP, pModLeftA, pModA) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePP(MP_MPn, pModA, pModRightA) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
 		
 		code = createArcCodePPP(MPp_MP_MPn, pModLeftA, pModA, pModRightA) | tid;
-		addArcFeature(code, fv);
-		addArcFeature(code | attDist, fv);
+		addLabeledArcFeature(code, fv);
+		addLabeledArcFeature(code | attDist, fv);
     	
     	// feature posL-1 posL posR posR+1
     	code = createArcCodePPPP(HPp_HP_MP_MPn, pHeadLeft, pHead, pMod, pModRight) | tid;
