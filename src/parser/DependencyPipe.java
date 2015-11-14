@@ -484,8 +484,8 @@ public class DependencyPipe implements Serializable {
     
     public void pruneLabel(DependencyInstance[] lstTrain)
     {
-		int numPOS = dictionaries.size(POS);
-		int numLab = dictionaries.size(DEPLABEL);
+		int numPOS = dictionaries.size(POS) + 1;
+		int numLab = dictionaries.size(DEPLABEL) + 1;
 		pruneLabel = new boolean [numPOS][numPOS][numLab];
 		int num = 0;
 		

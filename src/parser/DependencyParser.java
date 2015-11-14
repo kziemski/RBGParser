@@ -393,7 +393,7 @@ public class DependencyParser implements Serializable {
                 	parameters.averageParameters((iIter+1)*N, 1);
                 int cnvg = options.numTestConverge;
                 options.numTestConverge = options.numTrainConverge;
-	  			float res = evaluateSet(false, true);
+	  			evaluateSet(false, true);
                 options.numTestConverge = cnvg;
                 System.out.println();
 	  			System.out.println("_____________________________________________");
@@ -458,7 +458,7 @@ public class DependencyParser implements Serializable {
     	return nCorrect;
     }
     
-    public float evaluateSet(boolean output, boolean evalWithPunc)
+    public void evaluateSet(boolean output, boolean evalWithPunc)
     		throws IOException {
     	
     	if (pruner != null) pruner.resetPruningStats();
@@ -487,7 +487,7 @@ public class DependencyParser implements Serializable {
     		labelTime += lfd.wordFVTime;
     		    		
             DependencyInstance predInst = decoder.decode(inst, lfd, gfd, false);
-            predInst.heads = inst.heads;
+            //predInst.heads = inst.heads;
             if (options.learnLabel) {
             	long st = System.currentTimeMillis();
             	lfd.predictLabels(predInst.heads, predInst.deplbids, false);
@@ -523,8 +523,6 @@ public class DependencyParser implements Serializable {
     	}
     	
         decoder.shutdown();
-
-        return eval.UAS();
     }
     
     public float evaluateWithConvergeNum(int converge) throws IOException, CloneNotSupportedException 
