@@ -118,11 +118,8 @@ public class DependencyParser implements Serializable {
 				parser.saveModel();
 			}
 			
-			DependencyInstance[] lstTrain = parser.pipe.createInstances(options.trainFile);
-			parser.pipe.pruneLabel(lstTrain);
-			
 			System.out.printf(" Evaluating: %s%n", options.testFile);
-			parser.evaluateSet(true, false);
+			parser.evaluateSet(true, true);
 		}
 		
 	}
@@ -251,14 +248,14 @@ public class DependencyParser implements Serializable {
         	ArrayList<float[][]> param = new ArrayList<float[][]>();
         	param.add(parameters.U);
         	param.add(parameters.V);
-        	float[][] W = new float[options.R][d];
+        	float[][] W = new float[d][options.R];
         	param.add(W);
         	tensor.decompose(param);
         	for (int i = 0; i < options.R; ++i) {
     			for (int j = 0; j < parameters.D; ++j)
-    				parameters.W[i][j] = W[i][j];
+    				parameters.W[j][i] = W[j][i];
     			for (int j = parameters.D; j < d; ++j)
-    				parameters.WL[i][j-parameters.D] = W[i][j];
+    				parameters.WL[j-parameters.D][i] = W[j][i];
     		}
         	
         	if (options.useGP) {
@@ -266,19 +263,19 @@ public class DependencyParser implements Serializable {
         		param2.add(parameters.U2);
         		param2.add(parameters.V2);
         		param2.add(parameters.W2);
-        		float[][] X2 = new float[options.R2][d2];
+        		float[][] X2 = new float[d2][options.R2];
             	param2.add(X2);
-            	float[][] Y2 = new float[options.R2][d2];
+            	float[][] Y2 = new float[d2][options.R2];
             	param2.add(Y2);
             	tensor2.decompose(param2);
             	for (int i = 0; i < options.R2; ++i) {
 	    			for (int j = 0; j < parameters.D2; ++j) {
-	    				parameters.X2[i][j] = X2[i][j];
-	    				parameters.Y2[i][j] = Y2[i][j];
+	    				parameters.X2[j][i] = X2[j][i];
+	    				parameters.Y2[j][i] = Y2[j][i];
 	    			}
 	    			for (int j = parameters.D2; j < d2; ++j) {
-	    				parameters.X2L[i][j-parameters.D2] = X2[i][j];
-	    				parameters.Y2L[i][j-parameters.D2] = Y2[i][j];
+	    				parameters.X2L[j-parameters.D2][i] = X2[j][i];
+	    				parameters.Y2L[j-parameters.D2][i] = Y2[j][i];
 	    			}
 	    		}
         	}
@@ -396,7 +393,7 @@ public class DependencyParser implements Serializable {
                 	parameters.averageParameters((iIter+1)*N, 1);
                 int cnvg = options.numTestConverge;
                 options.numTestConverge = options.numTrainConverge;
-	  			float res = evaluateSet(false, false);
+	  			float res = evaluateSet(false, true);
                 options.numTestConverge = cnvg;
                 System.out.println();
 	  			System.out.println("_____________________________________________");

@@ -113,12 +113,12 @@ public class LocalFeatureData {
 	public void updateProjection()
 	{
 		for (int i = 0; i < len; ++i) {
-			parameters.projectU(wordFvs[i], wpU[i]);
-			parameters.projectV(wordFvs[i], wpV[i]);
+			parameters.projectMat(parameters.U, wordFvs[i], wpU[i]);
+			parameters.projectMat(parameters.V, wordFvs[i], wpV[i]);
 			if (options.useGP) {
-				parameters.projectU2(wordFvs[i], wpU2[i]);
-				parameters.projectV2(wordFvs[i], wpV2[i]);
-				parameters.projectW2(wordFvs[i], wpW2[i]);
+				parameters.projectMat(parameters.U2, wordFvs[i], wpU2[i]);
+				parameters.projectMat(parameters.V2, wordFvs[i], wpV2[i]);
+				parameters.projectMat(parameters.W2, wordFvs[i], wpW2[i]);
 			}
 		}
 	}
@@ -129,12 +129,12 @@ public class LocalFeatureData {
 		
 		for (int i = 0; i < len; ++i) {
 			wordFvs[i] = synFactory.createWordFeatures(inst, i);
-			parameters.projectU(wordFvs[i], wpU[i]);
-			parameters.projectV(wordFvs[i], wpV[i]);
+			parameters.projectMat(parameters.U, wordFvs[i], wpU[i]);
+			parameters.projectMat(parameters.V, wordFvs[i], wpV[i]);
 			if (options.useGP) {
-				parameters.projectU2(wordFvs[i], wpU2[i]);
-				parameters.projectV2(wordFvs[i], wpV2[i]);
-				parameters.projectW2(wordFvs[i], wpW2[i]);
+				parameters.projectMat(parameters.U2, wordFvs[i], wpU2[i]);
+				parameters.projectMat(parameters.V2, wordFvs[i], wpV2[i]);
+				parameters.projectMat(parameters.W2, wordFvs[i], wpW2[i]);
 			}
 		}
 		

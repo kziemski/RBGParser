@@ -50,10 +50,14 @@ public class LowRankTensor {
 					for (int j = 0; j < i; ++j) {
 						float dot = 1;
 						for (int l = 0; l < dim; ++l)
-							if (l != k)
-								dot *= Utils.dot(a.get(l), param.get(l)[j]);
+							if (l != k) {
+								float s = 0.0f;
+								for (int p = 0; p < N[l]; ++p)
+									s += a.get(l)[p]*param.get(l)[p][j];
+								dot *= s;
+							}
 						for (int p = 0; p < N[k]; ++p)
-							b[p] -= dot*param.get(k)[j][p];
+							b[p] -= dot*param.get(k)[p][j];
 					}
 					if (k < dim-1)
 						Utils.normalize(b);
@@ -72,7 +76,8 @@ public class LowRankTensor {
 			}
 			System.out.printf("\t%.2f", norm);
 			for (int k = 0; k < dim; ++k)
-				param.get(k)[i] = a.get(k);
+				for (int p = 0; p < N[k]; ++p)
+					param.get(k)[p][i] = a.get(k)[p];
 		}
 		System.out.println();
 	}
