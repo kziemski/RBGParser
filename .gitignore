@@ -1,4 +1,7 @@
-jni_include
+# eclipse #
+.project
+.classpath
+
 *.class
 
 # Package Files #
