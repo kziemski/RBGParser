@@ -59,7 +59,7 @@ public class Evaluator
 
             if (!evalWithPunc)
             	if (puncRegex.matcher(gold.forms[i]).matches()) continue;
-            	if (gold.forms[i].matches("[-!\"%&'()*,./:;?@\\[\\]_{}、]+")) continue;
+            	//if (gold.forms[i].matches("[-!\"%&'()*,./:;?@\\[\\]_{}、]+")) continue;
 
             ++tt;
     		if (gold.heads[i] == pred.heads[i]) {

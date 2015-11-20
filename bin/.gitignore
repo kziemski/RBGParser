@@ -1,1 +1,16 @@
-/parser/
+# eclipse #
+.project
+.classpath
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# running data #
+*.model
+*.test
+*.train
+/src/
