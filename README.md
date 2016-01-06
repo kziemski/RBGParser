@@ -16,11 +16,11 @@ This project is used to assign labels to an (unlabeled) dependency tree by a dis
 
 
 
-##### 1. Compilation
+##### 1. Compiling
 
 
 
-Make sure you have Java JDK installed on your machine. Use the following command to compile the Java code (please create a "bin" directory in the project directory before running it):
+Make sure you have Java JDK installed on your machine, then use the following command to compile the Java code (please create a "bin" directory in the project directory before running it):
 
 ```
 
@@ -40,7 +40,7 @@ javac -d bin -sourcepath src -classpath "lib/trove.jar" src/parser/DependencyPar
 
 
 
-We support CONLL-09 (default) and CONLL-06 (by specifying the argument "format:CONLL-06") data format.
+We support CoNLL-09 (default) and CoNLL-06 (by specifying the argument "format:CONLL-06") data format.
 
 
 
@@ -76,7 +76,7 @@ java -classpath "bin:lib/trove.jar" -Xmx20000m parser.DependencyParser \
 
 ```
 
-This will train the labeler from the training data *example.train*, save the labeling model to the file *example.model*, assign labels to (unlabeled) dependency trees in *example.pred*, evaluate against the test data *example.test* (data in *example.pred* and *example.test* should match except for the column HEAD and DEPREL), and output results to the file *example.out*.
+This will train the labeler from the training data *example.train*, save the labeling model to the file *example.model*, assign labels to (unlabeled) dependency trees in *example.pred* and evaluate against the test data *example.test* (*example.pred* and *example.test* should match except for the "HEAD" and "DEPREL" column). Labeling results are output to the file *example.out*.
 
 
 
@@ -100,7 +100,7 @@ java -classpath "bin:lib/trove.jar" -Xmx20000m parser.DependencyParser \
 
   pred-file:example.pred \
 
-  output-file:example.out
+  output-file:example.out\
 
   model:second  C:1.0  iters:5 \
 
@@ -108,8 +108,8 @@ java -classpath "bin:lib/trove.jar" -Xmx20000m parser.DependencyParser \
 
 ```
 
-This will run a 2nd-order model with regularization *C=1.0*, number of training iteration *iters=5*, rank of the first-order tensor *R=100* and second-order tensor *R2=50*, weight of the traditional features in scoring function *gammaLabel=0.3* (note that when traditional features incorporated, i.e. gammaLabel>0, the labeled will be significantly slowed down).
+This will run a 2nd-order model with regularization *C=1.0*, number of training iterations *iters=5*, rank of the first-order tensor *R=100* and second-order tensor *R2=50*, and weight of the traditional features in scoring function *gammaLabel=0.3* (note that when traditional features incorporated, i.e. *gammaLabel*>0, the labeler will be significantly slowed down).
 
 
 
-You may take a look at labeler/src/parser/Options.java to see a full list of possible options.
+You may take a look at labeler/src/parser/Options.java to see the full list of possible options.
