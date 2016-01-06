@@ -20,7 +20,7 @@ This project is used to assign labels to an (unlabeled) dependency tree by a dis
 
 
 
-Make sure you have Java JDK installed on your machine, then use the following command to compile the Java code (please create a "bin" directory in the project directory before running it):
+Make sure you have Java JDK installed on your machine, then run the following command to compile the Java code (please create a "bin" directory in the project directory before running it):
 
 ```
 
@@ -108,7 +108,7 @@ java -classpath "bin:lib/trove.jar" -Xmx20000m parser.DependencyParser \
 
 ```
 
-This will run a 2nd-order model with regularization *C=1.0*, number of training iterations *iters=5*, rank of the first-order tensor *R=100* and second-order tensor *R2=50*, and weight of the traditional features in scoring function *gammaLabel=0.3* (note that when traditional features incorporated, i.e. *gammaLabel*>0, the labeler will be significantly slowed down).
+This will run a 2nd-order model with regularization *C=1.0*, number of training iterations *iters=5*, rank of the first-order tensor *R=100* and second-order tensor *R2=50*, and weight of the traditional features in the scoring function *gammaLabel=0.3* (note that when traditional features incorporated, i.e. *gammaLabel*>0, the labeler will be significantly slowed down).
 
 
 
